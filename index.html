@@ -3,75 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echo of Void - Arena</title>
+    <title>Echo of Void</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0f0f1a; color: white; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
-        .card { background: linear-gradient(145deg, #1a1a2e, #16213e); border-radius: 20px; padding: 25px; width: 90%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid #4ecca3; text-align: center; }
-        .stat-row { display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; }
-        .stat-value { color: #4ecca3; font-weight: bold; }
-        button { background: #4ecca3; color: #1a1a2e; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-        .setup-btn { background: #2d4263; color: #888; font-size: 0.7em; margin-top: 40px; border: 1px dashed #444; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .card { background: linear-gradient(145deg, #1a1a2e, #16213e); border-radius: 20px; padding: 25px; width: 90%; max-width: 400px; border: 1px solid #4ecca3; text-align: center; box-shadow: 0 0 20px rgba(78,204,163,0.2); }
+        h1 { margin-top: 0; color: #4ecca3; font-size: 1.5em; }
+        .stat-row { display: flex; justify-content: space-between; margin: 12px 0; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 4px solid #4ecca3; }
+        .stat-label { color: #888; text-transform: uppercase; font-size: 0.8em; letter-spacing: 1px; }
+        .stat-value { color: #4ecca3; font-weight: bold; font-family: monospace; font-size: 1.1em; }
+        button { background: #4ecca3; color: #1a1a2e; border: none; padding: 18px; border-radius: 15px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 15px; font-size: 1em; transition: 0.3s; }
+        button:active { transform: scale(0.98); opacity: 0.8; }
+        #status { margin-top: 20px; font-size: 0.7em; color: #555; }
     </style>
 </head>
 <body>
-
     <div class="card">
-        <h1 id="username">Загрузка...</h1>
-        <div class="stat-row"><span>Lvl</span><span id="level" class="stat-value">--</span></div>
-        <div class="stat-row"><span>❤️ HP</span><span id="hp" class="stat-value">--/--</span></div>
-        <div class="stat-row"><span>⚔️ ATK</span><span id="attack" class="stat-value">--</span></div>
-        <div class="stat-row"><span>💰 GOLD</span><span id="gold" class="stat-value">--</span></div>
-
-        <button onclick="train('attack')">🏋️ Тренировать Атаку (10💰)</button>
+        <h1 id="username">Загрузка героя...</h1>
+        <div class="stat-row">
+            <span class="stat-label">❤️ Здоровье</span>
+            <span id="hp" class="stat-value">--</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">⚔️ Атака</span>
+            <span id="attack" class="stat-value">--</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">💰 Золото</span>
+            <span id="gold" class="stat-value">--</span>
+        </div>
+        <button onclick="train('attack')">🏋️ Тренировать атаку (10💰)</button>
     </div>
-
-    <button class="setup-btn" onclick="setupServer()">⚙️ Настроить адрес сервера</button>
+    <div id="status">Подключение к Бездне...</div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
 
-        // Берем сохраненную ссылку или пустую строку
-        let SERVER_URL = localStorage.getItem('game_server_url') || "";
-
-        function setupServer() {
-            const url = prompt("Вставь ссылку из Termux (https://...):", SERVER_URL);
-            if (url) {
-                localStorage.setItem('game_server_url', url);
-                location.reload();
-            }
-        }
-
-        // Если ссылки нет - просим ввести
-        if (!SERVER_URL) {
-            alert("Пожалуйста, настрой адрес сервера (кнопка внизу)");
-        }
-
+        // Твоя ссылка от Render
+        const SERVER_URL = "https://void-echoes-rpg.onrender.com"; 
+        
+        // Получаем ID пользователя из Telegram или ставим тестовый
         const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 12345;
 
         async function loadHero() {
-            if (!SERVER_URL) return;
             try {
                 const res = await fetch(`${SERVER_URL}/get_hero/${userId}`);
+                if (!res.ok) throw new Error();
                 const data = await res.json();
+                
                 document.getElementById('username').innerText = data.username;
-                document.getElementById('level').innerText = data.level;
-                document.getElementById('hp').innerText = `${data.hp}/${data.max_hp}`;
+                document.getElementById('hp').innerText = data.hp + " / " + data.max_hp;
                 document.getElementById('attack').innerText = data.attack;
                 document.getElementById('gold').innerText = data.gold;
+                document.getElementById('status').innerText = "Связь стабильна";
             } catch (e) {
-                console.log("Ошибка сервера");
+                document.getElementById('status').innerText = "Сервер просыпается... (до 30 сек)";
+                setTimeout(loadHero, 3000); // Пробуем снова через 3 сек
             }
         }
 
         async function train(stat) {
             try {
-                await fetch(`${SERVER_URL}/train/${userId}/${stat}`, {method:'POST'});
+                const res = await fetch(`${SERVER_URL}/train/${userId}/${stat}`, { method: 'POST' });
+                const result = await res.json();
+                if (result.status === "error") {
+                    tg.showAlert("Недостаточно золота!");
+                }
                 loadHero();
-            } catch (e) { alert("Нет связи"); }
+            } catch (e) {
+                tg.showAlert("Ошибка связи с сервером");
+            }
         }
 
+        // Запуск при открытии
         loadHero();
     </script>
 </body>
