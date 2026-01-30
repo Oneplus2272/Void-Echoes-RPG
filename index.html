@@ -6,109 +6,70 @@
     <title>Echo of Void - Arena</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0f0f1a;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .card {
-            background: linear-gradient(145deg, #1a1a2e, #16213e);
-            border-radius: 20px;
-            padding: 25px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
-            border: 1px solid #4ecca3;
-            text-align: center;
-        }
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-        }
-        .stat-value {
-            color: #4ecca3;
-            font-weight: bold;
-        }
-        button {
-            background: #4ecca3;
-            color: #1a1a2e;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        #status {
-            margin-top: 20px;
-            font-size: 0.8em;
-            color: #888;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0f0f1a; color: white; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
+        .card { background: linear-gradient(145deg, #1a1a2e, #16213e); border-radius: 20px; padding: 25px; width: 90%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); border: 1px solid #4ecca3; text-align: center; }
+        .stat-row { display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+        .stat-value { color: #4ecca3; font-weight: bold; }
+        button { background: #4ecca3; color: #1a1a2e; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+        .setup-btn { background: #2d4263; color: #888; font-size: 0.7em; margin-top: 40px; border: 1px dashed #444; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1 id="username">Герой</h1>
-        <div class="stat-row"><span>Lvl</span><span id="level" class="stat-value">1</span></div>
-        <div class="stat-row"><span>❤️ HP</span><span id="hp" class="stat-value">100/100</span></div>
-        <div class="stat-row"><span>⚔️ ATK</span><span id="attack" class="stat-value">10</span></div>
-        <div class="stat-row"><span>🛡️ DEF</span><span id="defense" class="stat-value">5</span></div>
-        <div class="stat-row"><span>💰 GOLD</span><span id="gold" class="stat-value">100</span></div>
+        <h1 id="username">Загрузка...</h1>
+        <div class="stat-row"><span>Lvl</span><span id="level" class="stat-value">--</span></div>
+        <div class="stat-row"><span>❤️ HP</span><span id="hp" class="stat-value">--/--</span></div>
+        <div class="stat-row"><span>⚔️ ATK</span><span id="attack" class="stat-value">--</span></div>
+        <div class="stat-row"><span>💰 GOLD</span><span id="gold" class="stat-value">--</span></div>
 
         <button onclick="train('attack')">🏋️ Тренировать Атаку (10💰)</button>
-        <button onclick="train('defense')" style="background:#2d4263; color:white;">🛡️ Тренировать Защиту (10💰)</button>
     </div>
 
-    <div id="status">Подключение...</div>
+    <button class="setup-btn" onclick="setupServer()">⚙️ Настроить адрес сервера</button>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ТВОЯ АКТУАЛЬНАЯ ССЫЛКА
-        const SERVER_URL = "https://alex-crafts-guys-turbo.trycloudflare.com"; 
-        
-        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 123456789;
+        // Берем сохраненную ссылку или пустую строку
+        let SERVER_URL = localStorage.getItem('game_server_url') || "";
+
+        function setupServer() {
+            const url = prompt("Вставь ссылку из Termux (https://...):", SERVER_URL);
+            if (url) {
+                localStorage.setItem('game_server_url', url);
+                location.reload();
+            }
+        }
+
+        // Если ссылки нет - просим ввести
+        if (!SERVER_URL) {
+            alert("Пожалуйста, настрой адрес сервера (кнопка внизу)");
+        }
+
+        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 12345;
 
         async function loadHero() {
+            if (!SERVER_URL) return;
             try {
                 const res = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const data = await res.json();
+                document.getElementById('username').innerText = data.username;
                 document.getElementById('level').innerText = data.level;
                 document.getElementById('hp').innerText = `${data.hp}/${data.max_hp}`;
                 document.getElementById('attack').innerText = data.attack;
-                document.getElementById('defense').innerText = data.defense;
                 document.getElementById('gold').innerText = data.gold;
-                document.getElementById('status').innerText = "Данные обновлены";
             } catch (e) {
-                document.getElementById('status').innerText = "Ошибка сервера";
+                console.log("Ошибка сервера");
             }
         }
 
         async function train(stat) {
             try {
-                const res = await fetch(`${SERVER_URL}/train/${userId}/${stat}`, {method:'POST'});
-                const data = await res.json();
-                if(data.status === "success") {
-                    tg.HapticFeedback.impactOccurred('light');
-                    loadHero();
-                } else {
-                    alert(data.message);
-                }
-            } catch (e) {
-                alert("Ошибка связи");
-            }
+                await fetch(`${SERVER_URL}/train/${userId}/${stat}`, {method:'POST'});
+                loadHero();
+            } catch (e) { alert("Нет связи"); }
         }
 
         loadHero();
