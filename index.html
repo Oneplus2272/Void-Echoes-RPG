@@ -7,7 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             background-color: #0f0f1a;
             color: white;
             display: flex;
@@ -15,7 +15,6 @@
             align-items: center;
             margin: 0;
             padding: 20px;
-            user-select: none;
         }
         .card {
             background: linear-gradient(145deg, #1a1a2e, #16213e);
@@ -26,165 +25,92 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.7);
             border: 1px solid #4ecca3;
             text-align: center;
-            margin-top: 20px;
-        }
-        h1 {
-            color: #4ecca3;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
         }
         .stat-row {
             display: flex;
             justify-content: space-between;
             margin: 15px 0;
-            font-size: 1.1em;
-            background: rgba(255,255,255,0.05);
             padding: 10px;
+            background: rgba(255,255,255,0.05);
             border-radius: 8px;
-        }
-        .stat-label {
-            color: #bbb;
         }
         .stat-value {
             color: #4ecca3;
             font-weight: bold;
         }
         button {
-            background: linear-gradient(90deg, #4ecca3, #45b293);
+            background: #4ecca3;
             color: #1a1a2e;
             border: none;
-            padding: 18px;
+            padding: 15px;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 1em;
-            cursor: pointer;
-            margin-top: 25px;
             width: 100%;
-            box-shadow: 0 4px 15px rgba(78, 204, 163, 0.3);
-            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-top: 10px;
         }
-        button:active {
-            transform: scale(0.96);
-            box-shadow: 0 2px 10px rgba(78, 204, 163, 0.2);
-        }
-        #status-bar {
+        #status {
             margin-top: 20px;
             font-size: 0.8em;
-            padding: 8px 15px;
-            border-radius: 20px;
-            background: rgba(0,0,0,0.3);
             color: #888;
-        }
-        .loading {
-            color: #fca311;
-        }
-        .online {
-            color: #4ecca3;
-        }
-        .error {
-            color: #e63946;
         }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h1 id="username">Загрузка...</h1>
-        
-        <div class="stat-row">
-            <span class="stat-label">Уровень</span>
-            <span id="level" class="stat-value">--</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">❤️ Здоровье</span>
-            <span id="hp" class="stat-value">-- / --</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">⚔️ Атака</span>
-            <span id="attack" class="stat-value">--</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">🛡️ Защита</span>
-            <span id="defense" class="stat-value">--</span>
-        </div>
-        <div class="stat-row">
-            <span class="stat-label">💰 Золото</span>
-            <span id="gold" class="stat-value">--</span>
-        </div>
+        <h1 id="username">Герой</h1>
+        <div class="stat-row"><span>Lvl</span><span id="level" class="stat-value">1</span></div>
+        <div class="stat-row"><span>❤️ HP</span><span id="hp" class="stat-value">100/100</span></div>
+        <div class="stat-row"><span>⚔️ ATK</span><span id="attack" class="stat-value">10</span></div>
+        <div class="stat-row"><span>🛡️ DEF</span><span id="defense" class="stat-value">5</span></div>
+        <div class="stat-row"><span>💰 GOLD</span><span id="gold" class="stat-value">100</span></div>
 
-        <button onclick="trainStat('attack')">🏋️ Тренировать Атаку (10💰)</button>
-        <button onclick="trainStat('defense')" style="margin-top: 10px; background: #2d4263; color: white;">🛡️ Усилить Защиту (10💰)</button>
+        <button onclick="train('attack')">🏋️ Тренировать Атаку (10💰)</button>
+        <button onclick="train('defense')" style="background:#2d4263; color:white;">🛡️ Тренировать Защиту (10💰)</button>
     </div>
 
-    <div id="status-bar">Инициализация...</div>
+    <div id="status">Подключение...</div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем приложение
-        tg.ready();
+        tg.expand();
 
-        // ТВОЙ АКТУАЛЬНЫЙ URL СЕРВЕРА ИЗ CLOUDFLARE
-        const SERVER_URL = "https://diabetes-electro-chairs-core.trycloudflare.com"; 
+        // ТВОЯ АКТУАЛЬНАЯ ССЫЛКА
+        const SERVER_URL = "https://alex-crafts-guys-turbo.trycloudflare.com"; 
         
-        // Получаем ID пользователя из Telegram или ставим тестовый для браузера
-        const user = tg.initDataUnsafe.user;
-        const userId = user ? user.id : 123456789;
-        const userName = user ? (user.username || user.first_name) : "Незнакомец";
+        const userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 123456789;
 
-        const statusEl = document.getElementById('status-bar');
-
-        // Функция обновления интерфейса
-        function updateUI(data) {
-            document.getElementById('username').innerText = data.username || userName;
-            document.getElementById('level').innerText = data.level;
-            document.getElementById('hp').innerText = `${data.hp} / ${data.max_hp}`;
-            document.getElementById('attack').innerText = data.attack;
-            document.getElementById('defense').innerText = data.defense;
-            document.getElementById('gold').innerText = data.gold;
-        }
-
-        // Загрузка героя с сервера
         async function loadHero() {
-            statusEl.innerText = "Синхронизация...";
-            statusEl.className = "loading";
             try {
-                const response = await fetch(`${SERVER_URL}/get_hero/${userId}`);
-                if (!response.ok) throw new Error("Ошибка сети");
-                const data = await response.json();
-                updateUI(data);
-                statusEl.innerText = "Соединение установлено";
-                statusEl.className = "online";
-            } catch (err) {
-                console.error(err);
-                statusEl.innerText = "Ошибка: Сервер недоступен";
-                statusEl.className = "error";
+                const res = await fetch(`${SERVER_URL}/get_hero/${userId}`);
+                const data = await res.json();
+                document.getElementById('level').innerText = data.level;
+                document.getElementById('hp').innerText = `${data.hp}/${data.max_hp}`;
+                document.getElementById('attack').innerText = data.attack;
+                document.getElementById('defense').innerText = data.defense;
+                document.getElementById('gold').innerText = data.gold;
+                document.getElementById('status').innerText = "Данные обновлены";
+            } catch (e) {
+                document.getElementById('status').innerText = "Ошибка сервера";
             }
         }
 
-        // Прокачка статов
-        async function trainStat(statType) {
-            statusEl.innerText = "Обмен данными...";
+        async function train(stat) {
             try {
-                const response = await fetch(`${SERVER_URL}/train/${userId}/${statType}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                
-                if (data.status === "success") {
-                    tg.HapticFeedback.impactOccurred('medium'); // Виброотклик
-                    loadHero(); // Перезагружаем данные
-                } else {
-                    alert(data.message || "Ошибка");
+                const res = await fetch(`${SERVER_URL}/train/${userId}/${stat}`, {method:'POST'});
+                const data = await res.json();
+                if(data.status === "success") {
+                    tg.HapticFeedback.impactOccurred('light');
                     loadHero();
+                } else {
+                    alert(data.message);
                 }
-            } catch (err) {
-                alert("Нет связи с сервером");
+            } catch (e) {
+                alert("Ошибка связи");
             }
         }
 
-        // Первая загрузка
         loadHero();
     </script>
 </body>
