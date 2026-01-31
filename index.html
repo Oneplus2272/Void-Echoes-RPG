@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Echoes RPG - Final UI</title>
+    <title>Void Echoes RPG - Final Loading</title>
     <style>
         body, html {
             margin: 0;
@@ -37,26 +37,27 @@
             z-index: 1;
         }
 
-        /* Логотип: поднят максимально (в самый ноль) и увеличен */
+        /* Логотип: крупный и максимально высоко */
         .logo-container {
-            position: fixed; /* Фиксируем строго вверху */
+            position: fixed;
             top: 0; 
             left: 50%;
             transform: translateX(-50%);
             z-index: 10;
-            width: 85%; /* Увеличен размер */
-            max-width: 450px; /* Лимит для больших экранов */
+            width: 95%; /* Увеличен размер */
+            max-width: 550px; /* Большой размер для ПК */
             text-align: center;
+            margin-top: -10px; /* Прижимаем вплотную к верхнему краю */
         }
 
         .logo-container img {
             width: 100%;
             height: auto;
             display: block;
-            filter: drop-shadow(0 0 20px rgba(0, 191, 255, 0.8));
+            filter: drop-shadow(0 0 25px rgba(0, 191, 255, 0.8));
         }
 
-        /* Прогресс-бар снизу */
+        /* Адаптивный прогресс-бар снизу */
         .progress-wrapper {
             position: absolute;
             bottom: 8%;
@@ -87,7 +88,7 @@
             overflow: hidden;
         }
 
-        /* Бегущий блеск строго по цвету */
+        /* Бегущий блеск СТРОГО внутри заполнения */
         .progress-fill::after {
             content: '';
             position: absolute;
@@ -131,14 +132,14 @@
             text-shadow: 0 0 5px #000;
         }
 
-        /* Адаптация под мобильные устройства */
+        /* Тонкая настройка для мобильных */
         @media (max-width: 480px) {
             .logo-container {
                 width: 90%;
-                top: -5px; /* Смещаем еще выше за край, чтобы выиграть место */
+                margin-top: -5px; /* Максимальный подъем */
             }
             .progress-wrapper {
-                bottom: 12%;
+                bottom: 10%;
             }
         }
     </style>
@@ -171,7 +172,7 @@
 
         function simulateLoading() {
             if (progress < 100) {
-                progress += Math.random() * 1.4; 
+                progress += Math.random() * 1.6; 
                 if (progress > 100) progress = 100;
                 
                 const roundedProgress = Math.floor(progress);
