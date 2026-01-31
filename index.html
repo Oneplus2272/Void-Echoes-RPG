@@ -94,7 +94,7 @@
             display: flex; align-items: center; background: rgba(0, 0, 0, 0.7);
             padding: 10px; border-radius: 15px; border: 1px solid var(--blue); backdrop-filter: blur(10px);
         }
-        .player-avatar { width: 50px; height: 50px; border-radius: 10px; border: 1px solid var(--gold); margin-right: 15px; }
+        .player-avatar { width: 50px; height: 50px; border-radius: 10px; border: 1px solid var(--gold); margin-right: 15px; object-fit: cover; }
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1rem; }
         .player-info p { margin: 2px 0 0 0; font-size: 0.75rem; color: #fff; }
 
@@ -167,7 +167,8 @@
         const heroesData = {
             warrior: {
                 title: "ВОИН", bg: "UI_Background_Warrior.png", 
-                male: "hero_warrior_male.png", female: "hero_warrior_female.png", avatar: "icon_hero_paladin.png",
+                male: "hero_warrior_male.png", female: "hero_warrior_female.png",
+                ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png",
                 skills: [
                     { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона текущей цели и имеет 10% шанс вызвать кровотечение на 3 секунды." },
                     { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается в танце смерти, нанося 80% урона всем окружающим противникам в радиусе 2 метров." },
@@ -178,7 +179,8 @@
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png",
-                male: "hero_mage_male.png", female: "hero_mage_female.png", avatar: "icon_hero_mage.png",
+                male: "hero_mage_male.png", female: "hero_mage_female.png",
+                ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png",
                 skills: [
                     { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Выпускает магический снаряд, наносящий 140% магического урона и замедляющий скорость передвижения цели на 30%." },
                     { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Обрушивает метеориты на выбранную область. Наносит колоссальный урон по площади и поджигает землю на 5 секунд." },
@@ -189,12 +191,13 @@
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png",
-                male: "hero_archer_male.png", female: "hero_archer_female.png", avatar: "icon_hero_ranger.png",
+                male: "hero_archer_male.png", female: "hero_archer_female.png",
+                ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png",
                 skills: [
                     { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Выстрел в уязвимую точку. Наносит 130% урона и имеет повышенный шанс на критическое попадание." },
                     { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает веер из 12 стрел перед собой, поражая всех противников на пути и отталкивая их назад." },
                     { n: "Ловушка охотника", i: "arc_3_control.png", d: "Устанавливает скрытый капкан. Наступивший в него враг обездвиживается на 4 секунды и получает эффект 'Метка смерти'." },
-                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", p: 50, d: "Пассивный навык. Увеличивает шанс уклониться от любой атаки на 20%. После успешного уворота скорость бега растет на 2 сек." },
+                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Пассивный навык. Увеличивает шанс уклониться от любой атаки на 20%. После успешного уворота скорость бега растет на 2 сек." },
                     { n: "Око Орла", i: "arc_5_ultimate.png", d: "Ультимейт: Концентрация достигает пика. В течение 8 секунд каждая стрела гарантированно наносит критический урон и прошивает врагов насквозь." }
                 ]
             }
@@ -256,6 +259,7 @@
         async function confirmSelection() {
             document.getElementById('main-confirm-btn').innerText = "СОХРАНЕНИЕ...";
             try {
+                // Передаем и пол тоже, чтобы сервер запомнил (если сервер поддерживает)
                 await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' });
                 const r = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const d = await r.json();
@@ -266,10 +270,17 @@
         function showMenu(data) {
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('selection-screen').style.display = 'none';
-            const hero = heroesData[data.hero_class.toLowerCase()];
-            document.getElementById('menu-avatar').src = hero.avatar;
+            
+            const heroKey = data.hero_class.toLowerCase();
+            const hero = heroesData[heroKey];
+            
+            // Здесь логика выбора аватарки. Если сервер не шлет пол, берем currentGender из выбора
+            const avatarFile = (currentGender === 'female') ? hero.ava_female : hero.ava_male;
+            
+            document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
             document.getElementById('player-stats').innerText = `Уровень: ${data.level} | Золото: ${data.gold} | АТК: ${data.attack}`;
+            
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
