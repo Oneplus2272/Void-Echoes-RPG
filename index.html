@@ -21,7 +21,7 @@
             color: white;
             user-select: none;
             -webkit-user-select: none;
-            /* Убираем лишние отступы в Telegram */
+            touch-action: none;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
@@ -162,7 +162,7 @@
         .class-selector {
             width: 100%;
             margin-top: auto; 
-            padding-bottom: 20px; /* Увеличили отступ снизу */
+            padding-bottom: 25px;
             display: flex; justify-content: center; align-items: center;
             gap: 25px;
         }
@@ -241,22 +241,16 @@
     </div>
 
     <script>
-        // --- Настройки Telegram Web App для FullScreen ---
-        const tg = window.Telegram.WebApp;
+        // Защита: проверяем наличие Telegram Web App
+        const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
-        // 1. Принудительно разворачиваем
-        tg.expand();
-        
-        // 2. Устанавливаем цвет заголовка в цвет фона (чтобы сливалось)
-        tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
-
-        // 3. Запрещаем закрывать свайпом
-        if (tg.disableVerticalSwipes) {
-            tg.disableVerticalSwipes();
+        if (tg) {
+            tg.expand();
+            tg.setHeaderColor('#000000');
+            tg.setBackgroundColor('#000000');
+            if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+            tg.ready();
         }
-
-        tg.ready();
 
         const heroesData = {
             warrior: {
@@ -300,55 +294,79 @@
 
         let loadedCount = 0;
 
+        function updateProgress() {
+            const percent = Math.floor((loadedCount / assetsToLoad.length) * 100);
+            const fill = document.getElementById('progress-fill');
+            const text = document.getElementById('progress-text');
+            if(fill) fill.style.width = percent + '%';
+            if(text) text.innerText = percent + '%';
+            
+            if (loadedCount >= assetsToLoad.length) {
+                setTimeout(initGame, 1000);
+            }
+        }
+
         function preloadAssets() {
-            if (assetsToLoad.length === 0) { initGame(); return; }
+            if (assetsToLoad.length === 0) { 
+                initGame(); 
+                return; 
+            }
             assetsToLoad.forEach(src => {
                 const img = new Image();
-                img.src = src;
                 img.onload = () => { loadedCount++; updateProgress(); };
                 img.onerror = () => { loadedCount++; updateProgress(); };
+                img.src = src;
             });
         }
 
-        function updateProgress() {
-            const percent = Math.floor((loadedCount / assetsToLoad.length) * 100);
-            document.getElementById('progress-fill').style.width = percent + '%';
-            document.getElementById('progress-text').innerText = percent + '%';
-            if (loadedCount >= assetsToLoad.length) { setTimeout(initGame, 1000); }
-        }
-
         function initGame() {
-            document.getElementById('loading-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loading-screen').style.display = 'none';
-                const s = document.getElementById('selection-screen');
-                s.style.display = 'block';
-                setTimeout(() => { s.style.opacity = '1'; selectHero('warrior'); }, 50);
-            }, 800);
+            const ls = document.getElementById('loading-screen');
+            if (ls) {
+                ls.style.opacity = '0';
+                setTimeout(() => {
+                    ls.style.display = 'none';
+                    const s = document.getElementById('selection-screen');
+                    if(s) {
+                        s.style.display = 'block';
+                        setTimeout(() => { 
+                            s.style.opacity = '1'; 
+                            selectHero('warrior'); 
+                        }, 50);
+                    }
+                }, 800);
+            }
         }
 
         function selectHero(key) {
             const d = heroesData[key];
             const screen = document.getElementById('selection-screen');
-            screen.style.backgroundImage = `url('${d.bg}')`;
-            document.getElementById('hero-img').src = d.image;
-            document.getElementById('class-title').innerText = d.title;
+            const heroImg = document.getElementById('hero-img');
+            const title = document.getElementById('class-title');
             const list = document.getElementById('skills-list');
-            list.innerHTML = '';
-            d.skills.forEach(sk => {
-                list.innerHTML += `
-                    <div class="skill-item">
-                        <img src="${sk.i}" class="skill-img">
-                        <div class="skill-content">
-                            <div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div>
-                            <div class="bar-bg"><div class="bar-fill" style="width:${sk.p}%"></div></div>
-                        </div>
-                    </div>`;
-            });
+
+            if(screen) screen.style.backgroundImage = `url('${d.bg}')`;
+            if(heroImg) heroImg.src = d.image;
+            if(title) title.innerText = d.title;
+            
+            if(list) {
+                list.innerHTML = '';
+                d.skills.forEach(sk => {
+                    list.innerHTML += `
+                        <div class="skill-item">
+                            <img src="${sk.i}" class="skill-img">
+                            <div class="skill-content">
+                                <div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div>
+                                <div class="bar-bg"><div class="bar-fill" style="width:${sk.p}%"></div></div>
+                            </div>
+                        </div>`;
+                });
+            }
             document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`btn-${key}`).classList.add('active');
+            const activeBtn = document.getElementById(`btn-${key}`);
+            if(activeBtn) activeBtn.classList.add('active');
         }
 
+        // Запуск
         window.onload = preloadAssets;
     </script>
 </body>
