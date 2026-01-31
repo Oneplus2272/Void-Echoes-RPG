@@ -3,246 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Echoes RPG - Character Selection</title>
+    <title>Void Echoes - Selection</title>
     <style>
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
         }
 
-        .selection-screen {
-            position: relative;
+        /* --- ЗАГРУЗОЧНЫЙ ЭКРАН --- */
+        #loading-screen {
+            position: fixed;
             width: 100%;
-            height: 100vh;
-            background: url('bg_loading_main_v1.png') no-repeat center center;
-            background-size: cover;
+            height: 100%;
+            background: url('bg_loading_main_v1.png') no-repeat center center/cover;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
+            z-index: 100;
+            transition: opacity 1s ease;
         }
 
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); z-index: 1;
-        }
-
-        .title {
-            position: relative; z-index: 10;
-            color: #00bfff; text-transform: uppercase;
-            letter-spacing: 5px; font-size: clamp(20px, 5vw, 28px); margin-bottom: 30px;
-            text-shadow: 0 0 15px rgba(0, 191, 255, 0.8);
-        }
-
-        .heroes-container {
-            position: relative; z-index: 10;
-            display: flex; gap: 20px; width: 95%; max-width: 1100px;
-            justify-content: center; flex-wrap: wrap;
-        }
-
-        .hero-card {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #333;
-            border-radius: 20px;
-            width: 180px;
-            padding: 20px;
+        .loader-container {
+            width: 80%;
+            max-width: 600px;
+            margin-bottom: 50px;
             text-align: center;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .hero-card:hover {
-            border-color: #00bfff;
-            transform: translateY(-10px);
-            box-shadow: 0 0 25px rgba(0, 191, 255, 0.3);
-        }
-
-        .hero-card.active {
-            border-color: #00bfff;
-            background: rgba(0, 191, 255, 0.15);
-            box-shadow: 0 0 35px rgba(0, 191, 255, 0.6);
-            transform: scale(1.05);
-        }
-
-        .hero-logo {
-            width: 110px; height: 110px;
-            margin: 0 auto 15px;
-            background: radial-gradient(circle, #1a1a1a, #000);
-            border-radius: 50%;
-            border: 2px solid #444;
-            display: flex; align-items: center; justify-content: center;
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
             overflow: hidden;
-            transition: 0.3s;
+            border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
-        .hero-card.active .hero-logo {
-            border-color: #00bfff;
-            box-shadow: 0 0 15px #00bfff;
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff8c00);
+            box-shadow: 0 0 15px #ff8c00;
+            transition: width 0.1s linear;
         }
 
-        .hero-logo img {
-            width: 90%; height: 90%;
+        /* --- ЭКРАН ВЫБОРА ГЕРОЯ --- */
+        #selection-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease, background-image 0.5s ease-in-out;
+        }
+
+        /* Затемнение фона для читаемости интерфейса */
+        #selection-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.7) 100%);
+            z-index: 0;
+        }
+
+        /* Контейнер персонажа (слева) */
+        .hero-preview {
+            position: absolute;
+            left: 5%;
+            bottom: 0;
+            height: 90%;
+            width: 40%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .hero-preview img {
+            height: 100%;
+            max-width: 100%;
             object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(0,0,0,0.9));
+            transition: transform 0.5s ease, opacity 0.3s ease;
         }
 
-        .hero-name {
-            color: #fff; font-weight: bold; font-size: 18px;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-
-        /* ПАНЕЛЬ ХАРАКТЕРИСТИК */
-        .details-panel {
-            position: relative; z-index: 10;
-            margin-top: 30px; background: rgba(0, 0, 0, 0.9);
-            border: 1px solid #00bfff; border-radius: 25px;
-            width: 85%; max-width: 700px; padding: 25px;
-            color: #fff; text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .hero-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-            border-top: 1px solid #333;
-            padding-top: 20px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
+        /* Таблица навыков (справа) */
+        .skills-panel {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 420px;
+            background: rgba(15, 15, 20, 0.85);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 12px;
-            border: 1px solid rgba(0, 191, 255, 0.1);
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            z-index: 2;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
 
-        .stat-label { color: #00bfff; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-value { color: #fff; display: block; font-size: 20px; font-weight: bold; margin-top: 3px; }
+        .skill-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.3s;
+        }
 
-        .select-btn {
-            margin-top: 25px; padding: 14px 60px;
-            background: linear-gradient(180deg, #00bfff, #0077be);
-            border: none; border-radius: 30px;
-            color: #fff; font-weight: bold; text-transform: uppercase;
-            cursor: pointer; transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        .skill-row:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .skill-icon {
+            width: 55px;
+            height: 55px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            margin-right: 15px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+        }
+
+        .skill-info {
+            flex-grow: 1;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .skill-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .skill-percent {
+            font-size: 14px;
+            color: #00d4ff;
+            font-family: monospace;
+        }
+
+        .skill-stat-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .skill-stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #0055ff);
+            border-radius: 10px;
+            transition: width 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+        }
+
+        /* Селектор героев (снизу) */
+        .hero-selector {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            z-index: 3;
+        }
+
+        .class-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .class-icon {
+            width: 80px;
+            height: 80px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: grayscale(1) opacity(0.6);
+            border: 2px solid transparent;
+            margin-bottom: 8px;
+        }
+
+        .class-btn:hover .class-icon {
+            filter: grayscale(0.5) opacity(0.9);
+            transform: translateY(-10px);
+        }
+
+        .class-btn.active .class-icon {
+            filter: grayscale(0) opacity(1);
+            transform: scale(1.15) translateY(-10px);
+            border-bottom: 3px solid #ffd700;
+        }
+
+        .class-label {
+            font-size: 12px;
+            text-transform: uppercase;
             letter-spacing: 2px;
+            color: #aaa;
+            transition: color 0.3s;
         }
 
-        .select-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px #00bfff;
-        }
-
-        @media (max-width: 480px) {
-            .hero-card { width: 100px; padding: 10px; }
-            .hero-logo { width: 70px; height: 70px; }
-            .hero-name { font-size: 12px; }
-            .details-panel { width: 90%; padding: 15px; }
-            .stat-value { font-size: 16px; }
+        .class-btn.active .class-label {
+            color: #ffd700;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="selection-screen">
-        <div class="overlay"></div>
-
-        <h1 class="title">Выберите своего героя</h1>
-
-        <div class="heroes-container">
-            <div class="hero-card active" onclick="selectHero('paladin', this)">
-                <div class="hero-logo">
-                    <img src="icon_hero_paladin.png" alt="Warrior">
-                </div>
-                <div class="hero-name">Паладин</div>
-            </div>
-
-            <div class="hero-card" onclick="selectHero('mage', this)">
-                <div class="hero-logo">
-                    <img src="icon_hero_mage.png" alt="Mage">
-                </div>
-                <div class="hero-name">Маг Пустоты</div>
-            </div>
-
-            <div class="hero-card" onclick="selectHero('ranger', this)">
-                <div class="hero-logo">
-                    <img src="icon_hero_ranger.png" alt="Archer">
-                </div>
-                <div class="hero-name">Следопыт</div>
+    <div id="loading-screen">
+        <div class="loader-container">
+            <h2 id="loading-text" style="letter-spacing: 5px; font-size: 18px; margin-bottom: 20px;">ЗАГРУЗКА МИРА...</h2>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
             </div>
         </div>
+    </div>
 
-        <div class="details-panel">
-            <h2 id="hero-title" style="color: #00bfff; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Паладин</h2>
-            <p id="hero-desc" style="font-size: 14px; color: #bbb; margin: 10px 0;">Защитник света и правосудия.</p>
-            
-            <div class="hero-info-grid">
-                <div class="stat-box">
-                    <span class="stat-label">Здоровье</span>
-                    <span class="stat-value" id="stat-hp">150</span>
+    <div id="selection-screen">
+        <div class="hero-preview">
+            <img id="hero-img" src="" alt="Hero">
+        </div>
+
+        <div class="skills-panel">
+            <h2 id="class-title" style="text-align:center; color:#ffd700; margin-top:0; font-size: 28px; letter-spacing: 4px;">КЛАСС</h2>
+            <hr style="border: 0; border-top: 1px solid rgba(255,215,0,0.2); margin-bottom: 20px;">
+            <div id="skills-list">
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label" id="resource-name">Ярость</span>
-                    <span class="stat-value" id="stat-res">100</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Сила</span>
-                    <span class="stat-value" id="stat-str">18</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Ловкость</span>
-                    <span class="stat-value" id="stat-dex">8</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Интеллект</span>
-                    <span class="stat-value" id="stat-int">5</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Удача</span>
-                    <span class="stat-value" id="stat-luck">10</span>
-                </div>
+        </div>
+
+        <div class="hero-selector">
+            <div class="class-btn" id="btn-warrior" onclick="selectHero('warrior')">
+                <img src="icon_hero_paladin.png" class="class-icon" alt="Воин">
+                <span class="class-label">Воин</span>
             </div>
-
-            <button class="select-btn">Начать путь</button>
+            <div class="class-btn" id="btn-mage" onclick="selectHero('mage')">
+                <img src="icon_hero_mage.png" class="class-icon" alt="Маг">
+                <span class="class-label">Маг</span>
+            </div>
+            <div class="class-btn" id="btn-archer" onclick="selectHero('archer')">
+                <img src="icon_hero_ranger.png" class="class-icon" alt="Лучник">
+                <span class="class-label">Лучник</span>
+            </div>
         </div>
     </div>
 
     <script>
-        const heroData = {
-            paladin: {
-                title: "Паладин",
-                desc: "Мастер ближнего боя и защиты. Использует ярость для проведения мощных сокрушающих атак.",
-                hp: 150, res: 100, resName: "Ярость", str: 18, dex: 8, int: 5, luck: 10
+        const heroesData = {
+            warrior: {
+                title: "ВОИН",
+                bg: "UI_Background_Warrior.png", // ФОН ДЛЯ ВОИНА
+                image: "hero_warrior_male.png",
+                skills: [
+                    { name: "Базовый урон", icon: "war_1_basic.png", power: 75 },
+                    { name: "Массовый урон", icon: "war_2_aoe.png", power: 65 },
+                    { name: "Контроль", icon: "war_3_control.png", power: 40 },
+                    { name: "Живучесть", icon: "war_4_survivability.png", power: 95 },
+                    { name: "Ультимейт", icon: "war_5_ultimate.png", power: 80 }
+                ]
             },
             mage: {
-                title: "Маг Пустоты",
-                desc: "Повелитель стихий и магии Бездны. Огромный интеллект позволяет уничтожать целые армии.",
-                hp: 85, res: 200, resName: "Мана", str: 4, dex: 10, int: 25, luck: 15
+                title: "МАГ",
+                bg: "UI_Background_Mage.png", // ФОН ДЛЯ МАГА
+                image: "hero_mage_male.png",
+                skills: [
+                    { name: "Базовый урон", icon: "mag_1_basic.png", power: 88 },
+                    { name: "Массовый урон", icon: "mag_2_aoe.png", power: 92 },
+                    { name: "Контроль", icon: "mag_3_control.png", power: 75 },
+                    { name: "Живучесть", icon: "mag_4_survivability.png", power: 35 },
+                    { name: "Ультимейт", icon: "mag_5_ultimate.png", power: 98 }
+                ]
             },
-            ranger: {
-                title: "Следопыт",
-                desc: "Самый быстрый герой. Использует энергию для акробатики и шквала стрел с критическим уроном.",
-                hp: 110, res: 120, resName: "Энергия", str: 10, dex: 22, int: 12, luck: 20
+            archer: {
+                title: "ЛУЧНИК",
+                bg: "UI_Background_Archer.png", // ФОН ДЛЯ ЛУЧНИКА
+                image: "hero_archer_male.png",
+                skills: [
+                    { name: "Базовый урон", icon: "arc_1_basic.png", power: 92 },
+                    { name: "Массовый урон", icon: "arc_2_aoe.png", power: 75 },
+                    { name: "Контроль", icon: "arc_3_control.png", power: 60 },
+                    { name: "Живучесть", icon: "arc_4_survivability.png", power: 45 },
+                    { name: "Ультимейт", icon: "arc_5_ultimate.png", power: 85 }
+                ]
             }
         };
 
-        function selectHero(heroKey, element) {
-            document.querySelectorAll('.hero-card').forEach(card => card.classList.remove('active'));
-            element.classList.add('active');
-
-            const data = heroData[heroKey];
-            document.getElementById('hero-title').innerText = data.title;
-            document.getElementById('hero-desc').innerText = data.desc;
-            document.getElementById('stat-hp').innerText = data.hp;
-            document.getElementById('stat-res').innerText = data.res;
-            document.getElementById('resource-name').innerText = data.resName;
-            document.getElementById('stat-str').innerText = data.str;
-            document.getElementById('stat-dex').innerText = data.dex;
-            document.getElementById('stat-int').innerText = data.int;
-            document.getElementById('stat-luck').innerText = data.luck;
+        function startLoading() {
+            let progress = 0;
+            const fill = document.getElementById('progress-fill');
+            const interval = setInterval(() => {
+                progress += Math.random() * 4;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(showSelection, 500);
+                }
+                fill.style.width = progress + '%';
+            }, 80);
         }
-    </script>
 
+        function showSelection() {
+            document.getElementById('loading-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                const screen = document.getElementById('selection-screen');
+                screen.style.display = 'block';
+                setTimeout(() => {
+                    screen.style.opacity = '1';
+                    selectHero('warrior');
+                }, 50);
+            }, 1000);
+        }
+
+        function selectHero(heroKey) {
+            const data = heroesData[heroKey];
+            const screen = document.getElementById('selection-screen');
+            const heroImg = document.getElementById('hero-img');
+            
+            // Плавная смена персонажа
+            heroImg.style.opacity = '0';
+            heroImg.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                // МЕНЯЕМ ФОН ЭКРАНА
+                screen.style.backgroundImage = `url('${data.bg}')`;
+                
+                // Меняем картинку героя и текст
+                heroImg.src = data.image;
+                document.getElementById('class-title').innerText = data.title;
+                
+                heroImg.style.opacity = '1';
+                heroImg.style.transform = 'translateX(0)';
+
+                // Обновляем навыки
+                const skillsList = document.getElementById('skills-list');
+                skillsList.innerHTML = '';
+                
+                data.skills.forEach(skill => {
+                    const row = document.createElement('div');
+                    row.className = 'skill-row';
+                    row.innerHTML = `
+                        <img src="${skill.icon}" class="skill-icon">
+                        <div class="skill-info">
+                            <div class="skill-header">
+                                <span class="skill-name">${skill.name}</span>
+                                <span class="skill-percent">${skill.power}%</span>
+                            </div>
+                            <div class="skill-stat-bar">
+                                <div class="skill-stat-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    `;
+                    skillsList.appendChild(row);
+                    
+                    // Анимация полоски после добавления
+                    setTimeout(() => {
+                        row.querySelector('.skill-stat-fill').style.width = skill.power + '%';
+                    }, 100);
+                });
+            }, 300);
+
+            // Подсветка активной кнопки
+            document.querySelectorAll('.class-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${heroKey}`).classList.add('active');
+        }
+
+        window.onload = startLoading;
+    </script>
 </body>
 </html>
