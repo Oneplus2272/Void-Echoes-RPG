@@ -23,7 +23,6 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         .screen {
@@ -40,49 +39,66 @@
             z-index: 100; background: url('bg_loading_main_v1.png') no-repeat center center/cover;
             opacity: 1;
         }
-        .logo-main { width: 250px; margin-bottom: 30px; filter: drop-shadow(0 0 15px var(--blue)); }
-        .loader-container { width: 80%; max-width: 450px; }
-        .progress-bar { height: 20px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 10px; overflow: hidden; }
+        .logo-main { width: 220px; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--blue)); }
+        .loader-container { width: 70%; max-width: 300px; text-align: center; }
+        #loading-pct { margin-bottom: 8px; font-weight: bold; color: var(--blue); font-size: 1.2rem; text-shadow: 0 0 10px var(--blue); }
+        .progress-bar { height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width 0.3s; }
 
-        /* --- ВЫБОР ГЕРОЯ --- */
-        .selection-container { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 2vh 0; box-sizing: border-box; }
-        .hero-view { width: 100%; flex: 0 0 40vh; display: flex; align-items: flex-end; justify-content: center; position: relative; }
-        .hero-view img { max-height: 100%; max-width: 90%; filter: drop-shadow(0 0 30px #000); }
+        /* --- ВЫБОР ГЕРОЯ (АДАПТИВ) --- */
+        .selection-container { 
+            display: flex; flex-direction: column; 
+            width: 100%; height: 100%; 
+            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
+            box-sizing: border-box;
+        }
+
+        .hero-view { 
+            flex: 1; /* Занимает всё свободное место */
+            display: flex; align-items: flex-end; justify-content: center; 
+            position: relative; min-height: 0; 
+        }
+        .hero-view img { max-height: 95%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 20px #000); }
 
         .gender-switch {
-            position: absolute; right: 20px; bottom: 10px; display: flex; gap: 10px; z-index: 10;
+            position: absolute; right: 15px; bottom: 10px; display: flex; gap: 8px; z-index: 10;
         }
         .gender-btn {
-            width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--gold);
+            width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold);
             background: rgba(0,0,0,0.6); color: var(--gold); font-weight: bold;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
-        .gender-btn.active { background: var(--gold); color: black; box-shadow: 0 0 15px var(--gold); }
+        .gender-btn.active { background: var(--gold); color: black; box-shadow: 0 0 10px var(--gold); }
 
         .skills-card {
-            width: 92%; max-width: 400px; background: var(--bg-panel); border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px; padding: 12px; backdrop-filter: blur(10px);
+            width: 90%; max-width: 380px; margin: 10px auto;
+            background: var(--bg-panel); border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px; padding: 10px; backdrop-filter: blur(10px);
+            flex-shrink: 0;
         }
-        .skills-card h2 { margin: 0 0 10px 0; text-align: center; color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; }
+        .skills-card h2 { margin: 0 0 8px 0; text-align: center; color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
 
         .skill-item { 
-            display: flex; align-items: center; margin-bottom: 8px; 
-            background: rgba(255, 255, 255, 0.05); padding: 8px 12px; 
-            border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: 0.2s;
+            display: flex; align-items: center; margin-bottom: 6px; 
+            background: rgba(255, 255, 255, 0.05); padding: 6px 10px; 
+            border-radius: 8px; cursor: pointer;
         }
-        .skill-item:active { background: rgba(255, 255, 255, 0.1); border-color: var(--gold); }
-        .skill-img { width: 32px; height: 32px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 15px; }
-        .skill-name { font-size: 0.9rem; font-weight: bold; color: #fff; }
+        .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 12px; }
+        .skill-name { font-size: 0.85rem; font-weight: bold; color: #fff; }
 
         .confirm-btn {
-            margin-top: 10px; width: 100%; padding: 14px; background: linear-gradient(180deg, var(--gold), #b8860b);
-            color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 1rem;
+            margin-top: 8px; width: 100%; padding: 12px; 
+            background: linear-gradient(180deg, var(--gold), #b8860b);
+            color: black; border: none; border-radius: 8px; 
+            font-weight: bold; text-transform: uppercase; font-size: 0.9rem;
         }
 
-        .class-selector { width: 100%; margin-top: auto; padding-bottom: 20px; display: flex; justify-content: center; gap: 20px; }
-        .icon-btn { filter: grayscale(1); transition: 0.3s; }
-        .icon-btn img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; }
+        .class-selector { 
+            width: 100%; display: flex; justify-content: center; 
+            gap: 15px; padding: 10px 0 20px 0; flex-shrink: 0;
+        }
+        .icon-btn { filter: grayscale(1); transition: 0.3s; transform: scale(0.9); }
+        .icon-btn img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid transparent; }
         .icon-btn.active { filter: grayscale(0); transform: scale(1.1); }
         .icon-btn.active img { border-color: var(--gold); }
 
@@ -93,19 +109,17 @@
         .player-header {
             display: inline-flex; align-items: center; 
             background: rgba(0, 0, 0, 0.75);
-            padding: 6px 15px 6px 6px; border-radius: 12px; 
+            padding: 5px 12px 5px 5px; border-radius: 10px; 
             border: 1px solid var(--blue); backdrop-filter: blur(10px);
-            width: fit-content; max-width: 80%;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+            width: fit-content;
         }
-        .player-avatar { width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 12px; object-fit: cover; }
-        .player-info { display: flex; flex-direction: column; justify-content: center; }
-        .player-info h3 { margin: 0; color: var(--gold); font-size: 0.95rem; font-weight: bold; }
-        .player-info p { margin: 1px 0 0 0; font-size: 0.8rem; color: #ccc; }
+        .player-avatar { width: 38px; height: 38px; border-radius: 6px; border: 1px solid var(--gold); margin-right: 10px; object-fit: cover; }
+        .player-info h3 { margin: 0; color: var(--gold); font-size: 0.9rem; }
+        .player-info p { margin: 0; font-size: 0.75rem; color: #ccc; }
 
         /* --- МОДАЛКА --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
-        .modal-content { width: 85%; max-width: 340px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); }
+        .modal-content { width: 85%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -113,6 +127,7 @@
     <div id="loading-screen" class="screen" style="display: flex;">
         <img src="icon_logo_void_echoes.png" class="logo-main">
         <div class="loader-container">
+            <div id="loading-pct">0%</div>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
         </div>
     </div>
@@ -153,10 +168,10 @@
 
     <div id="skill-modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" style="width:70px; height:70px; border:2px solid var(--gold); border-radius: 12px; margin-bottom: 10px;">
-            <div id="modal-name" style="color:var(--gold); font-size:1.3rem; margin-bottom:12px; font-weight: bold; text-transform: uppercase;"></div>
-            <div id="modal-text" style="color:#eee; font-size:0.95rem; line-height: 1.5; text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;"></div>
-            <button style="margin-top: 20px; background: var(--gold); border:none; padding:10px 30px; border-radius:5px; font-weight:bold; cursor: pointer;" onclick="closeModal()">ПОНЯТНО</button>
+            <img id="modal-img" src="" style="width:60px; height:60px; border:2px solid var(--gold); border-radius: 10px; margin-bottom: 10px;">
+            <div id="modal-name" style="color:var(--gold); font-size:1.2rem; margin-bottom:10px; font-weight: bold; text-transform: uppercase;"></div>
+            <div id="modal-text" style="color:#eee; font-size:0.9rem; line-height: 1.4; text-align: left; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;"></div>
+            <button style="margin-top: 15px; background: var(--gold); border:none; padding:8px 25px; border-radius:5px; font-weight:bold; cursor: pointer;" onclick="closeModal()">ПОНЯТНО</button>
         </div>
     </div>
 
@@ -175,11 +190,11 @@
                 male: "hero_warrior_male.png", female: "hero_warrior_female.png",
                 ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png",
                 skills: [
-                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона текущей цели и имеет 10% шанс вызвать кровотечение на 3 секунды." },
-                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается в танце смерти, нанося 80% урона всем окружающим противникам в радиусе 2 метров." },
-                    { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Стремительный выпад вперед. Наносит небольшой урон и оглушает цель на 2.5 секунды, прерывая любое заклинание." },
-                    { n: "Бастион веры", i: "war_4_survivability.png", d: "Пассивный навык. Увеличивает показатель брони на 25% и дает шанс 15% полностью заблокировать входящий урон щитом." },
-                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ультимейт: Воин впадает в ярость на 10 секунд. Скорость атаки повышается на 50%, а весь исходящий урон становится критическим." }
+                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона и имеет шанс 10% вызвать кровотечение." },
+                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается, нанося 80% урона всем окружающим противникам." },
+                    { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Стремительный выпад. Оглушает цель на 2.5 секунды." },
+                    { n: "Бастион веры", i: "war_4_survivability.png", d: "Увеличивает броню на 25% и дает шанс 15% заблокировать урон." },
+                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ярость на 10 сек: скорость атаки +50%, все удары критические." }
                 ]
             },
             mage: {
@@ -187,11 +202,11 @@
                 male: "hero_mage_male.png", female: "hero_mage_female.png",
                 ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png",
                 skills: [
-                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Выпускает магический снаряд, наносящий 140% магического урона и замедляющий скорость передвижения цели на 30%." },
-                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Обрушивает метеориты на выбранную область. Наносит колоссальный урон по площади и поджигает землю на 5 секунд." },
-                    { n: "Кольцо холода", i: "mag_3_control.png", p: 70, d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды. Замороженные цели не могут двигаться и атаковать." },
-                    { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Создает барьер из чистой маны, который поглощает 50% входящего урона, расходуя очки маны вместо здоровья." },
-                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Ультимейт: Призывает энергию бездны, которая аннигилирует цель, нанося 500% чистого урона, игнорируя любую защиту." }
+                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Наносит 140% магического урона и замедляет цель на 30%." },
+                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Метеоритный дождь по области. Поджигает землю на 5 секунд." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды." },
+                    { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Поглощает 50% входящего урона за счет маны." },
+                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Аннигиляция цели: 500% чистого урона, игнорируя защиту." }
                 ]
             },
             archer: {
@@ -199,11 +214,11 @@
                 male: "hero_archer_male.png", female: "hero_archer_female.png",
                 ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png",
                 skills: [
-                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Выстрел в уязвимую точку. Наносит 130% урона и имеет повышенный шанс на критическое попадание." },
-                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает веер из 12 стрел перед собой, поражая всех противников на пути и отталкивая их назад." },
-                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Устанавливает скрытый капкан. Наступивший в него враг обездвиживается на 4 секунды и получает эффект 'Метка смерти'." },
-                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Пассивный навык. Увеличивает шанс уклониться от любой атаки на 20%. После успешного уворота скорость бега растет на 2 сек." },
-                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "Ультимейт: Концентрация достигает пика. В течение 8 секунд каждая стрела гарантированно наносит критический урон и прошивает врагов насквозь." }
+                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Наносит 130% урона с повышенным шансом на крит." },
+                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает 12 стрел, поражая и отталкивая врагов." },
+                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Обездвиживает врага на 4 сек и вешает 'Метку смерти'." },
+                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Увеличивает шанс уклониться на 20%." },
+                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "8 секунд каждый выстрел гарантированно критует." }
                 ]
             }
         };
@@ -215,11 +230,20 @@
         function preloadAssets() {
             assetsToLoad.forEach(src => {
                 const img = new Image();
-                img.onload = img.onerror = () => { loadedCount++; if (loadedCount >= assetsToLoad.length) checkUserOnServer(); updateLoader(); };
+                img.onload = img.onerror = () => { 
+                    loadedCount++; 
+                    updateLoader();
+                    if (loadedCount >= assetsToLoad.length) checkUserOnServer(); 
+                };
                 img.src = src;
             });
         }
-        function updateLoader() { document.getElementById('progress-fill').style.width = (loadedCount/assetsToLoad.length*100)+'%'; }
+
+        function updateLoader() { 
+            const pct = Math.floor((loadedCount / assetsToLoad.length) * 100);
+            document.getElementById('progress-fill').style.width = pct + '%'; 
+            document.getElementById('loading-pct').innerText = pct + '%';
+        }
 
         async function checkUserOnServer() {
             try {
@@ -274,15 +298,11 @@
         function showMenu(data) {
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('selection-screen').style.display = 'none';
-            
-            const heroKey = data.hero_class.toLowerCase();
-            const hero = heroesData[heroKey];
+            const hero = heroesData[data.hero_class.toLowerCase()];
             const avatarFile = (currentGender === 'female') ? hero.ava_female : hero.ava_male;
-            
             document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
             document.getElementById('player-stats-header').innerText = `Уровень: ${data.level}`;
-            
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
