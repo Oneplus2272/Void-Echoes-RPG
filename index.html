@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Echoes - Selection</title>
+    <title>Void Echoes</title>
     <style>
         :root {
             --gold: #ffd700;
@@ -20,145 +20,121 @@
             color: white;
         }
 
-        /* --- ЗАГРУЗОЧНЫЙ ЭКРАН (БЕЗ НАЗВАНИЯ) --- */
+        /* --- ЗАГРУЗОЧНЫЙ ЭКРАН --- */
         #loading-screen {
             position: fixed;
             width: 100%; height: 100%;
             background: url('bg_loading_main_v1.png') no-repeat center center/cover;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-end;
+            align-items: center; justify-content: center; /* Центрируем всё */
             z-index: 100; transition: opacity 0.8s ease;
         }
 
-        .loader-container { 
-            width: 60%; max-width: 350px; 
-            margin-bottom: 12vh; 
+        .logo-main {
+            width: 300px; /* Размер логотипа */
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.5));
         }
 
+        .loader-container { 
+            width: 80%; max-width: 500px; 
+            position: relative;
+        }
+
+        /* Крупная шкала */
         .progress-bar { 
-            height: 4px; background: rgba(255,255,255,0.1); 
-            border-radius: 2px; overflow: hidden; 
+            height: 24px; /* Сделали крупнее */
+            background: rgba(0, 0, 0, 0.6); 
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px; 
+            overflow: hidden; 
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
 
         .progress-fill { 
             width: 0%; height: 100%; 
-            background: var(--gold); 
-            box-shadow: 0 0 15px var(--gold); 
-            transition: width 0.2s;
+            background: linear-gradient(90deg, #005f73, var(--blue), #005f73);
+            background-size: 200% 100%;
+            box-shadow: 0 0 15px var(--blue); 
+            transition: width 0.3s ease;
+            position: relative;
+            /* Эффект бегущего блеска */
+            animation: shine 2s linear infinite;
+        }
+
+        @keyframes shine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Проценты по центру */
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            text-shadow: 1px 1px 2px black;
+            z-index: 2;
         }
 
         /* --- ЭКРАН ВЫБОРА ГЕРОЯ --- */
         #selection-screen {
             display: none; width: 100%; height: 100%;
             background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 0.6s ease, background-image 0.5s ease;
+            opacity: 0; transition: opacity 0.6s ease;
             position: relative;
         }
 
-        /* Контейнер для героя и таблицы (Компактный) */
         .selection-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%; height: 80vh;
-            gap: 30px;
-            padding: 0 5%;
-            box-sizing: border-box;
-            z-index: 2;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 80vh; gap: 30px; padding: 0 5%;
+            box-sizing: border-box; z-index: 2;
         }
 
-        /* Герой слева */
-        .hero-view {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
+        .hero-view { flex: 1; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
+        .hero-view img { max-height: 85%; max-width: 100%; object-fit: contain; }
 
-        .hero-view img {
-            max-height: 85%;
-            max-width: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 30px rgba(0,0,0,0.9));
-        }
-
-        /* Таблица навыков справа */
         .skills-card {
-            flex: 0 0 400px;
-            background: var(--bg-panel);
+            flex: 0 0 400px; background: var(--bg-panel);
             border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(12px);
+            border-radius: 15px; padding: 20px; backdrop-filter: blur(12px);
         }
 
-        .skills-card h2 {
-            margin: 0 0 20px 0;
-            text-align: center;
-            color: var(--gold);
-            letter-spacing: 2px;
-            font-size: 1.6rem;
-            text-transform: uppercase;
-        }
+        .skills-card h2 { margin: 0 0 20px 0; text-align: center; color: var(--gold); text-transform: uppercase; }
 
-        .skill-item {
-            display: flex; align-items: center;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 10px; border-radius: 8px;
-        }
-
-        .skill-img {
-            width: 50px; height: 50px;
-            border: 1px solid var(--gold);
-            border-radius: 5px; margin-right: 15px;
-        }
-
+        .skill-item { display: flex; align-items: center; margin-bottom: 15px; background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 8px; }
+        .skill-img { width: 50px; height: 50px; border: 1px solid var(--gold); border-radius: 5px; margin-right: 15px; }
         .skill-content { flex-grow: 1; }
-        .skill-meta {
-            display: flex; justify-content: space-between;
-            font-size: 0.85rem; margin-bottom: 5px;
-            font-weight: bold; color: #eee;
-        }
+        .skill-meta { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 5px; font-weight: bold; }
 
         .bar-bg { width: 100%; height: 5px; background: #222; border-radius: 3px; }
         .bar-fill { height: 100%; background: var(--blue); border-radius: 3px; transition: width 1s ease-out; }
 
-        /* Эмблемы снизу */
         .class-selector {
-            position: absolute; bottom: 0;
-            width: 100%; height: 20vh;
-            display: flex; justify-content: center; align-items: center;
-            gap: 40px;
+            position: absolute; bottom: 0; width: 100%; height: 20vh;
+            display: flex; justify-content: center; align-items: center; gap: 40px;
             background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
         }
 
-        .icon-btn {
-            display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; transition: 0.3s;
-            filter: grayscale(1) brightness(0.6);
-        }
-
+        .icon-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.3s; filter: grayscale(1) brightness(0.6); }
         .icon-btn img { width: 70px; height: 70px; margin-bottom: 5px; }
         .icon-btn.active { filter: grayscale(0) brightness(1.2); transform: scale(1.1); }
         .icon-btn span { font-size: 0.75rem; color: var(--gold); font-weight: bold; }
-
-        /* Адаптация под мобильные */
-        @media (max-width: 850px) {
-            .selection-container { flex-direction: column; height: 75vh; gap: 10px; padding-top: 20px; }
-            .hero-view { height: 40%; }
-            .skills-card { flex: 0 0 auto; width: 90%; padding: 15px; }
-            .skill-img { width: 40px; height: 40px; }
-        }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
+        <img src="icon_logo_void_echoes.png" class="logo-main" alt="Logo">
         <div class="loader-container">
             <div class="progress-bar">
                 <div id="progress-fill" class="progress-fill"></div>
+                <div id="progress-text" class="progress-text">0%</div>
             </div>
         </div>
     </div>
@@ -168,35 +144,27 @@
             <div class="hero-view">
                 <img id="hero-img" src="" alt="Hero">
             </div>
-
             <div class="skills-card">
                 <h2 id="class-title">КЛАСС</h2>
                 <div id="skills-list"></div>
             </div>
         </div>
-
         <div class="class-selector">
             <div class="icon-btn" id="btn-warrior" onclick="selectHero('warrior')">
-                <img src="icon_hero_paladin.png" alt="Воин">
-                <span>ВОИН</span>
+                <img src="icon_hero_paladin.png" alt="Воин"><span>ВОИН</span>
             </div>
             <div class="icon-btn" id="btn-mage" onclick="selectHero('mage')">
-                <img src="icon_hero_mage.png" alt="Маг">
-                <span>МАГ</span>
+                <img src="icon_hero_mage.png" alt="Маг"><span>МАГ</span>
             </div>
             <div class="icon-btn" id="btn-archer" onclick="selectHero('archer')">
-                <img src="icon_hero_ranger.png" alt="Лучник">
-                <span>ЛУЧНИК</span>
+                <img src="icon_hero_ranger.png" alt="Лучник"><span>ЛУЧНИК</span>
             </div>
         </div>
     </div>
 
     <script>
         const heroesData = {
-            warrior: {
-                title: "ВОИН",
-                bg: "UI_Background_Warrior.png",
-                image: "hero_warrior_male.png",
+            warrior: { title: "ВОИН", bg: "UI_Background_Warrior.png", image: "hero_warrior_male.png",
                 skills: [
                     { n: "Базовый урон", i: "war_1_basic.png", p: 75 },
                     { n: "Массовый урон", i: "war_2_aoe.png", p: 65 },
@@ -205,10 +173,7 @@
                     { n: "Ультимейт", i: "war_5_ultimate.png", p: 80 }
                 ]
             },
-            mage: {
-                title: "МАГ",
-                bg: "UI_Background_Mage.png",
-                image: "hero_mage_male.png",
+            mage: { title: "МАГ", bg: "UI_Background_Mage.png", image: "hero_mage_male.png",
                 skills: [
                     { n: "Базовый урон", i: "mag_1_basic.png", p: 85 },
                     { n: "Массовый урон", i: "mag_2_aoe.png", p: 95 },
@@ -217,13 +182,10 @@
                     { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90 }
                 ]
             },
-            archer: {
-                title: "ЛУЧНИК",
-                bg: "UI_Background_Archer.png",
-                image: "hero_archer_male.png",
+            archer: { title: "ЛУЧНИК", bg: "UI_Background_Archer.png", image: "hero_archer_male.png",
                 skills: [
-                    { n: "Базовый урон", i: "arc_1_basic.png", p: 90 },
-                    { n: "Массовый урон", i: "arc_2_aoe.png", p: 70 },
+                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90 },
+                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70 },
                     { n: "Контроль", i: "arc_3_control.png", p: 60 },
                     { n: "Живучесть", i: "arc_4_survivability.png", p: 50 },
                     { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85 }
@@ -231,18 +193,53 @@
             }
         };
 
-        function startLoading() {
-            let progress = 0;
-            const fill = document.getElementById('progress-fill');
-            const timer = setInterval(() => {
-                progress += Math.random() * 5;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(timer);
-                    setTimeout(initGame, 500);
-                }
-                fill.style.width = progress + '%';
-            }, 100);
+        // Список всех файлов для предзагрузки
+        const assetsToLoad = [
+            'bg_loading_main_v1.png',
+            'icon_logo_void_echoes.png',
+            'UI_Background_Warrior.png',
+            'UI_Background_Mage.png',
+            'UI_Background_Archer.png',
+            'hero_warrior_male.png',
+            'hero_mage_male.png',
+            'hero_archer_male.png',
+            'icon_hero_paladin.png',
+            'icon_hero_mage.png',
+            'icon_hero_ranger.png',
+            // Навыки Воина
+            'war_1_basic.png', 'war_2_aoe.png', 'war_3_control.png', 'war_4_survivability.png', 'war_5_ultimate.png',
+            // Навыки Мага
+            'mag_1_basic.png', 'mag_2_aoe.png', 'mag_3_control.png', 'mag_4_survivability.png', 'mag_5_ultimate.png',
+            // Навыки Лучника
+            'arc_1_basic_attack.png', 'arc_2_aoe_damage.png', 'arc_3_control.png', 'arc_4_survivability.png', 'arc_5_ultimate.png'
+        ];
+
+        let loadedCount = 0;
+
+        function preloadAssets() {
+            assetsToLoad.forEach(src => {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    loadedCount++;
+                    updateProgress();
+                };
+                img.onerror = () => {
+                    console.error("Ошибка загрузки:", src);
+                    loadedCount++; // Считаем даже ошибки, чтобы загрузка не зависла
+                    updateProgress();
+                };
+            });
+        }
+
+        function updateProgress() {
+            const percent = Math.floor((loadedCount / assetsToLoad.length) * 100);
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').innerText = percent + '%';
+
+            if (loadedCount >= assetsToLoad.length) {
+                setTimeout(initGame, 1000); // Задержка перед входом для красоты
+            }
         }
 
         function initGame() {
@@ -258,11 +255,9 @@
         function selectHero(key) {
             const d = heroesData[key];
             const screen = document.getElementById('selection-screen');
-            
             screen.style.backgroundImage = `url('${d.bg}')`;
             document.getElementById('hero-img').src = d.image;
             document.getElementById('class-title').innerText = d.title;
-
             const list = document.getElementById('skills-list');
             list.innerHTML = '';
             d.skills.forEach(sk => {
@@ -275,12 +270,11 @@
                         </div>
                     </div>`;
             });
-
             document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${key}`).classList.add('active');
         }
 
-        window.onload = startLoading;
+        window.onload = preloadAssets;
     </script>
 </body>
 </html>
