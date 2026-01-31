@@ -47,7 +47,7 @@
 
         /* --- ВЫБОР ГЕРОЯ --- */
         .selection-container { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; padding: 2vh 0; box-sizing: border-box; }
-        .hero-view { width: 100%; flex: 0 0 38vh; display: flex; align-items: flex-end; justify-content: center; position: relative; }
+        .hero-view { width: 100%; flex: 0 0 40vh; display: flex; align-items: flex-end; justify-content: center; position: relative; }
         .hero-view img { max-height: 100%; max-width: 90%; filter: drop-shadow(0 0 30px #000); }
 
         .gender-switch {
@@ -62,19 +62,22 @@
 
         .skills-card {
             width: 92%; max-width: 400px; background: var(--bg-panel); border: 1px solid rgba(255, 215, 0, 0.2);
-            border-radius: 12px; padding: 10px; backdrop-filter: blur(10px);
+            border-radius: 12px; padding: 12px; backdrop-filter: blur(10px);
         }
-        .skills-card h2 { margin: 0 0 8px 0; text-align: center; color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
+        .skills-card h2 { margin: 0 0 10px 0; text-align: center; color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; }
 
-        .skill-item { display: flex; align-items: center; margin-bottom: 5px; background: rgba(255, 255, 255, 0.03); padding: 5px; border-radius: 6px; cursor: pointer; }
-        .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 10px; }
-        .skill-meta { display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 2px; font-weight: bold; }
-        .bar-bg { width: 100%; height: 4px; background: #222; border-radius: 2px; }
-        .bar-fill { height: 100%; background: var(--blue); transition: width 0.8s; }
+        .skill-item { 
+            display: flex; align-items: center; margin-bottom: 8px; 
+            background: rgba(255, 255, 255, 0.05); padding: 8px 12px; 
+            border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: 0.2s;
+        }
+        .skill-item:active { background: rgba(255, 255, 255, 0.1); border-color: var(--gold); }
+        .skill-img { width: 32px; height: 32px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 15px; }
+        .skill-name { font-size: 0.9rem; font-weight: bold; color: #fff; }
 
         .confirm-btn {
-            margin-top: 10px; width: 100%; padding: 12px; background: linear-gradient(180deg, var(--gold), #b8860b);
-            color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer;
+            margin-top: 10px; width: 100%; padding: 14px; background: linear-gradient(180deg, var(--gold), #b8860b);
+            color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 1rem;
         }
 
         .class-selector { width: 100%; margin-top: auto; padding-bottom: 20px; display: flex; justify-content: center; gap: 20px; }
@@ -166,33 +169,33 @@
                 title: "ВОИН", bg: "UI_Background_Warrior.png", 
                 male: "hero_warrior_male.png", female: "hero_warrior_female.png", avatar: "icon_hero_paladin.png",
                 skills: [
-                    { n: "Рассекающий удар", i: "war_1_basic.png", p: 75, d: "Базовая атака мечом. Наносит 120% физического урона текущей цели и имеет 10% шанс вызвать кровотечение на 3 секунды." },
-                    { n: "Вихрь стали", i: "war_2_aoe.png", p: 65, d: "Герой вращается в танце смерти, нанося 80% урона всем окружающим противникам в радиусе 2 метров." },
-                    { n: "Сокрушительный рывок", i: "war_3_control.png", p: 40, d: "Стремительный выпад вперед. Наносит небольшой урон и оглушает цель на 2.5 секунды, прерывая любое заклинание." },
-                    { n: "Бастион веры", i: "war_4_survivability.png", p: 95, d: "Пассивный навык. Увеличивает показатель брони на 25% и дает шанс 15% полностью заблокировать входящий урон щитом." },
-                    { n: "Гнев Титана", i: "war_5_ultimate.png", p: 80, d: "Ультимейт: Воин впадает в ярость на 10 секунд. Скорость атаки повышается на 50%, а весь исходящий урон становится критическим." }
+                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона текущей цели и имеет 10% шанс вызвать кровотечение на 3 секунды." },
+                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается в танце смерти, нанося 80% урона всем окружающим противникам в радиусе 2 метров." },
+                    { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Стремительный выпад вперед. Наносит небольшой урон и оглушает цель на 2.5 секунды, прерывая любое заклинание." },
+                    { n: "Бастион веры", i: "war_4_survivability.png", d: "Пассивный навык. Увеличивает показатель брони на 25% и дает шанс 15% полностью заблокировать входящий урон щитом." },
+                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ультимейт: Воин впадает в ярость на 10 секунд. Скорость атаки повышается на 50%, а весь исходящий урон становится критическим." }
                 ]
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png",
                 male: "hero_mage_male.png", female: "hero_mage_female.png", avatar: "icon_hero_mage.png",
                 skills: [
-                    { n: "Ледяная стрела", i: "mag_1_basic.png", p: 85, d: "Выпускает магический снаряд, наносящий 140% магического урона и замедляющий скорость передвижения цели на 30%." },
-                    { n: "Огненный шторм", i: "mag_2_aoe.png", p: 95, d: "Обрушивает метеориты на выбранную область. Наносит колоссальный урон по площади и поджигает землю на 5 секунд." },
-                    { n: "Кольцо холода", i: "mag_3_control.png", p: 70, d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды. Замороженные цели не могут двигаться и атаковать." },
-                    { n: "Призрачный щит", i: "mag_4_survivability.png", p: 30, d: "Создает барьер из чистой маны, который поглощает 50% входящего урона, расходуя очки маны вместо здоровья." },
-                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", p: 90, d: "Ультимейт: Призывает энергию бездны, которая аннигилирует цель, нанося 500% чистого урона, игнорируя любую защиту." }
+                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Выпускает магический снаряд, наносящий 140% магического урона и замедляющий скорость передвижения цели на 30%." },
+                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Обрушивает метеориты на выбранную область. Наносит колоссальный урон по площади и поджигает землю на 5 секунд." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды. Замороженные цели не могут двигаться и атаковать." },
+                    { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Создает барьер из чистой маны, который поглощает 50% входящего урона, расходуя очки маны вместо здоровья." },
+                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Ультимейт: Призывает энергию бездны, которая аннигилирует цель, нанося 500% чистого урона, игнорируя любую защиту." }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png",
                 male: "hero_archer_male.png", female: "hero_archer_female.png", avatar: "icon_hero_ranger.png",
                 skills: [
-                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", p: 90, d: "Выстрел в уязвимую точку. Наносит 130% урона и имеет повышенный шанс на критическое попадание." },
-                    { n: "Град стрел", i: "arc_2_aoe_damage.png", p: 70, d: "Выпускает веер из 12 стрел перед собой, поражая всех противников на пути и отталкивая их назад." },
-                    { n: "Ловушка охотника", i: "arc_3_control.png", p: 60, d: "Устанавливает скрытый капкан. Наступивший в него враг обездвиживается на 4 секунды и получает эффект 'Метка смерти'." },
+                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Выстрел в уязвимую точку. Наносит 130% урона и имеет повышенный шанс на критическое попадание." },
+                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает веер из 12 стрел перед собой, поражая всех противников на пути и отталкивая их назад." },
+                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Устанавливает скрытый капкан. Наступивший в него враг обездвиживается на 4 секунды и получает эффект 'Метка смерти'." },
                     { n: "Мастерство уклонения", i: "arc_4_survivability.png", p: 50, d: "Пассивный навык. Увеличивает шанс уклониться от любой атаки на 20%. После успешного уворота скорость бега растет на 2 сек." },
-                    { n: "Око Орла", i: "arc_5_ultimate.png", p: 85, d: "Ультимейт: Концентрация достигает пика. В течение 8 секунд каждая стрела гарантированно наносит критический урон и прошивает врагов насквозь." }
+                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "Ультимейт: Концентрация достигает пика. В течение 8 секунд каждая стрела гарантированно наносит критический урон и прошивает врагов насквозь." }
                 ]
             }
         };
@@ -233,7 +236,7 @@
             const list = document.getElementById('skills-list');
             list.innerHTML = '';
             d.skills.forEach((sk, i) => {
-                list.innerHTML += `<div class="skill-item" onclick="openSkill(${i})"><img src="${sk.i}" class="skill-img"><div style="flex:1"><div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${sk.p}%"></div></div></div></div>`;
+                list.innerHTML += `<div class="skill-item" onclick="openSkill(${i})"><img src="${sk.i}" class="skill-img"><div class="skill-name">${sk.n}</div></div>`;
             });
             document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${key}`).classList.add('active');
