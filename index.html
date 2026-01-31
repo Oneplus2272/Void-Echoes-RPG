@@ -10,6 +10,7 @@
             --gold: #ffd700;
             --blue: #00d4ff;
             --bg-panel: rgba(10, 10, 15, 0.9);
+            --bg-modal: rgba(5, 5, 10, 0.95);
         }
 
         body, html {
@@ -102,7 +103,7 @@
 
         .hero-view {
             width: 100%;
-            flex: 0 0 45vh;
+            flex: 0 0 42vh;
             display: flex;
             align-items: flex-end;
             justify-content: center;
@@ -141,6 +142,12 @@
             margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.03);
             padding: 6px; border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .skill-item:active {
+            background: rgba(0, 212, 255, 0.1);
         }
 
         .skill-img {
@@ -192,6 +199,69 @@
 
         .icon-btn span { font-size: 0.7rem; color: var(--gold); font-weight: bold; }
 
+        /* --- МОДАЛЬНОЕ ОКНО ОПИСАНИЯ --- */
+        #skill-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            width: 80%;
+            max-width: 320px;
+            background: var(--bg-modal);
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            width: 80px; height: 80px;
+            border: 2px solid var(--gold);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .modal-title {
+            color: var(--gold);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .modal-desc {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: var(--gold);
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
         @media (min-aspect-ratio: 1/1) {
             .selection-container { flex-direction: row; justify-content: center; gap: 40px; }
             .hero-view { flex: 0 0 40%; height: 75vh; }
@@ -240,6 +310,15 @@
         </div>
     </div>
 
+    <div id="skill-modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-img" src="" class="modal-icon">
+            <div id="modal-name" class="modal-title">Название</div>
+            <div id="modal-text" class="modal-desc">Описание навыка...</div>
+            <button class="close-btn" onclick="closeModal()">Закрыть</button>
+        </div>
+    </div>
+
     <script>
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
@@ -255,31 +334,31 @@
             warrior: {
                 title: "ВОИН", bg: "UI_Background_Warrior.png", image: "hero_warrior_male.png",
                 skills: [
-                    { n: "Базовый урон", i: "war_1_basic.png", p: 75 },
-                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65 },
-                    { n: "Контроль", i: "war_3_control.png", p: 40 },
-                    { n: "Живучесть", i: "war_4_survivability.png", p: 95 },
-                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80 }
+                    { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом, наносящий физический урон ближайшей цели." },
+                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65, d: "Круговой удар щитом, поражающий всех врагов в небольшом радиусе." },
+                    { n: "Контроль", i: "war_3_control.png", p: 40, d: "Оглушающий рывок, который прерывает заклинания противника." },
+                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная броня и увеличенный запас здоровья для долгого боя." },
+                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80, d: "Гнев титана: увеличивает урон и защиту на 15 секунд." }
                 ]
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png", image: "hero_mage_male.png",
                 skills: [
-                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85 },
-                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95 },
-                    { n: "Контроль", i: "mag_3_control.png", p: 70 },
-                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30 },
-                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90 }
+                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Сгусток чистой энергии, летящий в цель на большой дистанции." },
+                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95, d: "Метеоритный дождь, выжигающий область на поле боя." },
+                    { n: "Контроль", i: "mag_3_control.png", p: 70, d: "Ледяное кольцо, замораживающее ноги противников." },
+                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Магический щит, поглощающий часть урона за счет маны." },
+                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90, d: "Разлом пустоты: мгновенно уничтожает слабых врагов в радиусе." }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png", image: "hero_archer_male.png",
                 skills: [
-                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90 },
-                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70 },
-                    { n: "Контроль", i: "arc_3_control.png", p: 60 },
-                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50 },
-                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85 }
+                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел в уязвимое место с высоким шансом крита." },
+                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70, d: "Залп стрел, покрывающий конусообразную область перед собой." },
+                    { n: "Контроль", i: "arc_3_control.png", p: 60, d: "Замедляющая ловушка, сковывающая движения наступающих." },
+                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и высокая скорость перемещения позволяют избегать атак." },
+                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85, d: "Око орла: каждая стрела становится самонаводящейся и взрывной." }
                 ]
             }
         };
@@ -295,6 +374,7 @@
         ];
 
         let loadedCount = 0;
+        let currentHeroKey = 'warrior';
 
         function updateProgress() {
             const percent = Math.floor((loadedCount / assetsToLoad.length) * 100);
@@ -331,6 +411,7 @@
         }
 
         function selectHero(key) {
+            currentHeroKey = key;
             const d = heroesData[key];
             const screen = document.getElementById('selection-screen');
             const heroImg = document.getElementById('hero-img');
@@ -343,9 +424,9 @@
             
             if(list) {
                 list.innerHTML = '';
-                d.skills.forEach(sk => {
+                d.skills.forEach((sk, index) => {
                     list.innerHTML += `
-                        <div class="skill-item">
+                        <div class="skill-item" onclick="openSkill(${index})">
                             <img src="${sk.i}" class="skill-img">
                             <div class="skill-content">
                                 <div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div>
@@ -357,6 +438,24 @@
             document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = document.getElementById(`btn-${key}`);
             if(activeBtn) activeBtn.classList.add('active');
+        }
+
+        // Логика Модалки
+        function openSkill(index) {
+            const skill = heroesData[currentHeroKey].skills[index];
+            document.getElementById('modal-img').src = skill.i;
+            document.getElementById('modal-name').innerText = skill.n;
+            document.getElementById('modal-text').innerText = skill.d;
+            document.getElementById('skill-modal').style.display = 'flex';
+            
+            // Легкая вибрация при открытии (только в Telegram)
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('skill-modal').style.display = 'none';
         }
 
         window.onload = preloadAssets;
