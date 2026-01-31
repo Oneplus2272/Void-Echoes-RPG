@@ -65,41 +65,41 @@
         }
 
         .hero-view {
-            width: 100%; flex: 0 0 40vh;
+            width: 100%; flex: 0 0 38vh;
             display: flex; align-items: flex-end; justify-content: center; margin-bottom: 5px;
         }
         .hero-view img { max-height: 100%; max-width: 90%; filter: drop-shadow(0 0 30px rgba(0,0,0,1)); }
 
         .skills-card {
-            width: 90%; max-width: 400px; background: var(--bg-panel);
+            width: 92%; max-width: 400px; background: var(--bg-panel);
             border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 12px;
-            padding: 10px 15px; backdrop-filter: blur(10px);
+            padding: 8px 12px; backdrop-filter: blur(10px);
         }
-        .skills-card h2 { margin: 0 0 8px 0; text-align: center; color: var(--gold); font-size: 1.1rem; letter-spacing: 2px; }
+        .skills-card h2 { margin: 0 0 6px 0; text-align: center; color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
 
         .skill-item {
-            display: flex; align-items: center; margin-bottom: 6px;
-            background: rgba(255, 255, 255, 0.03); padding: 5px; border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; margin-bottom: 5px;
+            background: rgba(255, 255, 255, 0.03); padding: 4px; border-radius: 6px; cursor: pointer;
         }
-        .skill-img { width: 30px; height: 30px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 10px; }
-        .skill-meta { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: bold; }
+        .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 8px; }
+        .skill-meta { display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 2px; font-weight: bold; }
         .bar-bg { width: 100%; height: 4px; background: #222; border-radius: 2px; }
         .bar-fill { height: 100%; background: var(--blue); transition: width 1s; }
 
         .confirm-btn {
-            margin-top: 10px; width: 100%; padding: 12px;
+            margin-top: 8px; width: 100%; padding: 10px;
             background: linear-gradient(180deg, var(--gold), #b8860b);
             color: black; border: none; border-radius: 8px;
-            font-weight: bold; font-size: 1rem; text-transform: uppercase;
+            font-weight: bold; font-size: 0.9rem; text-transform: uppercase;
             box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); cursor: pointer;
         }
 
         .class-selector {
-            width: 100%; margin-top: auto; padding-bottom: 20px;
+            width: 100%; margin-top: auto; padding-bottom: 15px;
             display: flex; justify-content: center; gap: 20px;
         }
         .icon-btn { filter: grayscale(1) brightness(0.5); transition: 0.3s; text-align: center; }
-        .icon-btn img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; }
+        .icon-btn img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid transparent; }
         .icon-btn.active { filter: grayscale(0) brightness(1.2); transform: scale(1.1); }
         .icon-btn.active img { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
 
@@ -196,7 +196,6 @@
 
     <script>
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-        // ТВОЙ СЕРВЕР НА RENDER
         const SERVER_URL = 'https://void-echoes-rpg.onrender.com';
         
         let currentHeroKey = 'warrior';
@@ -207,22 +206,31 @@
             warrior: {
                 title: "ВОИН", bg: "UI_Background_Warrior.png", image: "hero_warrior_male.png", avatar: "icon_hero_paladin.png",
                 skills: [
-                    { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом." },
-                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита." }
+                    { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом, наносящий физический урон цели." },
+                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65, d: "Круговой удар щитом по области." },
+                    { n: "Контроль", i: "war_3_control.png", p: 40, d: "Оглушающий рывок, прерывающий действия врага." },
+                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита и повышенное здоровье." },
+                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80, d: "Гнев титана: временный бонус к урону и защите." }
                 ]
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png", image: "hero_mage_male.png", avatar: "icon_hero_mage.png",
                 skills: [
-                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Магический сгусток." },
-                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Энергетический щит." }
+                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Сгусток чистой магической энергии." },
+                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95, d: "Метеоритный дождь, выжигающий поле боя." },
+                    { n: "Контроль", i: "mag_3_control.png", p: 70, d: "Ледяное кольцо, сковывающее движения." },
+                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Магический щит, поглощающий урон за счет маны." },
+                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90, d: "Разлом пустоты: мгновенный урон по площади." }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png", image: "hero_archer_male.png", avatar: "icon_hero_ranger.png",
                 skills: [
-                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел." },
-                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и ловкость." }
+                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел в уязвимое место." },
+                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70, d: "Залп стрел по конусной области." },
+                    { n: "Контроль", i: "arc_3_control.png", p: 60, d: "Замедляющая ловушка на пути врага." },
+                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и высокая скорость передвижения." },
+                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85, d: "Око орла: критические попадания при каждом выстреле." }
                 ]
             }
         };
@@ -251,10 +259,8 @@
 
         async function checkUserOnServer() {
             try {
-                // Запрашиваем данные игрока с твоего Render сервера
                 const response = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const data = await response.json();
-                
                 if (data.hero_class) {
                     currentHeroKey = data.hero_class.toLowerCase();
                     showMenu(data);
@@ -262,8 +268,8 @@
                     showSelection();
                 }
             } catch (e) {
-                console.error("Ошибка связи с бэкендом", e);
-                showSelection(); // Если сервер недоступен, даем выбрать (для теста)
+                console.error("Сервер недоступен", e);
+                showSelection();
             }
         }
 
@@ -298,15 +304,13 @@
         async function confirmSelection() {
             document.getElementById('main-confirm-btn').innerText = "Сохранение...";
             if(tg) tg.HapticFeedback.notificationOccurred('success');
-
             try {
-                // Отправляем выбор класса на Render
                 await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' });
                 const response = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const data = await response.json();
                 showMenu(data);
             } catch (e) {
-                alert("Не удалось сохранить выбор на сервере.");
+                alert("Ошибка сохранения.");
                 document.getElementById('main-confirm-btn').innerText = "Выбрать героя";
             }
         }
@@ -315,12 +319,10 @@
             const hero = heroesData[serverData.hero_class?.toLowerCase()] || heroesData['warrior'];
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('selection-screen').style.display = 'none';
-            
             document.getElementById('menu-avatar').src = hero.avatar;
             document.getElementById('player-class').innerText = hero.title;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || serverData.username;
             document.getElementById('player-stats').innerText = `Lvl: ${serverData.level} | Gold: ${serverData.gold} | ATK: ${serverData.attack}`;
-
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
