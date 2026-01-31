@@ -88,15 +88,20 @@
 
         /* --- ЭКРАН МЕНЮ --- */
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; }
-        .menu-container { display: flex; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; }
+        .menu-container { display: flex; flex-direction: column; height: 100%; padding: 15px; box-sizing: border-box; }
         
         .player-header {
-            display: flex; align-items: center; background: rgba(0, 0, 0, 0.7);
-            padding: 10px; border-radius: 15px; border: 1px solid var(--blue); backdrop-filter: blur(10px);
+            display: inline-flex; align-items: center; 
+            background: rgba(0, 0, 0, 0.75);
+            padding: 6px 15px 6px 6px; border-radius: 12px; 
+            border: 1px solid var(--blue); backdrop-filter: blur(10px);
+            width: fit-content; max-width: 80%;
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
         }
-        .player-avatar { width: 50px; height: 50px; border-radius: 10px; border: 1px solid var(--gold); margin-right: 15px; object-fit: cover; }
-        .player-info h3 { margin: 0; color: var(--gold); font-size: 1rem; }
-        .player-info p { margin: 2px 0 0 0; font-size: 0.75rem; color: #fff; }
+        .player-avatar { width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 12px; object-fit: cover; }
+        .player-info { display: flex; flex-direction: column; justify-content: center; }
+        .player-info h3 { margin: 0; color: var(--gold); font-size: 0.95rem; font-weight: bold; }
+        .player-info p { margin: 1px 0 0 0; font-size: 0.8rem; color: #ccc; }
 
         /* --- МОДАЛКА --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
@@ -140,7 +145,7 @@
                 <img id="menu-avatar" src="" class="player-avatar">
                 <div class="player-info">
                     <h3 id="player-name">Загрузка...</h3>
-                    <p id="player-stats"></p>
+                    <p id="player-stats-header">Уровень: 1</p>
                 </div>
             </div>
         </div>
@@ -184,7 +189,7 @@
                 skills: [
                     { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Выпускает магический снаряд, наносящий 140% магического урона и замедляющий скорость передвижения цели на 30%." },
                     { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Обрушивает метеориты на выбранную область. Наносит колоссальный урон по площади и поджигает землю на 5 секунд." },
-                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды. Замороженные цели не могут двигаться и атаковать." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", p: 70, d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды. Замороженные цели не могут двигаться и атаковать." },
                     { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Создает барьер из чистой маны, который поглощает 50% входящего урона, расходуя очки маны вместо здоровья." },
                     { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Ультимейт: Призывает энергию бездны, которая аннигилирует цель, нанося 500% чистого урона, игнорируя любую защиту." }
                 ]
@@ -259,7 +264,6 @@
         async function confirmSelection() {
             document.getElementById('main-confirm-btn').innerText = "СОХРАНЕНИЕ...";
             try {
-                // Передаем и пол тоже, чтобы сервер запомнил (если сервер поддерживает)
                 await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' });
                 const r = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const d = await r.json();
@@ -273,13 +277,11 @@
             
             const heroKey = data.hero_class.toLowerCase();
             const hero = heroesData[heroKey];
-            
-            // Здесь логика выбора аватарки. Если сервер не шлет пол, берем currentGender из выбора
             const avatarFile = (currentGender === 'female') ? hero.ava_female : hero.ava_male;
             
             document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
-            document.getElementById('player-stats').innerText = `Уровень: ${data.level} | Золото: ${data.gold} | АТК: ${data.attack}`;
+            document.getElementById('player-stats-header').innerText = `Уровень: ${data.level}`;
             
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
