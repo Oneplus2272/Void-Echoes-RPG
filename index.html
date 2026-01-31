@@ -5,225 +5,151 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Void Echoes - Selection</title>
     <style>
+        :root {
+            --gold: #ffd700;
+            --blue: #00d4ff;
+            --bg-panel: rgba(10, 10, 15, 0.85);
+        }
+
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
             overflow: hidden;
             background-color: #000;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             color: white;
         }
 
-        /* --- ЗАГРУЗОЧНЫЙ ЭКРАН --- */
+        /* --- ЗАГРУЗОЧНЫЙ ЭКРАН (БЕЗ НАЗВАНИЯ) --- */
         #loading-screen {
             position: fixed;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             background: url('bg_loading_main_v1.png') no-repeat center center/cover;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            z-index: 100;
-            transition: opacity 1s ease;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-end;
+            z-index: 100; transition: opacity 0.8s ease;
         }
 
-        .loader-container {
-            width: 80%;
-            max-width: 600px;
-            margin-bottom: 50px;
-            text-align: center;
+        .loader-container { 
+            width: 60%; max-width: 350px; 
+            margin-bottom: 12vh; 
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+        .progress-bar { 
+            height: 4px; background: rgba(255,255,255,0.1); 
+            border-radius: 2px; overflow: hidden; 
         }
 
-        .progress-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ffd700, #ff8c00);
-            box-shadow: 0 0 15px #ff8c00;
-            transition: width 0.1s linear;
+        .progress-fill { 
+            width: 0%; height: 100%; 
+            background: var(--gold); 
+            box-shadow: 0 0 15px var(--gold); 
+            transition: width 0.2s;
         }
 
         /* --- ЭКРАН ВЫБОРА ГЕРОЯ --- */
         #selection-screen {
-            display: none;
-            width: 100%;
-            height: 100%;
+            display: none; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 0.6s ease, background-image 0.5s ease;
             position: relative;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 0.8s ease, background-image 0.5s ease-in-out;
         }
 
-        /* Затемнение фона для читаемости интерфейса */
-        #selection-screen::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.7) 100%);
-            z-index: 0;
+        /* Контейнер для героя и таблицы (Компактный) */
+        .selection-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%; height: 80vh;
+            gap: 30px;
+            padding: 0 5%;
+            box-sizing: border-box;
+            z-index: 2;
         }
 
-        /* Контейнер персонажа (слева) */
-        .hero-preview {
-            position: absolute;
-            left: 5%;
-            bottom: 0;
-            height: 90%;
-            width: 40%;
+        /* Герой слева */
+        .hero-view {
+            flex: 1;
+            height: 100%;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            z-index: 1;
         }
 
-        .hero-preview img {
-            height: 100%;
+        .hero-view img {
+            max-height: 85%;
             max-width: 100%;
             object-fit: contain;
             filter: drop-shadow(0 0 30px rgba(0,0,0,0.9));
-            transition: transform 0.5s ease, opacity 0.3s ease;
         }
 
-        /* Таблица навыков (справа) */
-        .skills-panel {
-            position: absolute;
-            right: 5%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 420px;
-            background: rgba(15, 15, 20, 0.85);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            z-index: 2;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        /* Таблица навыков справа */
+        .skills-card {
+            flex: 0 0 400px;
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
         }
 
-        .skill-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 18px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: background 0.3s;
-        }
-
-        .skill-row:hover {
-            background: rgba(255, 255, 255, 0.07);
-        }
-
-        .skill-icon {
-            width: 55px;
-            height: 55px;
-            border: 2px solid #ffd700;
-            border-radius: 8px;
-            margin-right: 15px;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
-        }
-
-        .skill-info {
-            flex-grow: 1;
-        }
-
-        .skill-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .skill-name {
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffd700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .skill-percent {
-            font-size: 14px;
-            color: #00d4ff;
-            font-family: monospace;
-        }
-
-        .skill-stat-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .skill-stat-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00d4ff, #0055ff);
-            border-radius: 10px;
-            transition: width 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-        }
-
-        /* Селектор героев (снизу) */
-        .hero-selector {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 40px;
-            z-index: 3;
-        }
-
-        .class-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .class-icon {
-            width: 80px;
-            height: 80px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: grayscale(1) opacity(0.6);
-            border: 2px solid transparent;
-            margin-bottom: 8px;
-        }
-
-        .class-btn:hover .class-icon {
-            filter: grayscale(0.5) opacity(0.9);
-            transform: translateY(-10px);
-        }
-
-        .class-btn.active .class-icon {
-            filter: grayscale(0) opacity(1);
-            transform: scale(1.15) translateY(-10px);
-            border-bottom: 3px solid #ffd700;
-        }
-
-        .class-label {
-            font-size: 12px;
-            text-transform: uppercase;
+        .skills-card h2 {
+            margin: 0 0 20px 0;
+            text-align: center;
+            color: var(--gold);
             letter-spacing: 2px;
-            color: #aaa;
-            transition: color 0.3s;
+            font-size: 1.6rem;
+            text-transform: uppercase;
         }
 
-        .class-btn.active .class-label {
-            color: #ffd700;
-            font-weight: bold;
+        .skill-item {
+            display: flex; align-items: center;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px; border-radius: 8px;
+        }
+
+        .skill-img {
+            width: 50px; height: 50px;
+            border: 1px solid var(--gold);
+            border-radius: 5px; margin-right: 15px;
+        }
+
+        .skill-content { flex-grow: 1; }
+        .skill-meta {
+            display: flex; justify-content: space-between;
+            font-size: 0.85rem; margin-bottom: 5px;
+            font-weight: bold; color: #eee;
+        }
+
+        .bar-bg { width: 100%; height: 5px; background: #222; border-radius: 3px; }
+        .bar-fill { height: 100%; background: var(--blue); border-radius: 3px; transition: width 1s ease-out; }
+
+        /* Эмблемы снизу */
+        .class-selector {
+            position: absolute; bottom: 0;
+            width: 100%; height: 20vh;
+            display: flex; justify-content: center; align-items: center;
+            gap: 40px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .icon-btn {
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; transition: 0.3s;
+            filter: grayscale(1) brightness(0.6);
+        }
+
+        .icon-btn img { width: 70px; height: 70px; margin-bottom: 5px; }
+        .icon-btn.active { filter: grayscale(0) brightness(1.2); transform: scale(1.1); }
+        .icon-btn span { font-size: 0.75rem; color: var(--gold); font-weight: bold; }
+
+        /* Адаптация под мобильные */
+        @media (max-width: 850px) {
+            .selection-container { flex-direction: column; height: 75vh; gap: 10px; padding-top: 20px; }
+            .hero-view { height: 40%; }
+            .skills-card { flex: 0 0 auto; width: 90%; padding: 15px; }
+            .skill-img { width: 40px; height: 40px; }
         }
     </style>
 </head>
@@ -231,7 +157,6 @@
 
     <div id="loading-screen">
         <div class="loader-container">
-            <h2 id="loading-text" style="letter-spacing: 5px; font-size: 18px; margin-bottom: 20px;">ЗАГРУЗКА МИРА...</h2>
             <div class="progress-bar">
                 <div id="progress-fill" class="progress-fill"></div>
             </div>
@@ -239,29 +164,29 @@
     </div>
 
     <div id="selection-screen">
-        <div class="hero-preview">
-            <img id="hero-img" src="" alt="Hero">
+        <div class="selection-container">
+            <div class="hero-view">
+                <img id="hero-img" src="" alt="Hero">
+            </div>
+
+            <div class="skills-card">
+                <h2 id="class-title">КЛАСС</h2>
+                <div id="skills-list"></div>
+            </div>
         </div>
 
-        <div class="skills-panel">
-            <h2 id="class-title" style="text-align:center; color:#ffd700; margin-top:0; font-size: 28px; letter-spacing: 4px;">КЛАСС</h2>
-            <hr style="border: 0; border-top: 1px solid rgba(255,215,0,0.2); margin-bottom: 20px;">
-            <div id="skills-list">
-                </div>
-        </div>
-
-        <div class="hero-selector">
-            <div class="class-btn" id="btn-warrior" onclick="selectHero('warrior')">
-                <img src="icon_hero_paladin.png" class="class-icon" alt="Воин">
-                <span class="class-label">Воин</span>
+        <div class="class-selector">
+            <div class="icon-btn" id="btn-warrior" onclick="selectHero('warrior')">
+                <img src="icon_hero_paladin.png" alt="Воин">
+                <span>ВОИН</span>
             </div>
-            <div class="class-btn" id="btn-mage" onclick="selectHero('mage')">
-                <img src="icon_hero_mage.png" class="class-icon" alt="Маг">
-                <span class="class-label">Маг</span>
+            <div class="icon-btn" id="btn-mage" onclick="selectHero('mage')">
+                <img src="icon_hero_mage.png" alt="Маг">
+                <span>МАГ</span>
             </div>
-            <div class="class-btn" id="btn-archer" onclick="selectHero('archer')">
-                <img src="icon_hero_ranger.png" class="class-icon" alt="Лучник">
-                <span class="class-label">Лучник</span>
+            <div class="icon-btn" id="btn-archer" onclick="selectHero('archer')">
+                <img src="icon_hero_ranger.png" alt="Лучник">
+                <span>ЛУЧНИК</span>
             </div>
         </div>
     </div>
@@ -270,38 +195,38 @@
         const heroesData = {
             warrior: {
                 title: "ВОИН",
-                bg: "UI_Background_Warrior.png", // ФОН ДЛЯ ВОИНА
+                bg: "UI_Background_Warrior.png",
                 image: "hero_warrior_male.png",
                 skills: [
-                    { name: "Базовый урон", icon: "war_1_basic.png", power: 75 },
-                    { name: "Массовый урон", icon: "war_2_aoe.png", power: 65 },
-                    { name: "Контроль", icon: "war_3_control.png", power: 40 },
-                    { name: "Живучесть", icon: "war_4_survivability.png", power: 95 },
-                    { name: "Ультимейт", icon: "war_5_ultimate.png", power: 80 }
+                    { n: "Базовый урон", i: "war_1_basic.png", p: 75 },
+                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65 },
+                    { n: "Контроль", i: "war_3_control.png", p: 40 },
+                    { n: "Живучесть", i: "war_4_survivability.png", p: 95 },
+                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80 }
                 ]
             },
             mage: {
                 title: "МАГ",
-                bg: "UI_Background_Mage.png", // ФОН ДЛЯ МАГА
+                bg: "UI_Background_Mage.png",
                 image: "hero_mage_male.png",
                 skills: [
-                    { name: "Базовый урон", icon: "mag_1_basic.png", power: 88 },
-                    { name: "Массовый урон", icon: "mag_2_aoe.png", power: 92 },
-                    { name: "Контроль", icon: "mag_3_control.png", power: 75 },
-                    { name: "Живучесть", icon: "mag_4_survivability.png", power: 35 },
-                    { name: "Ультимейт", icon: "mag_5_ultimate.png", power: 98 }
+                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85 },
+                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95 },
+                    { n: "Контроль", i: "mag_3_control.png", p: 70 },
+                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30 },
+                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90 }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК",
-                bg: "UI_Background_Archer.png", // ФОН ДЛЯ ЛУЧНИКА
+                bg: "UI_Background_Archer.png",
                 image: "hero_archer_male.png",
                 skills: [
-                    { name: "Базовый урон", icon: "arc_1_basic.png", power: 92 },
-                    { name: "Массовый урон", icon: "arc_2_aoe.png", power: 75 },
-                    { name: "Контроль", icon: "arc_3_control.png", power: 60 },
-                    { name: "Живучесть", icon: "arc_4_survivability.png", power: 45 },
-                    { name: "Ультимейт", icon: "arc_5_ultimate.png", power: 85 }
+                    { n: "Базовый урон", i: "arc_1_basic.png", p: 90 },
+                    { n: "Массовый урон", i: "arc_2_aoe.png", p: 70 },
+                    { n: "Контроль", i: "arc_3_control.png", p: 60 },
+                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50 },
+                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85 }
                 ]
             }
         };
@@ -309,81 +234,50 @@
         function startLoading() {
             let progress = 0;
             const fill = document.getElementById('progress-fill');
-            const interval = setInterval(() => {
-                progress += Math.random() * 4;
+            const timer = setInterval(() => {
+                progress += Math.random() * 5;
                 if (progress >= 100) {
                     progress = 100;
-                    clearInterval(interval);
-                    setTimeout(showSelection, 500);
+                    clearInterval(timer);
+                    setTimeout(initGame, 500);
                 }
                 fill.style.width = progress + '%';
-            }, 80);
+            }, 100);
         }
 
-        function showSelection() {
+        function initGame() {
             document.getElementById('loading-screen').style.opacity = '0';
             setTimeout(() => {
                 document.getElementById('loading-screen').style.display = 'none';
-                const screen = document.getElementById('selection-screen');
-                screen.style.display = 'block';
-                setTimeout(() => {
-                    screen.style.opacity = '1';
-                    selectHero('warrior');
-                }, 50);
-            }, 1000);
+                const s = document.getElementById('selection-screen');
+                s.style.display = 'block';
+                setTimeout(() => { s.style.opacity = '1'; selectHero('warrior'); }, 50);
+            }, 800);
         }
 
-        function selectHero(heroKey) {
-            const data = heroesData[heroKey];
+        function selectHero(key) {
+            const d = heroesData[key];
             const screen = document.getElementById('selection-screen');
-            const heroImg = document.getElementById('hero-img');
             
-            // Плавная смена персонажа
-            heroImg.style.opacity = '0';
-            heroImg.style.transform = 'translateX(-20px)';
-            
-            setTimeout(() => {
-                // МЕНЯЕМ ФОН ЭКРАНА
-                screen.style.backgroundImage = `url('${data.bg}')`;
-                
-                // Меняем картинку героя и текст
-                heroImg.src = data.image;
-                document.getElementById('class-title').innerText = data.title;
-                
-                heroImg.style.opacity = '1';
-                heroImg.style.transform = 'translateX(0)';
+            screen.style.backgroundImage = `url('${d.bg}')`;
+            document.getElementById('hero-img').src = d.image;
+            document.getElementById('class-title').innerText = d.title;
 
-                // Обновляем навыки
-                const skillsList = document.getElementById('skills-list');
-                skillsList.innerHTML = '';
-                
-                data.skills.forEach(skill => {
-                    const row = document.createElement('div');
-                    row.className = 'skill-row';
-                    row.innerHTML = `
-                        <img src="${skill.icon}" class="skill-icon">
-                        <div class="skill-info">
-                            <div class="skill-header">
-                                <span class="skill-name">${skill.name}</span>
-                                <span class="skill-percent">${skill.power}%</span>
-                            </div>
-                            <div class="skill-stat-bar">
-                                <div class="skill-stat-fill" style="width: 0%"></div>
-                            </div>
+            const list = document.getElementById('skills-list');
+            list.innerHTML = '';
+            d.skills.forEach(sk => {
+                list.innerHTML += `
+                    <div class="skill-item">
+                        <img src="${sk.i}" class="skill-img">
+                        <div class="skill-content">
+                            <div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div>
+                            <div class="bar-bg"><div class="bar-fill" style="width:${sk.p}%"></div></div>
                         </div>
-                    `;
-                    skillsList.appendChild(row);
-                    
-                    // Анимация полоски после добавления
-                    setTimeout(() => {
-                        row.querySelector('.skill-stat-fill').style.width = skill.power + '%';
-                    }, 100);
-                });
-            }, 300);
+                    </div>`;
+            });
 
-            // Подсветка активной кнопки
-            document.querySelectorAll('.class-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${heroKey}`).classList.add('active');
+            document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${key}`).classList.add('active');
         }
 
         window.onload = startLoading;
