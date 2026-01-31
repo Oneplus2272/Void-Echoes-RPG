@@ -241,7 +241,6 @@
     </div>
 
     <script>
-        // Защита: проверяем наличие Telegram Web App
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
         if (tg) {
@@ -259,6 +258,7 @@
                     { n: "Базовый урон", i: "war_1_basic.png", p: 75 },
                     { n: "Массовый урон", i: "war_2_aoe.png", p: 65 },
                     { n: "Контроль", i: "war_3_control.png", p: 40 },
+                    { n: "Живучесть", i: "war_4_survivability.png", p: 95 },
                     { n: "Ультимейт", i: "war_5_ultimate.png", p: 80 }
                 ]
             },
@@ -268,6 +268,7 @@
                     { n: "Базовый урон", i: "mag_1_basic.png", p: 85 },
                     { n: "Массовый урон", i: "mag_2_aoe.png", p: 95 },
                     { n: "Контроль", i: "mag_3_control.png", p: 70 },
+                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30 },
                     { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90 }
                 ]
             },
@@ -277,7 +278,8 @@
                     { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90 },
                     { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70 },
                     { n: "Контроль", i: "arc_3_control.png", p: 60 },
-                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 50 }
+                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50 },
+                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85 }
                 ]
             }
         };
@@ -287,9 +289,9 @@
             'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png',
             'hero_warrior_male.png', 'hero_mage_male.png', 'hero_archer_male.png',
             'icon_hero_paladin.png', 'icon_hero_mage.png', 'icon_hero_ranger.png',
-            'war_1_basic.png', 'war_2_aoe.png', 'war_3_control.png', 'war_5_ultimate.png',
-            'mag_1_basic.png', 'mag_2_aoe.png', 'mag_3_control.png', 'mag_5_ultimate.png',
-            'arc_1_basic_attack.png', 'arc_2_aoe_damage.png', 'arc_3_control.png', 'arc_5_ultimate.png'
+            'war_1_basic.png', 'war_2_aoe.png', 'war_3_control.png', 'war_4_survivability.png', 'war_5_ultimate.png',
+            'mag_1_basic.png', 'mag_2_aoe.png', 'mag_3_control.png', 'mag_4_survivability.png', 'mag_5_ultimate.png',
+            'arc_1_basic_attack.png', 'arc_2_aoe_damage.png', 'arc_3_control.png', 'arc_4_survivability.png', 'arc_5_ultimate.png'
         ];
 
         let loadedCount = 0;
@@ -300,17 +302,11 @@
             const text = document.getElementById('progress-text');
             if(fill) fill.style.width = percent + '%';
             if(text) text.innerText = percent + '%';
-            
-            if (loadedCount >= assetsToLoad.length) {
-                setTimeout(initGame, 1000);
-            }
+            if (loadedCount >= assetsToLoad.length) { setTimeout(initGame, 1000); }
         }
 
         function preloadAssets() {
-            if (assetsToLoad.length === 0) { 
-                initGame(); 
-                return; 
-            }
+            if (assetsToLoad.length === 0) { initGame(); return; }
             assetsToLoad.forEach(src => {
                 const img = new Image();
                 img.onload = () => { loadedCount++; updateProgress(); };
@@ -328,10 +324,7 @@
                     const s = document.getElementById('selection-screen');
                     if(s) {
                         s.style.display = 'block';
-                        setTimeout(() => { 
-                            s.style.opacity = '1'; 
-                            selectHero('warrior'); 
-                        }, 50);
+                        setTimeout(() => { s.style.opacity = '1'; selectHero('warrior'); }, 50);
                     }
                 }, 800);
             }
@@ -366,7 +359,6 @@
             if(activeBtn) activeBtn.classList.add('active');
         }
 
-        // Запуск
         window.onload = preloadAssets;
     </script>
 </body>
