@@ -11,7 +11,6 @@
             --blue: #00d4ff;
             --bg-panel: rgba(10, 10, 15, 0.9);
             --bg-modal: rgba(5, 5, 10, 0.95);
-            --accent-red: #ff4d4d;
         }
 
         body, html {
@@ -27,7 +26,6 @@
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        /* --- ОБЩИЕ ЭЛЕМЕНТЫ --- */
         .screen {
             display: none; width: 100%; height: 100%;
             background-size: cover; background-position: center;
@@ -104,7 +102,6 @@
         .icon-btn img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; }
         .icon-btn.active { filter: grayscale(0) brightness(1.2); transform: scale(1.1); }
         .icon-btn.active img { border-color: var(--gold); box-shadow: 0 0 10px var(--gold); }
-        .icon-btn span { font-size: 0.6rem; color: var(--gold); display: block; }
 
         /* --- ЭКРАН МЕНЮ --- */
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; }
@@ -138,9 +135,8 @@
         }
         .modal-content {
             width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold);
-            border-radius: 15px; padding: 20px; text-align: center; animation: modalIn 0.3s ease-out;
+            border-radius: 15px; padding: 20px; text-align: center;
         }
-        @keyframes modalIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-icon { width: 70px; height: 70px; border: 2px solid var(--gold); border-radius: 10px; margin-bottom: 10px; }
     </style>
 </head>
@@ -160,12 +156,12 @@
             <div class="skills-card">
                 <h2 id="class-title">КЛАСС</h2>
                 <div id="skills-list"></div>
-                <button class="confirm-btn" onclick="confirmSelection()">Выбрать героя</button>
+                <button id="main-confirm-btn" class="confirm-btn" onclick="confirmSelection()">Выбрать героя</button>
             </div>
             <div class="class-selector">
-                <div class="icon-btn" id="btn-warrior" onclick="selectHero('warrior')"><img src="icon_hero_paladin.png"><span>Воин</span></div>
-                <div class="icon-btn" id="btn-mage" onclick="selectHero('mage')"><img src="icon_hero_mage.png"><span>Маг</span></div>
-                <div class="icon-btn" id="btn-archer" onclick="selectHero('archer')"><img src="icon_hero_ranger.png"><span>Лучник</span></div>
+                <div class="icon-btn" id="btn-warrior" onclick="selectHero('warrior')"><img src="icon_hero_paladin.png"></div>
+                <div class="icon-btn" id="btn-mage" onclick="selectHero('mage')"><img src="icon_hero_mage.png"></div>
+                <div class="icon-btn" id="btn-archer" onclick="selectHero('archer')"><img src="icon_hero_ranger.png"></div>
             </div>
         </div>
     </div>
@@ -176,7 +172,8 @@
                 <img id="menu-avatar" src="" class="player-avatar">
                 <div class="player-info">
                     <h3 id="player-name">Игрок</h3>
-                    <p id="player-class">Класс не выбран</p>
+                    <p id="player-class">Загрузка...</p>
+                    <p id="player-stats" style="font-size: 0.7rem; color: #fff;"></p>
                 </div>
             </div>
             
@@ -191,57 +188,51 @@
     <div id="skill-modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <img id="modal-img" src="" class="modal-icon">
-            <div id="modal-name" style="color:var(--gold); font-size:1.2rem; margin-bottom:10px;">Название</div>
-            <div id="modal-text" style="color:#ccc; font-size:0.9rem; margin-bottom:20px;">Описание...</div>
+            <div id="modal-name" style="color:var(--gold); font-size:1.2rem; margin-bottom:10px;"></div>
+            <div id="modal-text" style="color:#ccc; font-size:0.9rem; margin-bottom:20px;"></div>
             <button style="background:var(--gold); border:none; padding:8px 20px; border-radius:5px; font-weight:bold;" onclick="closeModal()">ОК</button>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+        // ТВОЙ СЕРВЕР НА RENDER
+        const SERVER_URL = 'https://void-echoes-rpg.onrender.com';
+        
         let currentHeroKey = 'warrior';
         let loadedCount = 0;
-
-        if (tg) {
-            tg.expand();
-            tg.setHeaderColor('#000000');
-            tg.ready();
-        }
+        let userId = tg?.initDataUnsafe?.user?.id || 12345;
 
         const heroesData = {
             warrior: {
                 title: "ВОИН", bg: "UI_Background_Warrior.png", image: "hero_warrior_male.png", avatar: "icon_hero_paladin.png",
                 skills: [
                     { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом." },
-                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65, d: "Круговой удар щитом." },
-                    { n: "Контроль", i: "war_3_control.png", p: 40, d: "Оглушающий рывок." },
-                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита." },
-                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80, d: "Гнев титана." }
+                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита." }
                 ]
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png", image: "hero_mage_male.png", avatar: "icon_hero_mage.png",
                 skills: [
                     { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Магический сгусток." },
-                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95, d: "Метеоритный дождь." },
-                    { n: "Контроль", i: "mag_3_control.png", p: 70, d: "Ледяное кольцо." },
-                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Энергетический щит." },
-                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90, d: "Разлом пустоты." }
+                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Энергетический щит." }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png", image: "hero_archer_male.png", avatar: "icon_hero_ranger.png",
                 skills: [
                     { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел." },
-                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70, d: "Залп стрел." },
-                    { n: "Контроль", i: "arc_3_control.png", p: 60, d: "Замедляющая ловушка." },
-                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и ловкость." },
-                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85, d: "Око орла." }
+                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и ловкость." }
                 ]
             }
         };
 
-        const assetsToLoad = ['bg_loading_main_v1.png', 'icon_logo_void_echoes.png', 'bg_menu_main.png', 'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 'hero_warrior_male.png', 'hero_mage_male.png', 'hero_archer_male.png', 'icon_hero_paladin.png', 'icon_hero_mage.png', 'icon_hero_ranger.png'];
+        const assetsToLoad = ['bg_loading_main_v1.png', 'icon_logo_void_echoes.png', 'bg_menu_main.png', 'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 'hero_warrior_male.png', 'hero_mage_male.png', 'hero_archer_male.png'];
+
+        window.onload = () => {
+            if (tg) { tg.expand(); tg.ready(); }
+            preloadAssets();
+        };
 
         function preloadAssets() {
             assetsToLoad.forEach(src => {
@@ -255,7 +246,25 @@
             const percent = Math.floor((loadedCount / assetsToLoad.length) * 100);
             document.getElementById('progress-fill').style.width = percent + '%';
             document.getElementById('progress-text').innerText = percent + '%';
-            if (loadedCount >= assetsToLoad.length) setTimeout(showSelection, 1000);
+            if (loadedCount >= assetsToLoad.length) checkUserOnServer();
+        }
+
+        async function checkUserOnServer() {
+            try {
+                // Запрашиваем данные игрока с твоего Render сервера
+                const response = await fetch(`${SERVER_URL}/get_hero/${userId}`);
+                const data = await response.json();
+                
+                if (data.hero_class) {
+                    currentHeroKey = data.hero_class.toLowerCase();
+                    showMenu(data);
+                } else {
+                    showSelection();
+                }
+            } catch (e) {
+                console.error("Ошибка связи с бэкендом", e);
+                showSelection(); // Если сервер недоступен, даем выбрать (для теста)
+            }
         }
 
         function showSelection() {
@@ -273,28 +282,47 @@
             const list = document.getElementById('skills-list');
             list.innerHTML = '';
             d.skills.forEach((sk, i) => {
-                list.innerHTML += `<div class="skill-item" onclick="openSkill(${i})"><img src="${sk.i}" class="skill-img"><div style="flex:1"><div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${sk.p}%"></div></div></div></div>`;
+                list.innerHTML += `
+                    <div class="skill-item" onclick="openSkill(${i})">
+                        <img src="${sk.i}" class="skill-img">
+                        <div style="flex:1">
+                            <div class="skill-meta"><span>${sk.n}</span><span>${sk.p}%</span></div>
+                            <div class="bar-bg"><div class="bar-fill" style="width:${sk.p}%"></div></div>
+                        </div>
+                    </div>`;
             });
             document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${key}`).classList.add('active');
         }
 
-        function confirmSelection() {
+        async function confirmSelection() {
+            document.getElementById('main-confirm-btn').innerText = "Сохранение...";
             if(tg) tg.HapticFeedback.notificationOccurred('success');
-            const hero = heroesData[currentHeroKey];
+
+            try {
+                // Отправляем выбор класса на Render
+                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' });
+                const response = await fetch(`${SERVER_URL}/get_hero/${userId}`);
+                const data = await response.json();
+                showMenu(data);
+            } catch (e) {
+                alert("Не удалось сохранить выбор на сервере.");
+                document.getElementById('main-confirm-btn').innerText = "Выбрать героя";
+            }
+        }
+
+        function showMenu(serverData) {
+            const hero = heroesData[serverData.hero_class?.toLowerCase()] || heroesData['warrior'];
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('selection-screen').style.display = 'none';
             
-            // Настройка меню
             document.getElementById('menu-avatar').src = hero.avatar;
             document.getElementById('player-class').innerText = hero.title;
-            document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || "Герой";
+            document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || serverData.username;
+            document.getElementById('player-stats').innerText = `Lvl: ${serverData.level} | Gold: ${serverData.gold} | ATK: ${serverData.attack}`;
 
-            // Переход
-            document.getElementById('selection-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('selection-screen').style.display = 'none';
-                const m = document.getElementById('menu-screen');
-                m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
-            }, 600);
+            const m = document.getElementById('menu-screen');
+            m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
 
         function openSkill(i) {
@@ -306,8 +334,6 @@
         }
 
         function closeModal() { document.getElementById('skill-modal').style.display = 'none'; }
-
-        window.onload = preloadAssets;
     </script>
 </body>
 </html>
