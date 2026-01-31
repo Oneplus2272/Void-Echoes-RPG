@@ -67,9 +67,9 @@
         }
         .skills-card h2 { margin: 0 0 8px 0; text-align: center; color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
 
-        .skill-item { display: flex; align-items: center; margin-bottom: 5px; background: rgba(255, 255, 255, 0.03); padding: 5px; border-radius: 6px; }
+        .skill-item { display: flex; align-items: center; margin-bottom: 5px; background: rgba(255, 255, 255, 0.03); padding: 5px; border-radius: 6px; cursor: pointer; }
         .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 10px; }
-        .skill-meta { display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 2px; }
+        .skill-meta { display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 2px; font-weight: bold; }
         .bar-bg { width: 100%; height: 4px; background: #222; border-radius: 2px; }
         .bar-fill { height: 100%; background: var(--blue); transition: width 0.8s; }
 
@@ -88,7 +88,6 @@
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; }
         .menu-container { display: flex; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; }
         
-        /* Верхняя панель игрока */
         .player-header {
             display: flex; align-items: center; background: rgba(0, 0, 0, 0.7);
             padding: 10px; border-radius: 15px; border: 1px solid var(--blue); backdrop-filter: blur(10px);
@@ -142,12 +141,12 @@
                     <p id="player-stats"></p>
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
     <div id="skill-modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" style="width:60px; height:60px; border:1px solid var(--gold);">
+            <img id="modal-img" src="" style="width:60px; height:60px; border:1px solid var(--gold); border-radius: 10px;">
             <div id="modal-name" style="color:var(--gold); font-size:1.1rem; margin:10px 0;"></div>
             <div id="modal-text" style="color:#ccc; font-size:0.85rem; margin-bottom:20px;"></div>
             <button style="background:var(--gold); border:none; padding:8px 20px; border-radius:5px; font-weight:bold;" onclick="closeModal()">ОК</button>
@@ -168,33 +167,33 @@
                 title: "ВОИН", bg: "UI_Background_Warrior.png", 
                 male: "hero_warrior_male.png", female: "hero_warrior_female.png", avatar: "icon_hero_paladin.png",
                 skills: [
-                    { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом." },
-                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65, d: "Круговой удар щитом." },
-                    { n: "Контроль", i: "war_3_control.png", p: 40, d: "Оглушающий рывок." },
-                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита." },
-                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80, d: "Гнев титана." }
+                    { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом, наносящий физический урон цели." },
+                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65, d: "Круговой удар щитом по области." },
+                    { n: "Контроль", i: "war_3_control.png", p: 40, d: "Оглушающий рывок, прерывающий действия врага." },
+                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита и повышенное здоровье." },
+                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80, d: "Гнев титана: временный бонус к урону и защите." }
                 ]
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png",
                 male: "hero_mage_male.png", female: "hero_mage_female.png", avatar: "icon_hero_mage.png",
                 skills: [
-                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Магический сгусток." },
-                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95, d: "Метеоритный дождь." },
-                    { n: "Контроль", i: "mag_3_control.png", p: 70, d: "Ледяное кольцо." },
-                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Магический барьер." },
-                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90, d: "Разлом пустоты." }
+                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Сгусток чистой магической энергии." },
+                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95, d: "Метеоритный дождь, выжигающий поле боя." },
+                    { n: "Контроль", i: "mag_3_control.png", p: 70, d: "Ледяное кольцо, сковывающее движения." },
+                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Магический щит, поглощающий урон за счет маны." },
+                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90, d: "Разлом пустоты: мгновенный урон по площади." }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png",
                 male: "hero_archer_male.png", female: "hero_archer_female.png", avatar: "icon_hero_ranger.png",
                 skills: [
-                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел." },
-                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70, d: "Залп стрел." },
-                    { n: "Контроль", i: "arc_3_control.png", p: 60, d: "Ловушка." },
-                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот." },
-                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85, d: "Око орла." }
+                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел в уязвимое место." },
+                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70, d: "Залп стрел по конусной области." },
+                    { n: "Контроль", i: "arc_3_control.png", p: 60, d: "Замедляющая ловушка на пути врага." },
+                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и высокая скорость передвижения." },
+                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85, d: "Око орла: критические попадания при каждом выстреле." }
                 ]
             }
         };
