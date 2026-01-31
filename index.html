@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Echoes RPG - Loading</title>
+    <title>Void Echoes RPG - Character Selection</title>
     <style>
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #000;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000;
         }
 
-        /* Основной фон загрузки */
-        .loading-screen {
+        .selection-screen {
             position: relative;
             width: 100%;
             height: 100vh;
@@ -25,168 +19,229 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.15);
-            z-index: 1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); z-index: 1;
         }
 
-        /* Логотип с твоими настройками */
-        #logo-container {
-            position: fixed;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10;
+        .title {
+            position: relative; z-index: 10;
+            color: #00bfff; text-transform: uppercase;
+            letter-spacing: 5px; font-size: clamp(20px, 5vw, 28px); margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.8);
+        }
+
+        .heroes-container {
+            position: relative; z-index: 10;
+            display: flex; gap: 20px; width: 95%; max-width: 1100px;
+            justify-content: center; flex-wrap: wrap;
+        }
+
+        .hero-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #333;
+            border-radius: 20px;
+            width: 180px;
+            padding: 20px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        #logo-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-            filter: drop-shadow(0 0 25px rgba(0, 191, 255, 0.8));
+        .hero-card:hover {
+            border-color: #00bfff;
+            transform: translateY(-10px);
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.3);
         }
 
-        /* Настройки для ПЛАНШЕТА (широкие экраны) */
-        @media (min-width: 481px) {
-            #logo-container {
-                top: -99px; 
-                width: 415px;
-            }
+        .hero-card.active {
+            border-color: #00bfff;
+            background: rgba(0, 191, 255, 0.15);
+            box-shadow: 0 0 35px rgba(0, 191, 255, 0.6);
+            transform: scale(1.05);
         }
 
-        /* Настройки для ТЕЛЕФОНА (узкие экраны) */
-        @media (max-width: 480px) {
-            #logo-container {
-                top: -62px;
-                width: 268px;
-            }
-        }
-
-        /* Прогресс-бар (Отступ 10% как на твоих тестах) */
-        .progress-wrapper {
-            position: absolute;
-            bottom: 10%;
-            width: 85%;
-            max-width: 600px;
-            z-index: 5;
-            text-align: center;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 32px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 2px solid #00bfff;
-            border-radius: 16px;
+        .hero-logo {
+            width: 110px; height: 110px;
+            margin: 0 auto 15px;
+            background: radial-gradient(circle, #1a1a1a, #000);
+            border-radius: 50%;
+            border: 2px solid #444;
+            display: flex; align-items: center; justify-content: center;
             overflow: hidden;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
+            transition: 0.3s;
         }
 
-        .progress-fill {
-            width: 0%; 
-            height: 100%;
-            background-color: #00bfff;
-            position: relative;
-            transition: width 0.1s linear;
-            overflow: hidden;
+        .hero-card.active .hero-logo {
+            border-color: #00bfff;
+            box-shadow: 0 0 15px #00bfff;
         }
 
-        /* Блеск строго внутри заполнения */
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.6), 
-                transparent
-            );
-            animation: shine 1.3s infinite linear;
+        .hero-logo img {
+            width: 90%; height: 90%;
+            object-fit: contain;
         }
 
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
+        .hero-name {
+            color: #fff; font-weight: bold; font-size: 18px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
-        .progress-percentage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #fff;
-            font-weight: bold;
-            font-size: 16px;
-            text-shadow: 1px 1px 3px #000;
-            z-index: 6;
+        /* ПАНЕЛЬ ХАРАКТЕРИСТИК */
+        .details-panel {
+            position: relative; z-index: 10;
+            margin-top: 30px; background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00bfff; border-radius: 25px;
+            width: 85%; max-width: 700px; padding: 25px;
+            color: #fff; text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        .loading-status {
-            margin-top: 10px;
-            color: #00bfff;
-            text-transform: uppercase;
+        .hero-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 191, 255, 0.1);
+        }
+
+        .stat-label { color: #00bfff; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { color: #fff; display: block; font-size: 20px; font-weight: bold; margin-top: 3px; }
+
+        .select-btn {
+            margin-top: 25px; padding: 14px 60px;
+            background: linear-gradient(180deg, #00bfff, #0077be);
+            border: none; border-radius: 30px;
+            color: #fff; font-weight: bold; text-transform: uppercase;
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             letter-spacing: 2px;
-            font-size: 11px;
-            text-shadow: 0 0 5px #000;
-            font-weight: bold;
+        }
+
+        .select-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00bfff;
+        }
+
+        @media (max-width: 480px) {
+            .hero-card { width: 100px; padding: 10px; }
+            .hero-logo { width: 70px; height: 70px; }
+            .hero-name { font-size: 12px; }
+            .details-panel { width: 90%; padding: 15px; }
+            .stat-value { font-size: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="loading-screen">
+    <div class="selection-screen">
         <div class="overlay"></div>
 
-        <div id="logo-container">
-            <img src="icon_logo_void_echoes.png" alt="Void Echoes Logo">
+        <h1 class="title">Выберите своего героя</h1>
+
+        <div class="heroes-container">
+            <div class="hero-card active" onclick="selectHero('paladin', this)">
+                <div class="hero-logo">
+                    <img src="icon_hero_paladin.png" alt="Warrior">
+                </div>
+                <div class="hero-name">Паладин</div>
+            </div>
+
+            <div class="hero-card" onclick="selectHero('mage', this)">
+                <div class="hero-logo">
+                    <img src="icon_hero_mage.png" alt="Mage">
+                </div>
+                <div class="hero-name">Маг Пустоты</div>
+            </div>
+
+            <div class="hero-card" onclick="selectHero('ranger', this)">
+                <div class="hero-logo">
+                    <img src="icon_hero_ranger.png" alt="Archer">
+                </div>
+                <div class="hero-name">Следопыт</div>
+            </div>
         </div>
 
-        <div class="progress-wrapper">
-            <div class="progress-bar-container">
-                <div class="progress-fill" id="fill"></div>
-                <div class="progress-percentage" id="percent">0%</div>
+        <div class="details-panel">
+            <h2 id="hero-title" style="color: #00bfff; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Паладин</h2>
+            <p id="hero-desc" style="font-size: 14px; color: #bbb; margin: 10px 0;">Защитник света и правосудия.</p>
+            
+            <div class="hero-info-grid">
+                <div class="stat-box">
+                    <span class="stat-label">Здоровье</span>
+                    <span class="stat-value" id="stat-hp">150</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label" id="resource-name">Ярость</span>
+                    <span class="stat-value" id="stat-res">100</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Сила</span>
+                    <span class="stat-value" id="stat-str">18</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Ловкость</span>
+                    <span class="stat-value" id="stat-dex">8</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Интеллект</span>
+                    <span class="stat-value" id="stat-int">5</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Удача</span>
+                    <span class="stat-value" id="stat-luck">10</span>
+                </div>
             </div>
-            <div class="loading-status" id="status">Загрузка мира...</div>
+
+            <button class="select-btn">Начать путь</button>
         </div>
     </div>
 
     <script>
-        const fill = document.getElementById('fill');
-        const percentText = document.getElementById('percent');
-        const statusText = document.getElementById('status');
-        let progress = 0;
-
-        const statuses = ["Инициализация...", "Загрузка ресурсов...", "Вход в Пустоту...", "ГОТОВО!"];
-
-        function simulateLoading() {
-            if (progress < 100) {
-                progress += Math.random() * 1.5; 
-                if (progress > 100) progress = 100;
-                
-                const roundedProgress = Math.floor(progress);
-                fill.style.width = roundedProgress + '%';
-                percentText.innerText = roundedProgress + '%';
-
-                if (roundedProgress > 25) statusText.innerText = statuses[1];
-                if (roundedProgress > 65) statusText.innerText = statuses[2];
-                if (roundedProgress > 95) statusText.innerText = statuses[3];
-                
-                setTimeout(simulateLoading, 50);
+        const heroData = {
+            paladin: {
+                title: "Паладин",
+                desc: "Мастер ближнего боя и защиты. Использует ярость для проведения мощных сокрушающих атак.",
+                hp: 150, res: 100, resName: "Ярость", str: 18, dex: 8, int: 5, luck: 10
+            },
+            mage: {
+                title: "Маг Пустоты",
+                desc: "Повелитель стихий и магии Бездны. Огромный интеллект позволяет уничтожать целые армии.",
+                hp: 85, res: 200, resName: "Мана", str: 4, dex: 10, int: 25, luck: 15
+            },
+            ranger: {
+                title: "Следопыт",
+                desc: "Самый быстрый герой. Использует энергию для акробатики и шквала стрел с критическим уроном.",
+                hp: 110, res: 120, resName: "Энергия", str: 10, dex: 22, int: 12, luck: 20
             }
+        };
+
+        function selectHero(heroKey, element) {
+            document.querySelectorAll('.hero-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+
+            const data = heroData[heroKey];
+            document.getElementById('hero-title').innerText = data.title;
+            document.getElementById('hero-desc').innerText = data.desc;
+            document.getElementById('stat-hp').innerText = data.hp;
+            document.getElementById('stat-res').innerText = data.res;
+            document.getElementById('resource-name').innerText = data.resName;
+            document.getElementById('stat-str').innerText = data.str;
+            document.getElementById('stat-dex').innerText = data.dex;
+            document.getElementById('stat-int').innerText = data.int;
+            document.getElementById('stat-luck').innerText = data.luck;
         }
-        window.onload = simulateLoading;
     </script>
 
 </body>
