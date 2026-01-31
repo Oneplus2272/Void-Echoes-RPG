@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Void Echoes RPG - Редактор положения</title>
+    <title>Void Echoes RPG - Loading</title>
     <style>
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; font-family: 'Segoe UI', sans-serif; background-color: #000;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #000;
         }
 
-        /* Фон */
+        /* Основной фон загрузки */
         .loading-screen {
             position: relative;
             width: 100%;
@@ -22,7 +27,17 @@
             align-items: center;
         }
 
-        /* ЛОГОТИП */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+
+        /* Логотип с твоими настройками */
         #logo-container {
             position: fixed;
             left: 50%;
@@ -34,12 +49,30 @@
         #logo-container img {
             width: 100%;
             height: auto;
+            display: block;
             filter: drop-shadow(0 0 25px rgba(0, 191, 255, 0.8));
         }
 
-        /* ПРОГРЕСС-БАР */
-        #progress-wrapper {
+        /* Настройки для ПЛАНШЕТА (широкие экраны) */
+        @media (min-width: 481px) {
+            #logo-container {
+                top: -99px; 
+                width: 415px;
+            }
+        }
+
+        /* Настройки для ТЕЛЕФОНА (узкие экраны) */
+        @media (max-width: 480px) {
+            #logo-container {
+                top: -62px;
+                width: 268px;
+            }
+        }
+
+        /* Прогресс-бар (Отступ 10% как на твоих тестах) */
+        .progress-wrapper {
             position: absolute;
+            bottom: 10%;
             width: 85%;
             max-width: 600px;
             z-index: 5;
@@ -47,121 +80,113 @@
         }
 
         .progress-bar-container {
-            width: 100%; height: 32px;
+            width: 100%;
+            height: 32px;
             background: rgba(0, 0, 0, 0.85);
             border: 2px solid #00bfff;
             border-radius: 16px;
-            overflow: hidden; position: relative;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.5);
         }
 
         .progress-fill {
-            width: 65%; /* Для теста заполнил на 65% */
-            height: 100%; background-color: #00bfff;
-            position: relative; overflow: hidden;
+            width: 0%; 
+            height: 100%;
+            background-color: #00bfff;
+            position: relative;
+            transition: width 0.1s linear;
+            overflow: hidden;
         }
 
+        /* Блеск строго внутри заполнения */
         .progress-fill::after {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.6), 
+                transparent
+            );
             animation: shine 1.3s infinite linear;
         }
 
-        @keyframes shine { 0% { left: -100%; } 100% { left: 100%; } }
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
 
         .progress-percentage {
-            position: absolute; top: 50%; left: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
-            color: #fff; font-weight: bold; text-shadow: 1px 1px 3px #000;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 1px 1px 3px #000;
+            z-index: 6;
         }
 
-        /* ПАНЕЛЬ УПРАВЛЕНИЯ (ТОЛЬКО ДЛЯ ТЕБЯ) */
-        #debug-panel {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.9);
+        .loading-status {
+            margin-top: 10px;
             color: #00bfff;
-            padding: 15px;
-            border: 1px solid #00bfff;
-            border-radius: 8px;
-            z-index: 100;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+            text-shadow: 0 0 5px #000;
+            font-weight: bold;
         }
-        .control-group { display: flex; flex-direction: column; }
-        input { cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="loading-screen">
-        <div id="logo-container" style="top: 0px; width: 450px;">
-            <img src="icon_logo_void_echoes.png" alt="Logo">
+        <div class="overlay"></div>
+
+        <div id="logo-container">
+            <img src="icon_logo_void_echoes.png" alt="Void Echoes Logo">
         </div>
 
-        <div id="progress-wrapper" style="bottom: 10%;">
+        <div class="progress-wrapper">
             <div class="progress-bar-container">
-                <div class="progress-fill"></div>
-                <div class="progress-percentage">65%</div>
+                <div class="progress-fill" id="fill"></div>
+                <div class="progress-percentage" id="percent">0%</div>
             </div>
-            <div style="color:#00bfff; margin-top:5px; font-size:12px;">ТЕСТОВЫЙ РЕЖИМ НАСТРОЙКИ</div>
-        </div>
-    </div>
-
-    <div id="debug-panel">
-        <strong>НАСТРОЙКА ВИДА</strong>
-        
-        <div class="control-group">
-            <label>Логотип: Высота (Top): <span id="v_top">0</span>px</label>
-            <input type="range" id="in_top" min="-100" max="300" value="0">
-        </div>
-
-        <div class="control-group">
-            <label>Логотип: Ширина: <span id="v_width">450</span>px</label>
-            <input type="range" id="in_width" min="100" max="800" value="450">
-        </div>
-
-        <div class="control-group">
-            <label>Полоска: Отступ (Bottom): <span id="v_bottom">10</span>%</label>
-            <input type="range" id="in_bottom" min="0" max="50" value="10">
-        </div>
-
-        <div style="color: #fff; font-size: 10px; border-top: 1px solid #444; pt-5">
-            Настрой как надо и скинь мне цифры.
+            <div class="loading-status" id="status">Загрузка мира...</div>
         </div>
     </div>
 
     <script>
-        const logo = document.getElementById('logo-container');
-        const bar = document.getElementById('progress-wrapper');
+        const fill = document.getElementById('fill');
+        const percentText = document.getElementById('percent');
+        const statusText = document.getElementById('status');
+        let progress = 0;
 
-        // Инпуты
-        const inTop = document.getElementById('in_top');
-        const inWidth = document.getElementById('in_width');
-        const inBottom = document.getElementById('in_bottom');
+        const statuses = ["Инициализация...", "Загрузка ресурсов...", "Вход в Пустоту...", "ГОТОВО!"];
 
-        // Текстовые значения
-        const vTop = document.getElementById('v_top');
-        const vWidth = document.getElementById('v_width');
-        const vBottom = document.getElementById('v_bottom');
+        function simulateLoading() {
+            if (progress < 100) {
+                progress += Math.random() * 1.5; 
+                if (progress > 100) progress = 100;
+                
+                const roundedProgress = Math.floor(progress);
+                fill.style.width = roundedProgress + '%';
+                percentText.innerText = roundedProgress + '%';
 
-        inTop.addEventListener('input', () => {
-            logo.style.top = inTop.value + 'px';
-            vTop.innerText = inTop.value;
-        });
-
-        inWidth.addEventListener('input', () => {
-            logo.style.width = inWidth.value + 'px';
-            vWidth.innerText = inWidth.value;
-        });
-
-        inBottom.addEventListener('input', () => {
-            bar.style.bottom = inBottom.value + '%';
-            vBottom.innerText = inBottom.value;
-        });
+                if (roundedProgress > 25) statusText.innerText = statuses[1];
+                if (roundedProgress > 65) statusText.innerText = statuses[2];
+                if (roundedProgress > 95) statusText.innerText = statuses[3];
+                
+                setTimeout(simulateLoading, 50);
+            }
+        }
+        window.onload = simulateLoading;
     </script>
 
 </body>
