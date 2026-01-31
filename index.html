@@ -50,7 +50,6 @@
         .hero-view { width: 100%; flex: 0 0 38vh; display: flex; align-items: flex-end; justify-content: center; position: relative; }
         .hero-view img { max-height: 100%; max-width: 90%; filter: drop-shadow(0 0 30px #000); }
 
-        /* Переключатель пола */
         .gender-switch {
             position: absolute; right: 20px; bottom: 10px; display: flex; gap: 10px; z-index: 10;
         }
@@ -98,7 +97,7 @@
 
         /* --- МОДАЛКА --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
-        .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
+        .modal-content { width: 85%; max-width: 340px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 25px; text-align: center; box-shadow: 0 0 30px rgba(255, 215, 0, 0.2); }
     </style>
 </head>
 <body>
@@ -146,10 +145,10 @@
 
     <div id="skill-modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" style="width:60px; height:60px; border:1px solid var(--gold); border-radius: 10px;">
-            <div id="modal-name" style="color:var(--gold); font-size:1.1rem; margin:10px 0;"></div>
-            <div id="modal-text" style="color:#ccc; font-size:0.85rem; margin-bottom:20px;"></div>
-            <button style="background:var(--gold); border:none; padding:8px 20px; border-radius:5px; font-weight:bold;" onclick="closeModal()">ОК</button>
+            <img id="modal-img" src="" style="width:70px; height:70px; border:2px solid var(--gold); border-radius: 12px; margin-bottom: 10px;">
+            <div id="modal-name" style="color:var(--gold); font-size:1.3rem; margin-bottom:12px; font-weight: bold; text-transform: uppercase;"></div>
+            <div id="modal-text" style="color:#eee; font-size:0.95rem; line-height: 1.5; text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;"></div>
+            <button style="margin-top: 20px; background: var(--gold); border:none; padding:10px 30px; border-radius:5px; font-weight:bold; cursor: pointer;" onclick="closeModal()">ПОНЯТНО</button>
         </div>
     </div>
 
@@ -167,33 +166,33 @@
                 title: "ВОИН", bg: "UI_Background_Warrior.png", 
                 male: "hero_warrior_male.png", female: "hero_warrior_female.png", avatar: "icon_hero_paladin.png",
                 skills: [
-                    { n: "Базовый урон", i: "war_1_basic.png", p: 75, d: "Мощный удар мечом, наносящий физический урон цели." },
-                    { n: "Массовый урон", i: "war_2_aoe.png", p: 65, d: "Круговой удар щитом по области." },
-                    { n: "Контроль", i: "war_3_control.png", p: 40, d: "Оглушающий рывок, прерывающий действия врага." },
-                    { n: "Живучесть", i: "war_4_survivability.png", p: 95, d: "Пассивная защита и повышенное здоровье." },
-                    { n: "Ультимейт", i: "war_5_ultimate.png", p: 80, d: "Гнев титана: временный бонус к урону и защите." }
+                    { n: "Рассекающий удар", i: "war_1_basic.png", p: 75, d: "Базовая атака мечом. Наносит 120% физического урона текущей цели и имеет 10% шанс вызвать кровотечение на 3 секунды." },
+                    { n: "Вихрь стали", i: "war_2_aoe.png", p: 65, d: "Герой вращается в танце смерти, нанося 80% урона всем окружающим противникам в радиусе 2 метров." },
+                    { n: "Сокрушительный рывок", i: "war_3_control.png", p: 40, d: "Стремительный выпад вперед. Наносит небольшой урон и оглушает цель на 2.5 секунды, прерывая любое заклинание." },
+                    { n: "Бастион веры", i: "war_4_survivability.png", p: 95, d: "Пассивный навык. Увеличивает показатель брони на 25% и дает шанс 15% полностью заблокировать входящий урон щитом." },
+                    { n: "Гнев Титана", i: "war_5_ultimate.png", p: 80, d: "Ультимейт: Воин впадает в ярость на 10 секунд. Скорость атаки повышается на 50%, а весь исходящий урон становится критическим." }
                 ]
             },
             mage: {
                 title: "МАГ", bg: "UI_Background_Mage.png",
                 male: "hero_mage_male.png", female: "hero_mage_female.png", avatar: "icon_hero_mage.png",
                 skills: [
-                    { n: "Базовый урон", i: "mag_1_basic.png", p: 85, d: "Сгусток чистой магической энергии." },
-                    { n: "Массовый урон", i: "mag_2_aoe.png", p: 95, d: "Метеоритный дождь, выжигающий поле боя." },
-                    { n: "Контроль", i: "mag_3_control.png", p: 70, d: "Ледяное кольцо, сковывающее движения." },
-                    { n: "Живучесть", i: "mag_4_survivability.png", p: 30, d: "Магический щит, поглощающий урон за счет маны." },
-                    { n: "Ультимейт", i: "mag_5_ultimate.png", p: 90, d: "Разлом пустоты: мгновенный урон по площади." }
+                    { n: "Ледяная стрела", i: "mag_1_basic.png", p: 85, d: "Выпускает магический снаряд, наносящий 140% магического урона и замедляющий скорость передвижения цели на 30%." },
+                    { n: "Огненный шторм", i: "mag_2_aoe.png", p: 95, d: "Обрушивает метеориты на выбранную область. Наносит колоссальный урон по площади и поджигает землю на 5 секунд." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", p: 70, d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды. Замороженные цели не могут двигаться и атаковать." },
+                    { n: "Призрачный щит", i: "mag_4_survivability.png", p: 30, d: "Создает барьер из чистой маны, который поглощает 50% входящего урона, расходуя очки маны вместо здоровья." },
+                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", p: 90, d: "Ультимейт: Призывает энергию бездны, которая аннигилирует цель, нанося 500% чистого урона, игнорируя любую защиту." }
                 ]
             },
             archer: {
                 title: "ЛУЧНИК", bg: "UI_Background_Archer.png",
                 male: "hero_archer_male.png", female: "hero_archer_female.png", avatar: "icon_hero_ranger.png",
                 skills: [
-                    { n: "Базовый урон", i: "arc_1_basic_attack.png", p: 90, d: "Точный выстрел в уязвимое место." },
-                    { n: "Массовый урон", i: "arc_2_aoe_damage.png", p: 70, d: "Залп стрел по конусной области." },
-                    { n: "Контроль", i: "arc_3_control.png", p: 60, d: "Замедляющая ловушка на пути врага." },
-                    { n: "Живучесть", i: "arc_4_survivability.png", p: 50, d: "Уворот и высокая скорость передвижения." },
-                    { n: "Ультимейт", i: "arc_5_ultimate.png", p: 85, d: "Око орла: критические попадания при каждом выстреле." }
+                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", p: 90, d: "Выстрел в уязвимую точку. Наносит 130% урона и имеет повышенный шанс на критическое попадание." },
+                    { n: "Град стрел", i: "arc_2_aoe_damage.png", p: 70, d: "Выпускает веер из 12 стрел перед собой, поражая всех противников на пути и отталкивая их назад." },
+                    { n: "Ловушка охотника", i: "arc_3_control.png", p: 60, d: "Устанавливает скрытый капкан. Наступивший в него враг обездвиживается на 4 секунды и получает эффект 'Метка смерти'." },
+                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", p: 50, d: "Пассивный навык. Увеличивает шанс уклониться от любой атаки на 20%. После успешного уворота скорость бега растет на 2 сек." },
+                    { n: "Око Орла", i: "arc_5_ultimate.png", p: 85, d: "Ультимейт: Концентрация достигает пика. В течение 8 секунд каждая стрела гарантированно наносит критический урон и прошивает врагов насквозь." }
                 ]
             }
         };
