@@ -179,13 +179,23 @@
         .hero-preview-box {
             position: absolute;
             transition: all 0.1s ease;
+            transform: translate(-50%, -50%);
         }
-        #inv-hero-img { height: auto; object-fit: contain; }
+
+        /* Настройки героя по твоим скриншотам */
+        @media screen and (max-width: 599px) { /* Телефоны */
+            .hero-preview-box { top: 55%; left: 54%; }
+            #inv-hero-img { width: 241px; height: auto; }
+        }
+        @media screen and (min-width: 600px) { /* Планшеты */
+            .hero-preview-box { top: 54%; left: 50%; }
+            #inv-hero-img { width: 376px; height: auto; }
+        }
 
         .equipment-grid {
             position: absolute; width: 100%; height: 100%;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; box-sizing: border-box; pointer-events: none;
+            padding: 0; box-sizing: border-box; pointer-events: none;
         }
 
         .inv-column { 
@@ -194,12 +204,11 @@
 
         .inv-slot {
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.1s ease;
-            /* Рамки убраны, так как они есть на самих png */
+            transition: all 0.05s ease;
         }
         .inv-slot img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* ПАНЕЛЬ РЕГУЛИРОВКИ */
+        /* ПАНЕЛЬ РЕГУЛИРОВКИ (ОСТАВЛЕНЫ ТОЛЬКО СЛОТЫ) */
         .debug-panel {
             position: absolute; bottom: 0; left: 0; width: 100%;
             background: rgba(0,0,0,0.85); padding: 10px;
@@ -207,7 +216,7 @@
             display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--gold);
         }
         .debug-panel label { display: flex; flex-direction: column; width: 30%; color: #aaa; }
-        .debug-panel input { margin-top: 4px; }
+        .debug-panel input { margin-top: 4px; width: 100%; }
 
         /* --- МАГАЗИН --- */
         #shop-modal {
@@ -367,12 +376,9 @@
         </div>
 
         <div class="debug-panel">
-            <label>Герой Y (%): <input type="range" min="0" max="100" value="50" oninput="updateUI('heroY', this.value)"></label>
-            <label>Герой X (%): <input type="range" min="0" max="100" value="50" oninput="updateUI('heroX', this.value)"></label>
-            <label>Герой Размер (px): <input type="range" min="100" max="800" value="400" oninput="updateUI('heroSize', this.value)"></label>
-            <label>Слоты Размер (px): <input type="range" min="30" max="150" value="80" oninput="updateUI('slotSize', this.value)"></label>
-            <label>Отступ Слотов (px): <input type="range" min="0" max="100" value="10" oninput="updateUI('slotGap', this.value)"></label>
-            <label>Колонки X (px): <input type="range" min="0" max="200" value="20" oninput="updateUI('colX', this.value)"></label>
+            <label>Слоты Размер (px): <input type="range" min="30" max="400" value="89" oninput="updateSlots('slotSize', this.value)"></label>
+            <label>Отступ Слотов (px): <input type="range" min="-100" max="300" value="0" oninput="updateSlots('slotGap', this.value)"></label>
+            <label>Колонки X (px): <input type="range" min="-100" max="600" value="105" oninput="updateSlots('colX', this.value)"></label>
             <div id="debug-values" style="width:100%; color: var(--gold); font-family: monospace; font-size: 9px; margin-top: 5px;"></div>
         </div>
     </div>
@@ -423,7 +429,6 @@
                     <div class="shop-item" style="grid-column: span 2;">
                         <img src="icon_vip.png">
                         <div class="amount">VIP Статус</div>
-                        <p style="font-size: 0.8rem; color: #aaa; margin: 0 0 15px 0;">+25% к опыту и уникальный префикс</p>
                         <button class="buy-btn" onclick="buyItem('vip', 1, 250)">Купить за 250 <img src="icon_star.png" class="star-img-btn"></button>
                     </div>
                 </div>
@@ -588,31 +593,24 @@
             setTimeout(() => document.getElementById('inventory-screen').style.display = 'none', 600);
         }
 
-        /* ФУНКЦИЯ РЕГУЛИРОВКИ UI */
-        let uiSettings = { heroY: 50, heroX: 50, heroSize: 400, slotSize: 80, slotGap: 10, colX: 20 };
-        function updateUI(key, val) {
-            uiSettings[key] = val;
-            const heroBox = document.getElementById('hero-box');
-            const heroImg = document.getElementById('inv-hero-img');
+        /* ФУНКЦИЯ РЕГУЛИРОВКИ СЛОТОВ */
+        let slotSettings = { slotSize: 89, slotGap: 0, colX: 105 };
+        function updateSlots(key, val) {
+            slotSettings[key] = parseInt(val);
             const slots = document.querySelectorAll('.inv-slot');
             const colL = document.getElementById('col-left');
             const colR = document.getElementById('col-right');
 
-            heroBox.style.top = uiSettings.heroY + '%';
-            heroBox.style.left = uiSettings.heroX + '%';
-            heroBox.style.transform = 'translate(-50%, -50%)';
-            heroImg.style.width = uiSettings.heroSize + 'px';
-
             slots.forEach(s => {
-                s.style.width = uiSettings.slotSize + 'px';
-                s.style.height = uiSettings.slotSize + 'px';
-                s.style.marginBottom = uiSettings.slotGap + 'px';
+                s.style.width = slotSettings.slotSize + 'px';
+                s.style.height = slotSettings.slotSize + 'px';
+                s.style.marginBottom = slotSettings.slotGap + 'px';
             });
 
-            colL.style.paddingLeft = uiSettings.colX + 'px';
-            colR.style.paddingRight = uiSettings.colX + 'px';
+            colL.style.paddingLeft = slotSettings.colX + 'px';
+            colR.style.paddingRight = slotSettings.colX + 'px';
 
-            document.getElementById('debug-values').innerText = "Настройки: " + JSON.stringify(uiSettings);
+            document.getElementById('debug-values').innerText = "Настройки слотов: " + JSON.stringify(slotSettings);
         }
 
         function toggleVipStatus() { document.getElementById('vip-btn').classList.toggle('active'); }
@@ -640,7 +638,7 @@
                         tg.showAlert("Успешно куплено!");
                     }
                 });
-            } else { alert("Покупка совершена (тест)"); }
+            }
         }
 
         function openSkill(i) {
