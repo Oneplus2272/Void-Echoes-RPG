@@ -193,23 +193,21 @@
         }
 
         .inv-slot {
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid var(--gold);
-            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
             transition: all 0.1s ease;
+            /* Рамки убраны, так как они есть на самих png */
         }
-        .inv-slot img { width: 80%; height: 80%; object-fit: contain; }
+        .inv-slot img { width: 100%; height: 100%; object-fit: contain; }
 
         /* ПАНЕЛЬ РЕГУЛИРОВКИ */
         .debug-panel {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.8); padding: 10px;
+            background: rgba(0,0,0,0.85); padding: 10px;
             box-sizing: border-box; font-size: 10px; z-index: 500;
-            display: flex; flex-wrap: wrap; gap: 10px;
+            display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--gold);
         }
-        .debug-panel label { display: flex; flex-direction: column; width: 30%; }
+        .debug-panel label { display: flex; flex-direction: column; width: 30%; color: #aaa; }
+        .debug-panel input { margin-top: 4px; }
 
         /* --- МАГАЗИН --- */
         #shop-modal {
@@ -355,11 +353,15 @@
                 <div class="inv-column" id="col-left">
                     <div class="inv-slot"><img src="helmet.png"></div>
                     <div class="inv-slot"><img src="chestplate.png"></div>
-                    <div class="inv-slot"><img src="hammer.png"></div> <div class="inv-slot"><img src="icon_gold.png"></div> </div>
+                    <div class="inv-slot"><img src="hammer.png"></div>
+                    <div class="inv-slot"><img src="ring.png"></div>
+                </div>
                 <div class="inv-column" id="col-right">
                     <div class="inv-slot"><img src="bracers.png"></div>
                     <div class="inv-slot"><img src="boots.png"></div>
-                    <div class="inv-slot"><img src="hammer.png"></div> <div class="inv-slot"><img src="icon_gold.png"></div> </div>
+                    <div class="inv-slot"><img src="hammer.png"></div>
+                    <div class="inv-slot"><img src="ring.png"></div>
+                </div>
             </div>
 
         </div>
@@ -368,10 +370,10 @@
             <label>Герой Y (%): <input type="range" min="0" max="100" value="50" oninput="updateUI('heroY', this.value)"></label>
             <label>Герой X (%): <input type="range" min="0" max="100" value="50" oninput="updateUI('heroX', this.value)"></label>
             <label>Герой Размер (px): <input type="range" min="100" max="800" value="400" oninput="updateUI('heroSize', this.value)"></label>
-            <label>Слоты Размер (px): <input type="range" min="40" max="120" value="70" oninput="updateUI('slotSize', this.value)"></label>
-            <label>Отступ Слотов (px): <input type="range" min="0" max="50" value="15" oninput="updateUI('slotGap', this.value)"></label>
-            <label>Колонки X (px): <input type="range" min="0" max="100" value="20" oninput="updateUI('colX', this.value)"></label>
-            <div id="debug-values" style="width:100%; color: var(--gold); font-family: monospace;"></div>
+            <label>Слоты Размер (px): <input type="range" min="30" max="150" value="80" oninput="updateUI('slotSize', this.value)"></label>
+            <label>Отступ Слотов (px): <input type="range" min="0" max="100" value="10" oninput="updateUI('slotGap', this.value)"></label>
+            <label>Колонки X (px): <input type="range" min="0" max="200" value="20" oninput="updateUI('colX', this.value)"></label>
+            <div id="debug-values" style="width:100%; color: var(--gold); font-family: monospace; font-size: 9px; margin-top: 5px;"></div>
         </div>
     </div>
 
@@ -451,7 +453,8 @@
             'bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 
             'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 
             'icon_vip.png', 'icon_gold.png', 'icon_crystal.png', 'icon_shop.png', 
-            'icon_inventory.png', 'bg_shop_main.png', 'icon_star.png', 'character_preview.png'
+            'icon_inventory.png', 'bg_shop_main.png', 'icon_star.png', 'character_preview.png',
+            'helmet.png', 'chestplate.png', 'bracers.png', 'boots.png', 'hammer.png', 'ring.png'
         ];
 
         const heroesData = {
@@ -541,6 +544,7 @@
         }
 
         function setGender(g) { currentGender = g; document.getElementById('gender-m').classList.toggle('active', g === 'male'); document.getElementById('gender-f').classList.toggle('active', g === 'female'); updateHeroImage(); }
+        
         function updateHeroImage() { 
             const img = heroesData[currentHeroKey][currentGender];
             document.getElementById('hero-img').src = img;
@@ -574,7 +578,6 @@
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
 
-        /* ФУНКЦИИ ИНВЕНТАРЯ (ОРУЖЕЙНОЙ) */
         function openInventory() {
             const inv = document.getElementById('inventory-screen');
             inv.style.display = 'block';
@@ -586,7 +589,7 @@
         }
 
         /* ФУНКЦИЯ РЕГУЛИРОВКИ UI */
-        let uiSettings = { heroY: 50, heroX: 50, heroSize: 400, slotSize: 70, slotGap: 15, colX: 20 };
+        let uiSettings = { heroY: 50, heroX: 50, heroSize: 400, slotSize: 80, slotGap: 10, colX: 20 };
         function updateUI(key, val) {
             uiSettings[key] = val;
             const heroBox = document.getElementById('hero-box');
@@ -609,7 +612,7 @@
             colL.style.paddingLeft = uiSettings.colX + 'px';
             colR.style.paddingRight = uiSettings.colX + 'px';
 
-            document.getElementById('debug-values').innerText = JSON.stringify(uiSettings);
+            document.getElementById('debug-values').innerText = "Настройки: " + JSON.stringify(uiSettings);
         }
 
         function toggleVipStatus() { document.getElementById('vip-btn').classList.toggle('active'); }
