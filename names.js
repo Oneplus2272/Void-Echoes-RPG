@@ -1,4 +1,4 @@
-// Объект путей к картинкам имен
+// Объект с путями к картинкам имен
 const nameLogos = {
     warrior: { male: 'text_name_thorn_gold.png', female: 'text_name_freya_gold.png' },
     mage: { male: 'text_name_andrian_purple.png', female: 'text_name_elissa_purple.png' },
@@ -6,59 +6,55 @@ const nameLogos = {
 };
 
 /**
- * Отрисовка имени ПОВЕРХ фона над персонажем
+ * Функция, которая рисует имя ПОВЕРХ фона персонажа
  */
-function updateHeroNameLogo() {
-    // Ищем основной контейнер превью
-    const previewContainer = document.querySelector('.character-preview') || document.getElementById('character-preview-container');
-    
-    if (previewContainer && window.currentHeroKey && window.currentGender) {
-        // Проверяем, есть ли уже слой для имени, если нет — создаем
-        let nameOverlay = document.getElementById('hero-name-layer');
-        if (!nameOverlay) {
-            nameOverlay = document.createElement('div');
-            nameOverlay.id = 'hero-name-layer';
-            // Стили для наложения поверх фона (абсолютное позиционирование)
-            Object.assign(nameOverlay.style, {
+function drawNameOnBackground() {
+    // Ищем блок, у которого в стилях прописан твой фон character_preview.png
+    const previewBox = document.querySelector('[style*="character_preview.png"]') || document.querySelector('.character-preview');
+
+    if (previewBox) {
+        // Проверяем, есть ли уже внутри картинка с именем, если нет - создаем контейнер
+        let nameContainer = document.getElementById('name-image-overlay');
+        if (!nameContainer) {
+            nameContainer = document.createElement('div');
+            nameContainer.id = 'name-image-overlay';
+            // Позиционируем строго по центру в верхней части фона
+            Object.assign(nameContainer.style, {
                 position: 'absolute',
-                top: '12%', // Высота — как раз под свод арки
-                left: '50%',
-                transform: 'translateX(-50%)',
+                top: '50px',
+                left: '0',
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
-                pointerEvents: 'none', // Чтобы не мешал кликам по инвентарю
-                zIndex: '20' // Выше фона, но ниже всплывающих окон
+                zIndex: '50',
+                pointerEvents: 'none'
             });
-            previewContainer.style.position = 'relative'; // Контейнер должен быть родителем
-            previewContainer.appendChild(nameOverlay);
+            previewBox.style.position = 'relative'; // Чтобы имя не улетело за пределы фона
+            previewBox.appendChild(nameContainer);
         }
 
-        const logoPath = nameLogos[window.currentHeroKey][window.currentGender];
+        // Берем нужный файл из конфига выше
+        const currentImg = nameLogos[window.currentHeroKey || 'warrior'][window.currentGender || 'male'];
         
-        // Обновляем картинку
-        nameOverlay.innerHTML = `
-            <img src="${logoPath}" alt="Name" 
-                 style="max-width: 260px; height: auto; 
-                        filter: drop-shadow(0 0 20px rgba(0,0,0,0.9));">
-        `;
+        // Вставляем саму картинку
+        nameContainer.innerHTML = `<img src="${currentImg}" style="max-width: 250px; height: auto; filter: drop-shadow(0 0 10px #000);">`;
     }
 }
 
-// Перехват функций смены героя и пола
-const backupSelectHero = window.selectHero;
+// Заменяем старые функции, чтобы при клике всё обновлялось
+const oldSelect = window.selectHero;
 window.selectHero = function(key) {
-    if (typeof backupSelectHero === 'function') backupSelectHero(key);
-    updateHeroNameLogo();
+    if (typeof oldSelect === 'function') oldSelect(key);
+    drawNameOnBackground();
 };
 
-const backupSetGender = window.setGender;
+const oldGender = window.setGender;
 window.setGender = function(g) {
-    if (typeof backupSetGender === 'function') backupSetGender(g);
-    updateHeroNameLogo();
+    if (typeof oldGender === 'function') oldGender(g);
+    drawNameOnBackground();
 };
 
 // Запуск при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(updateHeroNameLogo, 400);
-});
+window.onload = () => {
+    setTimeout(drawNameOnBackground, 500);
+};
