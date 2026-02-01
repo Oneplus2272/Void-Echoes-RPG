@@ -111,25 +111,25 @@
             box-sizing: border-box; position: relative;
         }
         
-        /* Кнопка VIP */
+        /* --- КНОПКА VIP (УВЕЛИЧЕНА ДО 100px) --- */
         .vip-button {
-            width: 85px; height: 85px; cursor: pointer;
+            width: 100px; height: 100px; cursor: pointer;
             filter: grayscale(1); transition: filter 0.3s, transform 0.2s;
             z-index: 100;
         }
 
-        /* Планшеты и всё что шире 600px (обычно телефоны заканчиваются на 480-500) */
+        /* Планшеты: строго по центру вверху */
         @media screen and (min-width: 600px) {
             .vip-button {
                 position: fixed;
-                top: 20px;
+                top: 15px;
                 left: 50%;
                 transform: translateX(-50%);
                 margin: 0;
             }
         }
 
-        /* Телефоны: строго под аватаркой */
+        /* Телефоны: под аватаркой */
         @media screen and (max-width: 599px) {
             .vip-button {
                 margin-top: 15px;
@@ -174,7 +174,6 @@
             margin-top: 10px;
         }
 
-        /* Увеличенные кнопки магазина и инвентаря */
         .shop-button, .inventory-button {
             width: 95px; height: 95px;
             cursor: pointer;
