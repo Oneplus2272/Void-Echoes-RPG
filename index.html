@@ -112,11 +112,9 @@
         }
         
         .vip-button {
-            position: absolute; top: env(safe-area-inset-top); left: 50%; 
-            transform: translateX(-50%);
-            width: 110px; height: 110px; cursor: pointer;
+            width: 80px; height: 80px; cursor: pointer;
             filter: grayscale(1); transition: filter 0.3s, transform 0.2s;
-            z-index: 10;
+            margin-top: 10px; margin-left: 5px;
         }
         .vip-button.active { filter: grayscale(0); }
         .vip-button img { width: 100%; height: 100%; object-fit: contain; }
@@ -146,10 +144,17 @@
         .resource-panel .icon { width: 26px; height: 26px; margin-right: 8px; object-fit: contain; }
         .resource-panel .value { font-size: 1rem; font-weight: bold; color: #fff; }
 
-        .shop-button, .inventory-button {
+        .side-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             align-self: flex-end;
+            margin-top: 5px;
+        }
+
+        .shop-button, .inventory-button {
             width: 80px; height: 80px;
-            cursor: pointer; margin-top: 5px;
+            cursor: pointer;
             transition: transform 0.2s ease;
         }
         .shop-button:active, .inventory-button:active { transform: scale(0.95); }
@@ -166,49 +171,72 @@
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1.05rem; font-weight: bold; }
         .player-info p { margin: 2px 0 0 0; font-size: 0.85rem; color: #ccc; }
 
-        .adventure-btn {
-            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            padding: 15px 40px; background: linear-gradient(180deg, #ff4500, #8b0000);
-            border: 2px solid var(--gold); border-radius: 30px; color: white;
-            font-weight: bold; font-size: 1.2rem; text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); cursor: pointer;
-        }
-
-        /* --- КАРТА МИРА --- */
-        #map-screen {
-            background: #050505;
-        }
-        .map-container {
-            width: 200%; height: 200%; /* Карта больше экрана для скролла */
-            background: url('bg_world_map.png') repeat;
-            position: relative;
-        }
-        .back-to-menu {
-            position: fixed; bottom: 20px; left: 20px;
-            background: rgba(0,0,0,0.8); border: 1px solid var(--gold);
-            color: var(--gold); padding: 10px 20px; border-radius: 10px; z-index: 100;
-        }
-
-        /* --- МАГАЗИН И ИНВЕНТАРЬ --- */
-        #shop-modal, #inventory-modal {
+        /* --- МАГАЗИН --- */
+        #shop-modal {
             display: none; position: fixed; top: 0; left: 0; 
             width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.9);
-            z-index: 300; flex-direction: column; align-items: center;
+            background: url('bg_shop_main.png') no-repeat center center/cover;
+            z-index: 300;
+            flex-direction: column; align-items: center;
             padding-top: env(safe-area-inset-top);
         }
-        .modal-header { width: 100%; display: flex; justify-content: space-between; padding: 20px; box-sizing: border-box; }
-        .modal-header h2 { color: var(--gold); margin: 0; }
-        .close-modal { font-size: 2rem; color: #fff; cursor: pointer; }
+        #shop-modal::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); z-index: -1;
+        }
 
+        .shop-header {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; box-sizing: border-box; z-index: 5;
+        }
+        .shop-header h2 { color: var(--gold); margin: 0; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 0 0 10px #000; }
+        .close-shop { font-size: 2.2rem; color: #fff; cursor: pointer; text-shadow: 0 0 10px #000; }
+
+        .shop-tabs {
+            width: 100%; display: flex; justify-content: space-around;
+            padding: 5px 10px; box-sizing: border-box; background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 5;
+        }
+        .shop-tab {
+            padding: 10px 15px; color: #ccc; font-weight: bold; font-size: 0.9rem;
+            text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .shop-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+        .shop-tab.active.gold-t { color: var(--gold); border-bottom-color: var(--gold); }
+        .shop-tab.active.vip-t { color: var(--purple); border-bottom-color: var(--purple); }
+
+        .shop-content {
+            width: 100%; overflow-y: auto; padding: 20px; box-sizing: border-box; z-index: 5;
+        }
+        .shop-category { display: none; }
+        .shop-category.active { display: block; }
+
+        .shop-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+        .shop-item {
+            background: rgba(10, 10, 15, 0.85); 
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px; padding: 15px; text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .shop-item img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 12px; }
+        .shop-item .amount { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: #fff; }
+        
         .buy-btn {
             width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--gold);
             color: var(--gold); padding: 10px; border-radius: 8px;
             font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 0.9rem;
         }
-        .star-img-btn { width: 18px; height: 18px; object-fit: contain; }
+        .buy-btn:active { background: var(--gold); color: #000; transform: scale(0.95); }
+        
+        .star-img-btn { width: 18px; height: 18px; object-fit: contain; filter: drop-shadow(0 0 2px var(--gold)); }
 
-        #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 400; justify-content: center; align-items: center; }
+        /* --- МОДАЛКА НАВЫКОВ --- */
+        #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
         .modal-content { width: 85%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
 </head>
@@ -246,10 +274,6 @@
 
     <div id="menu-screen" class="screen">
         <div class="menu-container">
-            <div id="vip-btn" class="vip-button" onclick="toggleVipStatus()">
-                <img src="icon_vip.png" alt="VIP">
-            </div>
-
             <div class="resources-column">
                 <div id="gold-panel" class="resource-panel">
                     <img src="icon_gold.png" class="icon" alt="G">
@@ -259,11 +283,13 @@
                     <img src="icon_crystal.png" class="icon" alt="C">
                     <div id="crystal-value" class="value">0</div>
                 </div>
-                <div class="inventory-button" onclick="openModal('inventory')">
-                    <img src="icon_inventory.png" alt="Инвентарь">
-                </div>
-                <div class="shop-button" onclick="openModal('shop')">
-                    <img src="icon_shop.png" alt="Магазин">
+                <div class="side-buttons">
+                    <div id="shop-btn" class="shop-button" onclick="openShop()">
+                        <img src="icon_shop.png" alt="Магазин">
+                    </div>
+                    <div id="inventory-btn" class="inventory-button" onclick="openInventory()">
+                        <img src="icon_inventory.png" alt="Инвентарь">
+                    </div>
                 </div>
             </div>
 
@@ -275,43 +301,74 @@
                 </div>
             </div>
 
-            <button class="adventure-btn" onclick="goToMap()">В поход</button>
-        </div>
-    </div>
-
-    <div id="map-screen" class="screen">
-        <div class="map-container" id="map-container">
+            <div id="vip-btn" class="vip-button" onclick="toggleVipStatus()">
+                <img src="icon_vip.png" alt="VIP">
             </div>
-        <button class="back-to-menu" onclick="goToMenu()">Вернуться в город</button>
-    </div>
-
-    <div id="inventory-modal">
-        <div class="modal-header">
-            <h2>ИНВЕНТАРЬ</h2>
-            <div class="close-modal" onclick="closeModal('inventory')">×</div>
         </div>
-        <div style="padding: 20px; text-align: center; color: #aaa;">Ваша сумка пока пуста...</div>
     </div>
 
     <div id="shop-modal">
-        <div class="modal-header">
-            <h2>МАГАЗИН</h2>
-            <div class="close-modal" onclick="closeModal('shop')">×</div>
+        <div class="shop-header">
+            <h2>MARKET</h2>
+            <div class="close-shop" onclick="closeShop()">×</div>
         </div>
-        <div style="padding: 20px; width: 100%; box-sizing: border-box;">
-            <div class="shop-item" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;">
-                <span>100 Кристаллов</span>
-                <button class="buy-btn" style="width: auto;" onclick="buyItem('crystals', 100, 50)">50 <img src="icon_star.png" class="star-img-btn"></button>
+        
+        <div class="shop-tabs">
+            <div class="shop-tab active" onclick="switchTab('crystals', this)">Кристаллы</div>
+            <div class="shop-tab gold-t" onclick="switchTab('gold', this)">Золото</div>
+            <div class="shop-tab vip-t" onclick="switchTab('vip', this)">VIP</div>
+        </div>
+
+        <div class="shop-content">
+            <div id="cat-crystals" class="shop-category active">
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <img src="icon_crystal.png">
+                        <div class="amount">100</div>
+                        <button class="buy-btn" onclick="buyItem('crystals', 100, 50)">50 <img src="icon_star.png" class="star-img-btn"></button>
+                    </div>
+                    <div class="shop-item">
+                        <img src="icon_crystal.png">
+                        <div class="amount">500</div>
+                        <button class="buy-btn" onclick="buyItem('crystals', 500, 200)">200 <img src="icon_star.png" class="star-img-btn"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cat-gold" class="shop-category">
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <img src="icon_gold.png">
+                        <div class="amount">10,000</div>
+                        <button class="buy-btn" onclick="buyItem('gold', 10000, 30)">30 <img src="icon_star.png" class="star-img-btn"></button>
+                    </div>
+                    <div class="shop-item">
+                        <img src="icon_gold.png">
+                        <div class="amount">50,000</div>
+                        <button class="buy-btn" onclick="buyItem('gold', 50000, 100)">100 <img src="icon_star.png" class="star-img-btn"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cat-vip" class="shop-category">
+                <div class="shop-grid">
+                    <div class="shop-item" style="grid-column: span 2;">
+                        <img src="icon_vip.png">
+                        <div class="amount">VIP Статус</div>
+                        <p style="font-size: 0.8rem; color: #aaa; margin: 0 0 15px 0;">+25% к опыту и уникальный префикс</p>
+                        <button class="buy-btn" onclick="buyItem('vip', 1, 250)">Купить за 250 <img src="icon_star.png" class="star-img-btn"></button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="skill-modal" onclick="closeSkillModal()">
+    <div id="skill-modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <img id="modal-img" src="" style="width:60px; height:60px; border:2px solid var(--gold); border-radius: 10px; margin-bottom: 10px;">
-            <div id="modal-name" style="color:var(--gold); font-size:1.2rem; font-weight: bold;"></div>
-            <div id="modal-text" style="color:#eee; font-size:0.9rem; margin-top: 10px;"></div>
-            <button style="margin-top: 15px; background: var(--gold); border:none; padding:8px 25px; border-radius:5px; font-weight:bold;" onclick="closeSkillModal()">ЗАКРЫТЬ</button>
+            <div id="modal-name" style="color:var(--gold); font-size:1.2rem; margin-bottom:10px; font-weight: bold; text-transform: uppercase;"></div>
+            <div id="modal-text" style="color:#eee; font-size:0.9rem; line-height: 1.4; text-align: left; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;"></div>
+            <button style="margin-top: 15px; background: var(--gold); border:none; padding:8px 25px; border-radius:5px; font-weight:bold; cursor: pointer;" onclick="closeModal()">ПОНЯТНО</button>
         </div>
     </div>
 
@@ -324,11 +381,12 @@
         let loadedCount = 0;
         let userId = tg?.initDataUnsafe?.user?.id || 12345;
 
+        // Список всех ресурсов
         const assetsToLoad = [
             'bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 
             'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 
             'icon_vip.png', 'icon_gold.png', 'icon_crystal.png', 'icon_shop.png', 
-            'icon_inventory.png', 'icon_star.png'
+            'icon_inventory.png', 'bg_shop_main.png', 'icon_star.png'
         ];
 
         const heroesData = {
@@ -337,7 +395,11 @@
                 male: "hero_warrior_male.png", female: "hero_warrior_female.png",
                 ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png",
                 skills: [
-                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% урона." }
+                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона." },
+                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается, нанося 80% урона всем окружающим противникам." },
+                    { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Стремительный выпад. Оглушает цель на 2.5 секунды." },
+                    { n: "Бастион веры", i: "war_4_survivability.png", d: "Увеличивает броню на 25%." },
+                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ярость на 10 сек: все удары критические." }
                 ]
             },
             mage: {
@@ -345,7 +407,11 @@
                 male: "hero_mage_male.png", female: "hero_mage_female.png",
                 ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png",
                 skills: [
-                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Наносит 140% магического урона." }
+                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Наносит 140% магического урона." },
+                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Метеоритный дождь по области." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг." },
+                    { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Поглощает 50% входящего урона за счет маны." },
+                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Аннигиляция цели: 500% чистого урона." }
                 ]
             },
             archer: {
@@ -353,7 +419,11 @@
                 male: "hero_archer_male.png", female: "hero_archer_female.png",
                 ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png",
                 skills: [
-                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Наносит 130% урона." }
+                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Наносит 130% урона." },
+                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает 12 стрел, поражая и отталкивая врагов." },
+                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Обездвиживает врага на 4 сек." },
+                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Увеличивает шанс уклониться на 20%." },
+                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "8 секунд каждый выстрел гарантированно критует." }
                 ]
             }
         };
@@ -363,16 +433,26 @@
         function preloadAssets() {
             assetsToLoad.forEach(src => {
                 const img = new Image();
-                img.onload = () => { loadedCount++; updateLoader(); if (loadedCount >= assetsToLoad.length) checkUserOnServer(); };
-                img.onerror = () => { loadedCount++; updateLoader(); if (loadedCount >= assetsToLoad.length) checkUserOnServer(); };
+                img.onload = () => { 
+                    loadedCount++; 
+                    updateLoader();
+                    if (loadedCount >= assetsToLoad.length) checkUserOnServer(); 
+                };
+                img.onerror = () => { 
+                    loadedCount++; 
+                    updateLoader();
+                    if (loadedCount >= assetsToLoad.length) checkUserOnServer(); 
+                };
                 img.src = src;
             });
         }
 
         function updateLoader() { 
             const pct = Math.floor((loadedCount / assetsToLoad.length) * 100);
-            document.getElementById('progress-fill').style.width = pct + '%'; 
-            document.getElementById('loading-pct').innerText = pct + '%';
+            const fill = document.getElementById('progress-fill');
+            const txt = document.getElementById('loading-pct');
+            if(fill) fill.style.width = pct + '%'; 
+            if(txt) txt.innerText = pct + '%';
         }
 
         async function checkUserOnServer() {
@@ -420,14 +500,18 @@
             document.getElementById('main-confirm-btn').innerText = "СОХРАНЕНИЕ...";
             try {
                 await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' });
-                checkUserOnServer();
-            } catch (e) { alert("Ошибка сохранения"); }
+                const r = await fetch(`${SERVER_URL}/get_hero/${userId}`);
+                const d = await r.json();
+                showMenu(d);
+            } catch (e) { alert("Ошибка сервера"); }
         }
 
         function showMenu(data) {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('selection-screen').style.display = 'none';
             const hero = heroesData[data.hero_class.toLowerCase()];
-            document.getElementById('menu-avatar').src = (currentGender === 'female') ? hero.ava_female : hero.ava_male;
+            const avatarFile = (currentGender === 'female') ? hero.ava_female : hero.ava_male;
+            document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
             document.getElementById('player-stats-header').innerText = `Уровень: ${data.level}`;
             document.getElementById('gold-value').innerText = data.gold || 0;
@@ -437,21 +521,41 @@
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
 
-        function goToMap() {
-            document.getElementById('menu-screen').style.display = 'none';
-            const ms = document.getElementById('map-screen');
-            ms.style.display = 'block'; setTimeout(() => ms.style.opacity = '1', 50);
+        function toggleVipStatus() {
+            document.getElementById('vip-btn').classList.toggle('active');
         }
 
-        function goToMenu() {
-            document.getElementById('map-screen').style.display = 'none';
-            document.getElementById('menu-screen').style.display = 'block';
+        function openShop() { document.getElementById('shop-modal').style.display = 'flex'; }
+        function closeShop() { document.getElementById('shop-modal').style.display = 'none'; }
+        
+        function openInventory() {
+            if(tg) tg.showAlert("Инвентарь в разработке");
+            else alert("Инвентарь в разработке");
         }
 
-        function openModal(type) { document.getElementById(type + '-modal').style.display = 'flex'; }
-        function closeModal(type) { document.getElementById(type + '-modal').style.display = 'none'; }
+        function switchTab(cat, el) {
+            document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.shop-category').forEach(c => c.classList.remove('active'));
+            document.getElementById('cat-' + cat).classList.add('active');
+        }
 
-        function toggleVipStatus() { document.getElementById('vip-btn').classList.toggle('active'); }
+        function buyItem(type, amount, price) {
+            if(tg) {
+                tg.showConfirm(`Купить ${amount} (${type}) за ${price} звезд?`, (ok) => {
+                    if (ok) {
+                        if(type === 'gold') {
+                            const val = document.getElementById('gold-value');
+                            val.innerText = parseInt(val.innerText) + amount;
+                        } else if(type === 'crystals') {
+                            const val = document.getElementById('crystal-value');
+                            val.innerText = parseInt(val.innerText) + amount;
+                        }
+                        tg.showAlert("Успешно куплено!");
+                    }
+                });
+            } else { alert("Покупка совершена (тест)"); }
+        }
 
         function openSkill(i) {
             const s = heroesData[currentHeroKey].skills[i];
@@ -460,11 +564,7 @@
             document.getElementById('modal-text').innerText = s.d;
             document.getElementById('skill-modal').style.display = 'flex';
         }
-        function closeSkillModal() { document.getElementById('skill-modal').style.display = 'none'; }
-
-        function buyItem(type, amount, price) {
-            if(tg) tg.showConfirm(`Купить ${amount} за ${price} звезд?`, (ok) => { if(ok) tg.showAlert("Оплата запущена"); });
-        }
+        function closeModal() { document.getElementById('skill-modal').style.display = 'none'; }
     </script>
 </body>
 </html>
