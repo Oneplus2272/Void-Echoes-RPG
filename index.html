@@ -12,10 +12,22 @@
             --purple: #bf40bf;
             --bg-panel: rgba(10, 10, 15, 0.9);
             --bg-modal: rgba(5, 5, 10, 0.95);
-            /* Переменные для регулировки */
-            --hero-scale: 1.05;
-            --hero-bottom: 0px;
-            --slot-size: 90px;
+            
+            /* Значения по умолчанию (Телефоны - по твоему скриншоту) */
+            --hero-scale: 0.52;
+            --hero-bottom: 88px;
+            --slot-size: 91px;
+            --slot-gap: 5px; /* Уменьшенное расстояние */
+        }
+
+        /* Настройки для планшетов (на основе твоего второго скриншота) */
+        @media screen and (min-width: 600px) {
+            :root {
+                --hero-scale: 0.63;
+                --hero-bottom: 100px;
+                --slot-size: 110px; /* Сделал чуть больше 91px, как ты просил */
+                --slot-gap: 8px;
+            }
         }
 
         body, html {
@@ -35,14 +47,6 @@
             background-size: cover; background-position: center;
             opacity: 0; transition: opacity 0.6s ease;
             position: absolute; top: 0; left: 0;
-        }
-
-        /* --- ПАНЕЛЬ НАСТРОЙКИ (ВРЕМЕННАЯ) --- */
-        #debug-panel {
-            position: fixed; top: 50px; left: 50%; transform: translateX(-50%);
-            z-index: 9999; background: rgba(0,0,0,0.8); padding: 10px;
-            border: 1px solid var(--blue); border-radius: 10px;
-            display: flex; flex-direction: column; gap: 10px; font-size: 12px;
         }
 
         /* --- ЗАГРУЗОЧНЫЙ ЭКРАН --- */
@@ -172,7 +176,6 @@
             width: 95px; height: 95px;
             cursor: pointer; transition: transform 0.2s ease;
         }
-        .shop-button:active, .inventory-button:active { transform: scale(0.95); }
         .shop-button img, .inventory-button img { width: 100%; height: 100%; object-fit: contain; }
 
         .player-header {
@@ -186,7 +189,7 @@
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1.05rem; font-weight: bold; }
         .player-info p { margin: 2px 0 0 0; font-size: 0.85rem; color: #ccc; }
 
-        /* --- ЭКРАН ИНВЕНТАРЯ (ОРУЖЕЙНАЯ) --- */
+        /* --- ЭКРАН ИНВЕНТАРЯ --- */
         #inventory-screen {
             background: url('character_preview.png') no-repeat center center/cover;
         }
@@ -197,23 +200,25 @@
             position: relative;
         }
         .equipment-column {
-            display: flex; flex-direction: column; gap: 10px; z-index: 10;
+            display: flex; flex-direction: column; 
+            gap: var(--slot-gap); /* Сближаем рамки */
+            z-index: 10;
         }
         .item-slot {
             width: var(--slot-size); height: var(--slot-size);
             display: flex; align-items: center; justify-content: center;
-            background: none; border: none;
         }
         .item-slot img { width: 100%; height: 100%; object-fit: contain; }
 
         .inventory-hero-view {
-            position: absolute; left: 50%; bottom: var(--hero-bottom);
+            position: absolute; left: 50%; 
+            bottom: var(--hero-bottom); /* Смещение Y */
             transform: translateX(-50%); width: 100%; height: 100%;
             display: flex; align-items: flex-end; justify-content: center;
             pointer-events: none;
         }
         .inventory-hero-view img { 
-            height: calc(var(--hero-scale) * 100%);
+            height: calc(var(--hero-scale) * 100%); /* Масштаб героя */
             max-width: none; object-fit: contain; 
         }
 
@@ -277,13 +282,6 @@
     </style>
 </head>
 <body>
-
-    <div id="debug-panel">
-        <div>Высота героя: <input type="range" id="range-scale" min="0.5" max="1.5" step="0.01" value="1.05" oninput="updateVars()"> <span id="val-scale">1.05</span></div>
-        <div>Смещение Y: <input type="range" id="range-y" min="-100" max="100" step="1" value="0" oninput="updateVars()"> <span id="val-y">0</span>px</div>
-        <div>Размер рамок: <input type="range" id="range-slot" min="50" max="150" step="1" value="90" oninput="updateVars()"> <span id="val-slot">90</span>px</div>
-        <button onclick="this.parentElement.style.display='none'">Скрыть пульт</button>
-    </div>
 
     <div id="loading-screen" class="screen" style="display: flex;">
         <img src="icon_logo_void_echoes.png" class="logo-main">
@@ -403,27 +401,24 @@
         let loadedCount = 0;
         let userId = tg?.initDataUnsafe?.user?.id || 12345;
 
-        // Функция обновления переменных из ползунков
-        function updateVars() {
-            const scale = document.getElementById('range-scale').value;
-            const y = document.getElementById('range-y').value;
-            const slot = document.getElementById('range-slot').value;
-
-            document.documentElement.style.setProperty('--hero-scale', scale);
-            document.documentElement.style.setProperty('--hero-bottom', y + 'px');
-            document.documentElement.style.setProperty('--slot-size', slot + 'px');
-
-            document.getElementById('val-scale').innerText = scale;
-            document.getElementById('val-y').innerText = y;
-            document.getElementById('val-slot').innerText = slot;
-        }
-
         const assetsToLoad = ['bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 'character_preview.png'];
 
         const heroesData = {
-            warrior: { title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png", ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png", skills: [{n:"Удар", i:"war_1_basic.png", d:"Урон"}] },
-            mage: { title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png", ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png", skills: [{n:"Фаербол", i:"mag_1_basic.png", d:"Огонь"}] },
-            archer: { title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png", ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png", skills: [{n:"Стрела", i:"arc_1_basic_attack.png", d:"Выстрел"}] }
+            warrior: { 
+                title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png", 
+                ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png", 
+                skills: [{n:"Удар", i:"war_1_basic.png", d:"Физический урон"}] 
+            },
+            mage: { 
+                title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png", 
+                ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png", 
+                skills: [{n:"Фаербол", i:"mag_1_basic.png", d:"Магический урон"}] 
+            },
+            archer: { 
+                title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png", 
+                ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png", 
+                skills: [{n:"Стрела", i:"arc_1_basic_attack.png", d:"Дальний урон"}] 
+            }
         };
 
         window.onload = () => { if (tg) { tg.expand(); tg.ready(); } preloadAssets(); };
@@ -471,6 +466,7 @@
         }
 
         function setGender(g) { currentGender = g; document.getElementById('gender-m').classList.toggle('active', g === 'male'); document.getElementById('gender-f').classList.toggle('active', g === 'female'); updateHeroImage(); }
+        
         function updateHeroImage() { 
             const imgPath = heroesData[currentHeroKey][currentGender];
             document.getElementById('hero-img').src = imgPath;
@@ -501,6 +497,7 @@
             document.getElementById('menu-screen').style.display = 'block';
         }
 
+        function toggleVipStatus() { document.getElementById('vip-btn').classList.toggle('active'); }
         function openShop() { document.getElementById('shop-modal').style.display = 'flex'; }
         function closeShop() { document.getElementById('shop-modal').style.display = 'none'; }
         function closeModal() { document.getElementById('skill-modal').style.display = 'none'; }
@@ -512,6 +509,29 @@
                 const d = await r.json();
                 showMenu(d);
             } catch (e) { alert("Ошибка сервера"); }
+        }
+
+        function buyItem(type, amount, price) {
+            if(tg) {
+                tg.showConfirm(`Купить за ${price} звезд?`, (ok) => {
+                    if (ok) tg.showAlert("Покупка успешна!");
+                });
+            } else { alert("Покупка совершена"); }
+        }
+        
+        function openSkill(i) {
+            const s = heroesData[currentHeroKey].skills[i];
+            document.getElementById('modal-img').src = s.i;
+            document.getElementById('modal-name').innerText = s.n;
+            document.getElementById('modal-text').innerText = s.d;
+            document.getElementById('skill-modal').style.display = 'flex';
+        }
+
+        function switchTab(cat, el) {
+            document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.shop-category').forEach(c => c.classList.remove('active'));
+            document.getElementById('cat-' + cat).classList.add('active');
         }
     </script>
 </body>
