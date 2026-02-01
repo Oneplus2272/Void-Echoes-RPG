@@ -1,31 +1,29 @@
-// Названия файлов, которые ты скачал и переименовал
-const nameLogos = {
-    warrior: { male: 'text_name_thorn_gold.png', female: 'text_name_freya_gold.png' },
-    mage: { male: 'text_name_andrian_purple.png', female: 'text_name_elissa_purple.png' },
-    archer: { male: 'text_name_killian_green.png', female: 'text_name_nari_green.png' }
-};
+// Логика подмены текстового заголовка на графические имена
+(function() {
+    const nameLogos = {
+        warrior: { male: 'text_name_thorn_gold.png', female: 'text_name_freya_gold.png' },
+        mage: { male: 'text_name_andrian_purple.png', female: 'text_name_elissa_purple.png' },
+        archer: { male: 'text_name_killian_green.png', female: 'text_name_nari_green.png' }
+    };
 
-// Функция замены текста на картинку-имя
-function refreshNameDisplay() {
-    const titleContainer = document.getElementById('class-title');
-    if (titleContainer) {
-        const logo = nameLogos[currentHeroKey][currentGender];
-        titleContainer.innerHTML = `<img src="${logo}" style="max-height: 50px; width: auto; filter: drop-shadow(0 0 10px rgba(0,0,0,0.7));">`;
+    function updateNameImage() {
+        const title = document.getElementById('class-title');
+        if (title) {
+            const imgPath = nameLogos[currentHeroKey][currentGender];
+            title.innerHTML = `<img src="${imgPath}" style="max-width: 200px; height: auto; display: block; margin: 0 auto;">`;
+        }
     }
-}
 
-// Инъекция в существующие функции выбора
-const originalSelectHero = selectHero;
-selectHero = function(key) {
-    originalSelectHero(key);
-    refreshNameDisplay();
-};
+    // Внедряемся в твои функции
+    const coreSelect = window.selectHero;
+    window.selectHero = function(key) {
+        if (coreSelect) coreSelect(key);
+        updateNameImage();
+    };
 
-const originalSetGender = setGender;
-setGender = function(g) {
-    originalSetGender(g);
-    refreshNameDisplay();
-};
-
-// Запуск при первой загрузке
-setTimeout(refreshNameDisplay, 100);
+    const coreGender = window.setGender;
+    window.setGender = function(g) {
+        if (coreGender) coreGender(g);
+        updateNameImage();
+    };
+})();
