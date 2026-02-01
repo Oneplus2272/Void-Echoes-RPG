@@ -45,7 +45,7 @@
         .progress-bar { height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width 0.3s; }
 
-        /* --- ВЫБОР ГЕРОЯ (АДАПТИВ) --- */
+        /* --- ВЫБОР ГЕРОЯ --- */
         .selection-container { 
             display: flex; flex-direction: column; 
             width: 100%; height: 100%; 
@@ -104,8 +104,26 @@
 
         /* --- ЭКРАН МЕНЮ --- */
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; }
-        .menu-container { display: flex; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; }
+        .menu-container { 
+            display: flex; flex-direction: column; height: 100%; 
+            padding: env(safe-area-inset-top) 20px 20px 20px; 
+            box-sizing: border-box; 
+            position: relative;
+        }
         
+        /* VIP Кнопка по центру */
+        .vip-button {
+            position: absolute;
+            top: env(safe-area-inset-top);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .vip-button img { width: 100%; height: 100%; object-fit: contain; }
+
         .player-header {
             display: inline-flex; align-items: center; 
             background: rgba(0, 0, 0, 0.75);
@@ -113,6 +131,7 @@
             border: 1px solid var(--blue); backdrop-filter: blur(10px);
             width: fit-content;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            margin-top: 10px;
         }
         .player-avatar { width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 14px; object-fit: cover; }
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1.05rem; font-weight: bold; }
@@ -157,6 +176,9 @@
 
     <div id="menu-screen" class="screen">
         <div class="menu-container">
+            <div class="vip-button" onclick="alert('VIP раздел в разработке')">
+                <img src="icon_vip.png" alt="VIP">
+            </div>
             <div class="player-header">
                 <img id="menu-avatar" src="" class="player-avatar">
                 <div class="player-info">
@@ -191,11 +213,11 @@
                 male: "hero_warrior_male.png", female: "hero_warrior_female.png",
                 ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png",
                 skills: [
-                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона и имеет шанс 10% вызвать кровотечение." },
-                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается, нанося 80% урона всем окружающим противникам." },
+                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона." },
+                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается, нанося 80% урона окружающим противникам." },
                     { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Стремительный выпад. Оглушает цель на 2.5 секунды." },
                     { n: "Бастион веры", i: "war_4_survivability.png", d: "Увеличивает броню на 25% и дает шанс 15% заблокировать урон." },
-                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ярость на 10 сек: скорость атаки +50%, все удары критические." }
+                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ярость на 10 сек: скорость атаки +50%, все удары криты." }
                 ]
             },
             mage: {
@@ -204,10 +226,10 @@
                 ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png",
                 skills: [
                     { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Наносит 140% магического урона и замедляет цель на 30%." },
-                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Метеоритный дождь по области. Поджигает землю на 5 секунд." },
-                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг мага на 3 секунды." },
+                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Метеоритный дождь по области. Поджигает землю на 5 сек." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг на 3 секунды." },
                     { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Поглощает 50% входящего урона за счет маны." },
-                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Аннигиляция цели: 500% чистого урона, игнорируя защиту." }
+                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "500% чистого урона, игнорируя любую защиту." }
                 ]
             },
             archer: {
@@ -215,16 +237,16 @@
                 male: "hero_archer_male.png", female: "hero_archer_female.png",
                 ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png",
                 skills: [
-                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Наносит 130% урона с повышенным шансом на крит." },
-                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает 12 стрел, поражая и отталкивая врагов." },
-                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Обездвиживает врага на 4 сек и вешает 'Метку смерти'." },
-                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Увеличивает шанс уклониться на 20%." },
-                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "8 секунд каждый выстрел гарантированно критует." }
+                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Наносит 130% урона с высоким шансом на крит." },
+                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает веер стрел, поражая и отталкивая врагов." },
+                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Обездвиживает врага на 4 сек и вешает метку." },
+                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Постоянный шанс уклониться от атаки на 20%." },
+                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "8 секунд каждый выстрел гарантированно критический." }
                 ]
             }
         };
 
-        const assetsToLoad = ['bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png'];
+        const assetsToLoad = ['bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 'icon_vip.png'];
 
         window.onload = () => { if (tg) { tg.expand(); tg.ready(); } preloadAssets(); };
 
