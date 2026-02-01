@@ -121,6 +121,41 @@
         .vip-button.active { filter: grayscale(0); }
         .vip-button img { width: 100%; height: 100%; object-fit: contain; }
 
+        /* Рамки ресурсов в углах */
+        .resource-panel {
+            position: absolute;
+            top: env(safe-area-inset-top, 10px); /* Отступ сверху */
+            display: flex; align-items: center;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 5px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--gold); /* Золотая рамка по умолчанию */
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            z-index: 5;
+            min-width: 90px;
+        }
+        .resource-panel.blue {
+            border: 1px solid var(--blue);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .resource-panel .icon {
+            width: 30px; height: 30px;
+            margin-right: 8px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+        }
+        .resource-panel .value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+
+        #gold-panel { left: 15px; }
+        #crystal-panel { right: 15px; }
+
         .player-header {
             display: inline-flex; align-items: center; 
             background: rgba(0, 0, 0, 0.75);
@@ -133,6 +168,27 @@
         .player-avatar { width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 14px; object-fit: cover; }
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1.05rem; font-weight: bold; }
         .player-info p { margin: 2px 0 0 0; font-size: 0.85rem; color: #ccc; }
+
+        /* Кнопка магазина (сундук) */
+        .shop-button {
+            position: absolute;
+            right: 15px;
+            top: calc(env(safe-area-inset-top, 10px) + 60px); /* Под рамкой ресурса */
+            width: 70px; /* Размер кнопки */
+            height: 70px;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s ease;
+        }
+        .shop-button:active {
+            transform: scale(0.95);
+        }
+        .shop-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6));
+        }
 
         /* --- МОДАЛКА --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
@@ -177,6 +233,20 @@
                 <img src="icon_vip.png" alt="VIP">
             </div>
 
+            <div id="gold-panel" class="resource-panel">
+                <img src="icon_gold.png" class="icon" alt="Золото">
+                <div id="gold-value" class="value">12345</div>
+            </div>
+
+            <div id="crystal-panel" class="resource-panel blue">
+                <img src="icon_crystal.png" class="icon" alt="Кристаллы">
+                <div id="crystal-value" class="value">500</div>
+            </div>
+
+            <div id="shop-btn" class="shop-button" onclick="openShop()">
+                <img src="icon_shop.png" alt="Магазин">
+            </div>
+
             <div class="player-header">
                 <img id="menu-avatar" src="" class="player-avatar">
                 <div class="player-info">
@@ -204,6 +274,13 @@
         let currentGender = 'male';
         let loadedCount = 0;
         let userId = tg?.initDataUnsafe?.user?.id || 12345;
+
+        // Добавил в preload новые иконки
+        const assetsToLoad = [
+            'bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 
+            'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 
+            'icon_vip.png', 'icon_gold.png', 'icon_crystal.png', 'icon_shop.png' 
+        ];
 
         const heroesData = {
             warrior: {
@@ -244,7 +321,6 @@
             }
         };
 
-        const assetsToLoad = ['bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 'icon_vip.png'];
 
         window.onload = () => { if (tg) { tg.expand(); tg.ready(); } preloadAssets(); };
 
@@ -324,12 +400,20 @@
             document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
             document.getElementById('player-stats-header').innerText = `Уровень: ${data.level}`;
+            document.getElementById('gold-value').innerText = data.gold || 12345; // Пример
+            document.getElementById('crystal-value').innerText = data.crystals || 500; // Пример
+
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
 
         function toggleVipStatus() {
             document.getElementById('vip-btn').classList.toggle('active');
+        }
+
+        function openShop() {
+            alert('Магазин будет открыт здесь!');
+            // Здесь будет логика открытия модального окна магазина
         }
 
         function openSkill(i) {
