@@ -18,17 +18,7 @@
             --hero-bottom: 88px;
             --slot-size: 105px;
             --slot-gap: -5px;
-            --side-offset: 10px; /* Смещение колонок от краев */
-        }
-
-        @media screen and (min-width: 600px) {
-            :root {
-                --hero-scale: 0.63;
-                --hero-bottom: 100px;
-                --slot-size: 130px;
-                --slot-gap: -8px;
-                --side-offset: 20px;
-            }
+            --side-offset: 10px;
         }
 
         body, html {
@@ -50,179 +40,105 @@
             position: absolute; top: 0; left: 0;
         }
 
-        /* ПУЛЬТ НАСТРОЙКИ РАМОК */
-        #debug-slots-panel {
+        /* --- ПАНЕЛЬ НАСТРОЙКИ --- */
+        #debug-panel {
             position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-            z-index: 9999; background: rgba(0,0,0,0.9); padding: 10px;
-            border: 1px solid var(--gold); border-radius: 10px;
-            display: none; flex-direction: column; gap: 8px; font-size: 11px;
+            z-index: 10000; background: rgba(0,0,0,0.95); padding: 15px;
+            border: 2px solid var(--gold); border-radius: 12px;
+            display: none; flex-direction: column; gap: 10px; width: 280px;
+            box-shadow: 0 0 20px #000;
         }
+        .debug-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .debug-row label { font-size: 12px; color: var(--gold); flex: 1; }
+        .debug-row input[type="range"] { flex: 2; }
+        .debug-row span { min-width: 35px; font-weight: bold; text-align: right; color: var(--blue); }
 
-        /* --- ЗАГРУЗОЧНЫЙ ЭКРАН --- */
-        #loading-screen {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            z-index: 100; background: url('bg_loading_main_v1.png') no-repeat center center/cover;
-            opacity: 1;
-        }
+        /* --- ЗАГРУЗКА --- */
+        #loading-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; background: url('bg_loading_main_v1.png') no-repeat center center/cover; opacity: 1; }
         .logo-main { width: 220px; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--blue)); }
-        .loader-container { width: 70%; max-width: 300px; text-align: center; }
-        #loading-pct { margin-bottom: 8px; font-weight: bold; color: var(--blue); font-size: 1.2rem; }
-        .progress-bar { height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
+        .progress-bar { width: 250px; height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width 0.3s; }
 
         /* --- ВЫБОР ГЕРОЯ --- */
-        .selection-container { 
-            display: flex; flex-direction: column; 
-            width: 100%; height: 100%; 
-            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
-            box-sizing: border-box;
-        }
-
-        .hero-view { 
-            flex: 1; 
-            display: flex; align-items: flex-end; justify-content: center; 
-            position: relative; min-height: 0; 
-        }
-        .hero-view img { max-height: 95%; max-width: 90%; object-fit: contain; }
-
-        .gender-switch {
-            position: absolute; right: 15px; bottom: 10px; display: flex; gap: 8px; z-index: 10;
-        }
-        .gender-btn {
-            width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold);
-            background: rgba(0,0,0,0.6); color: var(--gold); font-weight: bold;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
+        .selection-container { display: flex; flex-direction: column; width: 100%; height: 100%; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; box-sizing: border-box; }
+        .hero-view { flex: 1; display: flex; align-items: flex-end; justify-content: center; position: relative; min-height: 0; }
+        .hero-view img { max-height: 95%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 20px #000); }
+        .gender-switch { position: absolute; right: 15px; bottom: 10px; display: flex; gap: 8px; z-index: 10; }
+        .gender-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold); background: rgba(0,0,0,0.6); color: var(--gold); font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .gender-btn.active { background: var(--gold); color: black; }
+        .skills-card { width: 92%; max-width: 400px; margin: 5px auto; background: var(--bg-panel); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 10px; backdrop-filter: blur(10px); flex-shrink: 0; }
+        #skills-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 5px; }
+        .skill-item { display: flex; flex-direction: column; align-items: center; background: rgba(255, 255, 255, 0.05); padding: 5px; border-radius: 6px; cursor: pointer; border: 1px solid transparent; }
+        .skill-item:active { border-color: var(--gold); }
+        .skill-img { width: 32px; height: 32px; border: 1px solid var(--gold); border-radius: 4px; }
+        .skill-name-small { font-size: 0.55rem; color: #fff; margin-top: 3px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
 
-        .skills-card {
-            width: 92%; max-width: 400px; margin: 5px auto;
-            background: var(--bg-panel); border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 12px; padding: 10px; backdrop-filter: blur(10px);
-            flex-shrink: 0;
-        }
-        .skills-card h2 { margin: 0 0 5px 0; text-align: center; color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; }
-
-        #skills-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 8px; }
-        .skill-item { 
-            display: flex; flex-direction: column; align-items: center; 
-            background: rgba(255, 255, 255, 0.05); padding: 5px; border-radius: 6px; cursor: pointer;
-        }
-        .skill-img { width: 35px; height: 35px; border: 1px solid var(--gold); border-radius: 4px; }
-        .skill-name { font-size: 0.6rem; margin-top: 3px; text-align: center; color: #fff; overflow: hidden; height: 1.4em; }
-
-        .confirm-btn {
-            width: 100%; padding: 10px; 
-            background: linear-gradient(180deg, var(--gold), #b8860b);
-            color: black; border: none; border-radius: 8px; 
-            font-weight: bold; text-transform: uppercase; font-size: 0.85rem;
-        }
-
-        .class-selector { 
-            width: 100%; display: flex; justify-content: center; 
-            gap: 15px; padding: 5px 0 15px 0; flex-shrink: 0;
-        }
-        .icon-btn { filter: grayscale(1); transition: 0.3s; }
-        .icon-btn img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid transparent; }
-        .icon-btn.active { filter: grayscale(0); transform: scale(1.1); }
-        .icon-btn.active img { border-color: var(--gold); }
-
-        /* --- ЭКРАН МЕНЮ --- */
+        /* --- МЕНЮ --- */
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; }
-        .menu-container { 
-            display: flex; flex-direction: column; height: 100%; 
-            padding: env(safe-area-inset-top) 20px env(safe-area-inset-bottom) 20px; 
-            box-sizing: border-box; position: relative;
-        }
-        
-        .vip-button {
-            width: 100px; height: 100px; cursor: pointer;
-            filter: grayscale(1); transition: 0.3s; z-index: 100;
-        }
-        .vip-button.active { filter: grayscale(0); }
-        .vip-button img { width: 100%; height: 100%; object-fit: contain; }
-
-        .resources-column {
-            position: absolute; top: env(safe-area-inset-top, 10px); right: 15px;
-            display: flex; flex-direction: column; gap: 10px; z-index: 5;
-        }
-        .resource-panel {
-            display: flex; align-items: center;
-            background: rgba(0, 0, 0, 0.75); padding: 5px 12px;
-            border-radius: 20px; border: 1px solid var(--gold); min-width: 100px;
-        }
+        .resources-column { position: absolute; top: env(safe-area-inset-top, 10px); right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+        .resource-panel { display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--gold); min-width: 100px; }
         .resource-panel.blue { border: 1px solid var(--blue); }
         .resource-panel .icon { width: 22px; height: 22px; margin-right: 8px; }
-
         .side-buttons { display: flex; flex-direction: column; gap: 15px; align-self: flex-end; margin-top: 10px; }
         .shop-button, .inventory-button { width: 90px; height: 90px; cursor: pointer; }
         .shop-button img, .inventory-button img { width: 100%; height: 100%; object-fit: contain; }
-
-        .player-header {
-            display: inline-flex; align-items: center; 
-            background: rgba(0, 0, 0, 0.75); padding: 8px 15px; 
-            border-radius: 14px; border: 1px solid var(--blue); margin-top: 10px; cursor: pointer;
-        }
+        .player-header { display: inline-flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 8px 15px; border-radius: 14px; border: 1px solid var(--blue); margin-top: 10px; cursor: pointer; }
         .player-avatar { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 12px; }
+        .vip-button { width: 100px; height: 100px; cursor: pointer; filter: grayscale(1); margin-top: 10px; z-index: 10; }
+        .vip-button.active { filter: grayscale(0); }
 
         /* --- ИНВЕНТАРЬ --- */
         #inventory-screen { background: url('character_preview.png') no-repeat center center/cover; }
-        .inventory-layout {
-            display: flex; width: 100%; height: 100%;
-            justify-content: space-between; align-items: center;
-            padding: 0 var(--side-offset); box-sizing: border-box;
-            position: relative;
-        }
+        .inventory-layout { display: flex; width: 100%; height: 100%; justify-content: space-between; align-items: center; padding: 0 var(--side-offset); box-sizing: border-box; position: relative; }
         .equipment-column { display: flex; flex-direction: column; gap: var(--slot-gap); z-index: 10; }
-        .item-slot { width: var(--slot-size); height: var(--slot-size); }
+        .item-slot { width: var(--slot-size); height: var(--slot-size); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .item-slot img { width: 100%; height: 100%; object-fit: contain; }
-
-        .inventory-hero-view {
-            position: absolute; left: 50%; bottom: var(--hero-bottom);
-            transform: translateX(-50%); width: 100%; height: 100%;
-            display: flex; align-items: flex-end; justify-content: center; pointer-events: none;
-        }
-        .inventory-hero-view img { height: calc(var(--hero-scale) * 100%); object-fit: contain; }
-        .back-from-inv { position: absolute; top: env(safe-area-inset-top, 20px); left: 20px; font-size: 2.5rem; color: #fff; cursor: pointer; z-index: 20; }
+        .inventory-hero-view { position: absolute; left: 50%; bottom: var(--hero-bottom); transform: translateX(-50%); width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; pointer-events: none; }
+        .inventory-hero-view img { height: calc(var(--hero-scale) * 100%); object-fit: contain; filter: drop-shadow(0 0 20px #000); }
+        .back-btn { position: absolute; top: env(safe-area-inset-top, 20px); left: 20px; font-size: 2.5rem; color: #fff; cursor: pointer; z-index: 20; text-shadow: 0 0 10px #000; }
 
         /* --- МАГАЗИН --- */
-        #shop-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: url('bg_shop_main.png') no-repeat center center/cover;
-            z-index: 300; flex-direction: column; align-items: center; padding-top: env(safe-area-inset-top);
-        }
+        #shop-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('bg_shop_main.png') no-repeat center center/cover; z-index: 300; flex-direction: column; align-items: center; padding-top: env(safe-area-inset-top); }
         #shop-modal::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: -1; }
-        .shop-header { width: 100%; display: flex; justify-content: space-between; padding: 15px 20px; box-sizing: border-box; }
         .shop-tabs { width: 100%; display: flex; justify-content: space-around; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .shop-tab { padding: 12px; color: #ccc; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .shop-tab { padding: 12px; color: #ccc; font-weight: bold; cursor: pointer; }
         .shop-tab.active { color: var(--blue); border-bottom: 2px solid var(--blue); }
-        .shop-content { width: 100%; overflow-y: auto; padding: 20px; box-sizing: border-box; }
-        .shop-category { display: none; }
-        .shop-category.active { display: block; }
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; width: 100%; box-sizing: border-box; }
         .shop-item { background: rgba(10, 10, 15, 0.85); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; text-align: center; }
         .shop-item img { width: 50px; height: 50px; margin-bottom: 10px; }
         .buy-btn { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--gold); color: var(--gold); padding: 8px; border-radius: 6px; font-weight: bold; }
 
-        /* МОДАЛКА НАВЫКОВ */
+        /* --- МОДАЛКА НАВЫКОВ --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 500; justify-content: center; align-items: center; }
         .modal-content { width: 80%; max-width: 300px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="debug-slots-panel">
-        <label>Размер рамок: <input type="range" id="r-size" min="50" max="200" value="105" oninput="adj()"></label>
-        <label>Расстояние: <input type="range" id="r-gap" min="-50" max="50" value="-5" oninput="adj()"></label>
-        <label>Смещение вбок: <input type="range" id="r-side" min="0" max="100" value="10" oninput="adj()"></label>
-        <button onclick="this.parentElement.style.display='none'">Готово</button>
+    <div id="debug-panel">
+        <h3 style="color:var(--gold); margin:0 0 10px 0; font-size:14px; text-align:center;">НАСТРОЙКА РАМОК</h3>
+        <div class="debug-row">
+            <label>Размер:</label>
+            <input type="range" id="adj-size" min="20" max="300" value="105" oninput="applyAdj()">
+            <span id="val-size">105</span>
+        </div>
+        <div class="debug-row">
+            <label>Расстояние:</label>
+            <input type="range" id="adj-gap" min="-100" max="100" value="-5" oninput="applyAdj()">
+            <span id="val-gap">-5</span>
+        </div>
+        <div class="debug-row">
+            <label>Смещение:</label>
+            <input type="range" id="adj-side" min="-50" max="200" value="10" oninput="applyAdj()">
+            <span id="val-side">10</span>
+        </div>
+        <button onclick="document.getElementById('debug-panel').style.display='none'" style="margin-top:5px; background:var(--gold); border:none; padding:8px; border-radius:5px; font-weight:bold;">ЗАКРЫТЬ ПУЛЬТ</button>
     </div>
 
     <div id="loading-screen" class="screen" style="display: flex;">
         <img src="icon_logo_void_echoes.png" class="logo-main">
         <div class="loader-container">
-            <div id="loading-pct">0%</div>
+            <div id="loading-pct" style="text-align:center; margin-bottom:5px;">0%</div>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
         </div>
     </div>
@@ -237,9 +153,9 @@
                 </div>
             </div>
             <div class="skills-card">
-                <h2 id="class-title">КЛАСС</h2>
+                <h2 id="class-title" style="margin:0; color:var(--gold); text-align:center; font-size:0.9rem;">КЛАСС</h2>
                 <div id="skills-list"></div>
-                <button class="confirm-btn" onclick="confirmSelection()">Выбрать героя</button>
+                <button class="confirm-btn" style="margin-top:10px; width:100%; padding:10px; background:var(--gold); border:none; border-radius:8px; font-weight:bold;" onclick="confirmSelection()">ВЫБРАТЬ ГЕРОЯ</button>
             </div>
             <div class="class-selector">
                 <div class="icon-btn" id="btn-warrior" onclick="selectHero('warrior')"><img src="icon_hero_paladin.png"></div>
@@ -256,19 +172,19 @@
                 <div class="resource-panel blue"><img src="icon_crystal.png" class="icon"><div id="crystal-value" class="value">0</div></div>
                 <div class="side-buttons">
                     <div class="shop-button" onclick="openShop()"><img src="icon_shop.png"></div>
-                    <div class="inventory-button"><img src="icon_inventory.png"></div>
+                    <div class="inventory-button" onclick="openInventory()"><img src="icon_inventory.png"></div>
                 </div>
             </div>
             <div class="player-header" onclick="openInventory()">
                 <img id="menu-avatar" src="" class="player-avatar">
-                <div class="player-info"><h3 id="player-name">Игрок</h3><p>Уровень: 1</p></div>
+                <div class="player-info"><h3 id="player-name">Игрок</h3><p id="player-stats">Уровень: 1</p></div>
             </div>
             <div id="vip-btn" class="vip-button" onclick="toggleVipStatus()"><img src="icon_vip.png"></div>
         </div>
     </div>
 
     <div id="inventory-screen" class="screen">
-        <div class="back-from-inv" onclick="closeInventory()">←</div>
+        <div class="back-btn" onclick="closeInventory()">←</div>
         <div class="inventory-layout">
             <div class="equipment-column">
                 <div class="item-slot"><img src="helmet.png"></div>
@@ -289,16 +205,29 @@
     </div>
 
     <div id="shop-modal">
-        <div class="shop-header"><h2 style="color:var(--gold); margin:0;">MARKET</h2><div style="cursor:pointer; font-size:2rem; color:#fff;" onclick="closeShop()">×</div></div>
-        <div class="shop-tabs">
-            <div class="shop-tab active" onclick="switchTab('crystals', this)">Кристаллы</div>
-            <div class="shop-tab" onclick="switchTab('gold', this)">Золото</div>
-            <div class="shop-tab" onclick="switchTab('vip', this)">VIP</div>
+        <div style="width:100%; display:flex; justify-content:space-between; padding:15px; box-sizing:border-box;">
+            <h2 style="color:var(--gold); margin:0;">MARKET</h2>
+            <div style="cursor:pointer; font-size:2rem; color:#fff;" onclick="closeShop()">×</div>
         </div>
-        <div class="shop-content">
-            <div id="cat-crystals" class="shop-category active"><div class="shop-grid"><div class="shop-item"><img src="icon_crystal.png"><div>100</div><button class="buy-btn" onclick="buyItem('C', 100, 50)">50 ⭐</button></div></div></div>
-            <div id="cat-gold" class="shop-category"><div class="shop-grid"><div class="shop-item"><img src="icon_gold.png"><div>5000</div><button class="buy-btn" onclick="buyItem('G', 5000, 100)">100 ⭐</button></div></div></div>
-            <div id="cat-vip" class="shop-category"><div class="shop-item" style="grid-column: span 2;"><img src="icon_vip.png" style="width:70px;"><div style="margin:10px 0;">VIP СТАТУС</div><button class="buy-btn" onclick="buyItem('V', 1, 500)">500 ⭐</button></div></div>
+        <div class="shop-tabs">
+            <div id="tab-c" class="shop-tab active" onclick="switchTab('crystals', this)">Кристаллы</div>
+            <div id="tab-g" class="shop-tab" onclick="switchTab('gold', this)">Золото</div>
+            <div id="tab-v" class="shop-tab" onclick="switchTab('vip', this)">VIP</div>
+        </div>
+        <div id="cat-crystals" class="shop-category active">
+            <div class="shop-grid">
+                <div class="shop-item"><img src="icon_crystal.png"><div>100</div><button class="buy-btn" onclick="buyItem('C', 100, 50)">50 ⭐</button></div>
+            </div>
+        </div>
+        <div id="cat-gold" class="shop-category" style="display:none;">
+            <div class="shop-grid">
+                <div class="shop-item"><img src="icon_gold.png"><div>5000</div><button class="buy-btn" onclick="buyItem('G', 5000, 100)">100 ⭐</button></div>
+            </div>
+        </div>
+        <div id="cat-vip" class="shop-category" style="display:none;">
+            <div class="shop-grid">
+                <div class="shop-item" style="grid-column: span 2;"><img src="icon_vip.png" style="width:80px;"><div style="margin:10px 0;">VIP СТАТУС</div><button class="buy-btn" onclick="buyItem('V', 1, 500)">500 ⭐</button></div>
+            </div>
         </div>
     </div>
 
@@ -307,7 +236,7 @@
             <img id="modal-img" src="" style="width:60px; height:60px; border:1px solid var(--gold); border-radius: 8px; margin-bottom: 10px;">
             <div id="modal-name" style="color:var(--gold); font-size:1.1rem; font-weight: bold; margin-bottom: 8px;"></div>
             <div id="modal-text" style="font-size:0.85rem; color:#ccc; line-height:1.4;"></div>
-            <button style="margin-top: 15px; padding: 8px 20px; background: var(--gold); border: none; border-radius: 5px; font-weight: bold;" onclick="closeModal()">OK</button>
+            <button style="margin-top:15px; padding:8px 20px; background:var(--gold); border:none; border-radius:5px; font-weight:bold;" onclick="closeModal()">OK</button>
         </div>
     </div>
 
@@ -317,154 +246,158 @@
         let currentHeroKey = 'warrior', currentGender = 'male', userId = tg?.initDataUnsafe?.user?.id || 12345;
 
         const heroesData = {
-            warrior: { 
-                title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png", 
-                ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png", 
+            warrior: {
+                title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png",
+                ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png",
                 skills: [
-                    {n:"Удар", i:"war_1.png", d:"Базовая атака мечом."},
-                    {n:"Щит", i:"war_2.png", d:"Блокирует 50% урона."},
-                    {n:"Рывок", i:"war_3.png", d:"Быстрое сближение с врагом."},
-                    {n:"Крик", i:"war_4.png", d:"Оглушает противников вокруг."},
-                    {n:"Ульта", i:"war_5.png", d:"Сокрушительный удар по области."}
-                ] 
+                    {n:"Удар", i:"war_1.png", d:"Базовая атака мечом. 120% урона."},
+                    {n:"Щит", i:"war_2.png", d:"Блокирует 50% урона на 5 сек."},
+                    {n:"Рывок", i:"war_3.png", d:"Сближение и оглушение цели."},
+                    {n:"Крик", i:"war_4.png", d:"Снижает атаку врагов вокруг."},
+                    {n:"Ярость", i:"war_5.png", d:"Удваивает шанс крита на 10 сек."}
+                ]
             },
-            mage: { 
-                title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png", 
-                ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png", 
+            mage: {
+                title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png",
+                ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png",
                 skills: [
-                    {n:"Огонь", i:"mag_1.png", d:"Выстрел фаерболом."},
-                    {n:"Лёд", i:"mag_2.png", d:"Замедляет врага на 3 сек."},
-                    {n:"Молния", i:"mag_3.png", d:"Цепной разряд по 3 целям."},
-                    {n:"Щит", i:"mag_4.png", d:"Магический барьер от урона."},
-                    {n:"Метеор", i:"mag_5.png", d:"Вызывает метеоритный дождь."}
-                ] 
+                    {n:"Стрела", i:"mag_1.png", d:"Ледяной заряд. Замедляет цель."},
+                    {n:"Огонь", i:"mag_2.png", d:"Массовый взрыв в зоне."},
+                    {n:"Кольцо", i:"mag_3.png", d:"Замораживает всех рядом."},
+                    {n:"Щит", i:"mag_4.png", d:"Магическая защита от магии."},
+                    {n:"Хаос", i:"mag_5.png", d:"Метеоритный дождь."}
+                ]
             },
-            archer: { 
-                title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png", 
-                ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png", 
+            archer: {
+                title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png",
+                ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png",
                 skills: [
-                    {n:"Стрела", i:"arc_1.png", d:"Точный выстрел в цель."},
-                    {n:"Яд", i:"arc_2.png", d:"Стрела с периодическим уроном."},
-                    {n:"Град", i:"arc_3.png", d:"Ливень из стрел по площади."},
-                    {n:"Уворот", i:"arc_4.png", d:"Шанс избежать атаки +30%."},
-                    {n:"Снайпер", i:"arc_5.png", d:"Выстрел, игнорирующий броню."}
-                ] 
+                    {n:"Выстрел", i:"arc_1.png", d:"Быстрая стрела в голову."},
+                    {n:"Яд", i:"arc_2.png", d:"Отравляет врага на 6 сек."},
+                    {n:"Ловушка", i:"arc_3.png", d:"Капкан на земле."},
+                    {n:"Град", i:"arc_4.png", d:"Обстрел большой площади."},
+                    {n:"Око", i:"arc_5.png", d:"Видит слабые места, игнор брони."}
+                ]
             }
         };
 
-        function adj() {
-            document.documentElement.style.setProperty('--slot-size', document.getElementById('r-size').value + 'px');
-            document.documentElement.style.setProperty('--slot-gap', document.getElementById('r-gap').value + 'px');
-            document.documentElement.style.setProperty('--side-offset', document.getElementById('r-side').value + 'px');
+        function applyAdj() {
+            const s = document.getElementById('adj-size').value;
+            const g = document.getElementById('adj-gap').value;
+            const off = document.getElementById('adj-side').value;
+            
+            document.documentElement.style.setProperty('--slot-size', s + 'px');
+            document.documentElement.style.setProperty('--slot-gap', g + 'px');
+            document.documentElement.style.setProperty('--side-offset', off + 'px');
+            
+            document.getElementById('val-size').innerText = s;
+            document.getElementById('val-gap').innerText = g;
+            document.getElementById('val-side').innerText = off;
         }
 
         window.onload = () => { tg?.expand(); preloadAssets(); };
 
         function preloadAssets() {
-            let loaded = 0;
-            const assets = ['bg_loading_main_v1.png', 'bg_menu_main.png', 'character_preview.png'];
+            let loaded = 0; const assets = ['bg_loading_main_v1.png', 'bg_menu_main.png', 'character_preview.png'];
             assets.forEach(src => {
                 const img = new Image();
                 img.onload = img.onerror = () => {
-                    loaded++;
-                    const pct = Math.floor((loaded / assets.length) * 100);
-                    document.getElementById('progress-fill').style.width = pct + '%';
-                    document.getElementById('loading-pct').innerText = pct + '%';
+                    loaded++; updateLoader(Math.floor((loaded/assets.length)*100));
                     if (loaded >= assets.length) checkUserOnServer();
                 };
                 img.src = src;
             });
         }
+        function updateLoader(p) { document.getElementById('progress-fill').style.width = p+'%'; document.getElementById('loading-pct').innerText = p+'%'; }
 
         async function checkUserOnServer() {
             try {
                 const r = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const d = await r.json();
-                if (d.hero_class) showMenu(d); else showSelection();
+                if (d.hero_class) { showMenu(d); } else { showSelection(); }
             } catch (e) { showSelection(); }
         }
 
         function showSelection() {
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('selection-screen').style.display = 'block';
-            setTimeout(() => { document.getElementById('selection-screen').style.opacity = '1'; selectHero('warrior'); }, 50);
+            document.getElementById('loading-screen').style.display='none';
+            document.getElementById('selection-screen').style.display='block';
+            setTimeout(() => { document.getElementById('selection-screen').style.opacity='1'; selectHero('warrior'); }, 50);
         }
 
         function selectHero(key) {
-            currentHeroKey = key;
-            const d = heroesData[key];
+            currentHeroKey = key; const d = heroesData[key];
             document.getElementById('selection-screen').style.backgroundImage = `url('${d.bg}')`;
             updateHeroImage();
             document.getElementById('class-title').innerText = d.title;
-            const list = document.getElementById('skills-list');
-            list.innerHTML = '';
+            const list = document.getElementById('skills-list'); list.innerHTML = '';
             d.skills.forEach((sk, i) => { 
-                list.innerHTML += `<div class="skill-item" onclick="openSkill(${i})"><img src="${sk.i}" class="skill-img"><div class="skill-name">${sk.n}</div></div>`; 
+                list.innerHTML += `<div class="skill-item" onclick="openSkill(${i})"><img src="${sk.i}" class="skill-img"><div class="skill-name-small">${sk.n}</div></div>`; 
             });
             document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`btn-${key}`).classList.add('active');
         }
 
-        function setGender(g) { currentGender = g; document.getElementById('gender-m').classList.toggle('active', g === 'male'); document.getElementById('gender-f').classList.toggle('active', g === 'female'); updateHeroImage(); }
+        function setGender(g) { currentGender=g; document.getElementById('gender-m').classList.toggle('active', g==='male'); document.getElementById('gender-f').classList.toggle('active', g==='female'); updateHeroImage(); }
         function updateHeroImage() { 
-            document.getElementById('hero-img').src = heroesData[currentHeroKey][currentGender]; 
-            document.getElementById('inv-hero-img').src = heroesData[currentHeroKey][currentGender];
+            const img = heroesData[currentHeroKey][currentGender];
+            document.getElementById('hero-img').src = img;
+            document.getElementById('inv-hero-img').src = img;
         }
 
         function showMenu(data) {
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('loading-screen').style.display='none';
+            document.getElementById('selection-screen').style.display='none';
             const h = heroesData[data.hero_class.toLowerCase()];
-            document.getElementById('menu-avatar').src = (currentGender === 'female') ? h.ava_female : h.ava_male;
+            document.getElementById('menu-avatar').src = (currentGender==='female')?h.ava_female:h.ava_male;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
+            document.getElementById('player-stats').innerText = `Уровень: ${data.level || 1}`;
             document.getElementById('gold-value').innerText = data.gold || 0;
             document.getElementById('crystal-value').innerText = data.crystals || 0;
-            document.getElementById('inv-hero-img').src = h[currentGender];
-            document.getElementById('menu-screen').style.display = 'block';
-            setTimeout(() => document.getElementById('menu-screen').style.opacity = '1', 50);
+            document.getElementById('menu-screen').style.display='block';
+            setTimeout(() => document.getElementById('menu-screen').style.opacity='1', 50);
         }
 
         function openInventory() {
-            document.getElementById('menu-screen').style.display = 'none';
-            document.getElementById('inventory-screen').style.display = 'block';
-            document.getElementById('debug-slots-panel').style.display = 'flex'; // Показываем пульт
-            setTimeout(() => document.getElementById('inventory-screen').style.opacity = '1', 50);
+            document.getElementById('menu-screen').style.display='none';
+            document.getElementById('inventory-screen').style.display='block';
+            document.getElementById('debug-panel').style.display='flex';
+            setTimeout(() => document.getElementById('inventory-screen').style.opacity='1', 50);
         }
 
         function closeInventory() {
-            document.getElementById('inventory-screen').style.display = 'none';
-            document.getElementById('debug-slots-panel').style.display = 'none'; // Прячем пульт
-            document.getElementById('menu-screen').style.display = 'block';
+            document.getElementById('inventory-screen').style.display='none';
+            document.getElementById('debug-panel').style.display='none';
+            document.getElementById('menu-screen').style.display='block';
         }
 
+        function openShop() { document.getElementById('shop-modal').style.display='flex'; }
+        function closeShop() { document.getElementById('shop-modal').style.display='none'; }
         function toggleVipStatus() { document.getElementById('vip-btn').classList.toggle('active'); }
-        function openShop() { document.getElementById('shop-modal').style.display = 'flex'; }
-        function closeShop() { document.getElementById('shop-modal').style.display = 'none'; }
-        function closeModal() { document.getElementById('skill-modal').style.display = 'none'; }
+        function closeModal() { document.getElementById('skill-modal').style.display='none'; }
         
         async function confirmSelection() {
             try {
-                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' });
+                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method:'POST' });
                 checkUserOnServer();
-            } catch (e) { alert("Ошибка"); }
+            } catch(e) { alert("Ошибка сохранения"); }
         }
 
-        function buyItem(t, a, p) { if(tg) tg.showConfirm(`Купить?`, (ok) => { if(ok) tg.showAlert("Успех"); }); else alert("Куплено"); }
-        
         function openSkill(i) {
             const s = heroesData[currentHeroKey].skills[i];
             document.getElementById('modal-img').src = s.i;
             document.getElementById('modal-name').innerText = s.n;
             document.getElementById('modal-text').innerText = s.d;
-            document.getElementById('skill-modal').style.display = 'flex';
+            document.getElementById('skill-modal').style.display='flex';
         }
 
         function switchTab(cat, el) {
             document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
             el.classList.add('active');
-            document.querySelectorAll('.shop-category').forEach(c => c.classList.remove('active'));
-            document.getElementById('cat-' + cat).classList.add('active');
+            document.querySelectorAll('.shop-category').forEach(c => c.style.display='none');
+            document.getElementById('cat-'+cat).style.display='block';
         }
+
+        function buyItem(t, a, p) { if(tg) tg.showConfirm(`Купить?`, (ok)=>{ if(ok) tg.showAlert("Успех!"); }); else alert("Куплено"); }
     </script>
 </body>
 </html>
