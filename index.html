@@ -12,7 +12,6 @@
             --purple: #bf40bf;
             --bg-panel: rgba(10, 10, 15, 0.9);
             --bg-modal: rgba(5, 5, 10, 0.95);
-            --star-color: #f8cc46;
         }
 
         body, html {
@@ -220,14 +219,16 @@
         }
         .shop-item img { width: 55px; height: 55px; object-fit: contain; margin-bottom: 12px; }
         .shop-item .amount { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; color: #fff; }
+        
         .buy-btn {
             width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--gold);
             color: var(--gold); padding: 10px; border-radius: 8px;
-            font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 6px;
+            font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;
             font-size: 0.9rem;
         }
         .buy-btn:active { background: var(--gold); color: #000; transform: scale(0.95); }
-        .star-icon { color: var(--star-color); font-size: 1.1rem; }
+        
+        .star-img-btn { width: 18px; height: 18px; object-fit: contain; filter: drop-shadow(0 0 2px var(--gold)); }
 
         /* --- МОДАЛКА НАВЫКОВ --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
@@ -314,12 +315,12 @@
                     <div class="shop-item">
                         <img src="icon_crystal.png">
                         <div class="amount">100</div>
-                        <button class="buy-btn" onclick="buyItem('crystals', 100, 50)">50 <span class="star-icon">★</span></button>
+                        <button class="buy-btn" onclick="buyItem('crystals', 100, 50)">50 <img src="icon_star.png" class="star-img-btn"></button>
                     </div>
                     <div class="shop-item">
                         <img src="icon_crystal.png">
                         <div class="amount">500</div>
-                        <button class="buy-btn" onclick="buyItem('crystals', 500, 200)">200 <span class="star-icon">★</span></button>
+                        <button class="buy-btn" onclick="buyItem('crystals', 500, 200)">200 <img src="icon_star.png" class="star-img-btn"></button>
                     </div>
                 </div>
             </div>
@@ -329,12 +330,12 @@
                     <div class="shop-item">
                         <img src="icon_gold.png">
                         <div class="amount">10,000</div>
-                        <button class="buy-btn" onclick="buyItem('gold', 10000, 30)">30 <span class="star-icon">★</span></button>
+                        <button class="buy-btn" onclick="buyItem('gold', 10000, 30)">30 <img src="icon_star.png" class="star-img-btn"></button>
                     </div>
                     <div class="shop-item">
                         <img src="icon_gold.png">
                         <div class="amount">50,000</div>
-                        <button class="buy-btn" onclick="buyItem('gold', 50000, 100)">100 <span class="star-icon">★</span></button>
+                        <button class="buy-btn" onclick="buyItem('gold', 50000, 100)">100 <img src="icon_star.png" class="star-img-btn"></button>
                     </div>
                 </div>
             </div>
@@ -345,7 +346,7 @@
                         <img src="icon_vip.png">
                         <div class="amount">VIP Статус</div>
                         <p style="font-size: 0.8rem; color: #aaa; margin: 0 0 15px 0;">+25% к опыту и уникальный префикс</p>
-                        <button class="buy-btn" onclick="buyItem('vip', 1, 250)">Купить за 250 <span class="star-icon">★</span></button>
+                        <button class="buy-btn" onclick="buyItem('vip', 1, 250)">Купить за 250 <img src="icon_star.png" class="star-img-btn"></button>
                     </div>
                 </div>
             </div>
@@ -370,11 +371,12 @@
         let loadedCount = 0;
         let userId = tg?.initDataUnsafe?.user?.id || 12345;
 
-        // ВАЖНО: Убедись, что все эти файлы лежат в папке с проектом
+        // Список всех ресурсов (проверь названия файлов!)
         const assetsToLoad = [
             'bg_loading_main_v1.png', 'bg_menu_main.png', 'icon_logo_void_echoes.png', 
             'UI_Background_Warrior.png', 'UI_Background_Mage.png', 'UI_Background_Archer.png', 
-            'icon_vip.png', 'icon_gold.png', 'icon_crystal.png', 'icon_shop.png', 'bg_shop_main.png'
+            'icon_vip.png', 'icon_gold.png', 'icon_crystal.png', 'icon_shop.png', 
+            'bg_shop_main.png', 'icon_star.png'
         ];
 
         const heroesData = {
@@ -428,7 +430,7 @@
                 };
                 img.onerror = () => { 
                     console.error("Не удалось загрузить файл:", src);
-                    loadedCount++; // Продолжаем счет, чтобы игра не висла
+                    loadedCount++; 
                     updateLoader();
                     if (loadedCount >= assetsToLoad.length) checkUserOnServer(); 
                 };
@@ -496,7 +498,7 @@
                 const r = await fetch(`${SERVER_URL}/get_hero/${userId}`);
                 const d = await r.json();
                 showMenu(d);
-            } catch (e) { alert("Ошибка сохранения на сервере"); }
+            } catch (e) { alert("Ошибка сервера"); }
         }
 
         function showMenu(data) {
@@ -531,13 +533,24 @@
             document.getElementById('cat-' + cat).classList.add('active');
         }
 
+        // Логика покупки (пока без сервера, для теста)
         function buyItem(type, amount, price) {
             if(tg) {
                 tg.showConfirm(`Купить ${amount} (${type}) за ${price} звезд?`, (ok) => {
-                    if (ok) tg.showAlert("Запрос отправлен в Telegram Stars");
+                    if (ok) {
+                        // Эмуляция успеха для теста:
+                        if(type === 'gold') {
+                            const val = document.getElementById('gold-value');
+                            val.innerText = parseInt(val.innerText) + amount;
+                        } else if(type === 'crystals') {
+                            const val = document.getElementById('crystal-value');
+                            val.innerText = parseInt(val.innerText) + amount;
+                        }
+                        tg.showAlert("Успешно куплено!");
+                    }
                 });
             } else {
-                alert(`Куплено ${amount} ${type} за ${price} звезд (режим отладки)`);
+                alert("Покупка в режиме отладки завершена");
             }
         }
 
