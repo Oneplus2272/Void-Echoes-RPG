@@ -1,37 +1,44 @@
-// --- СЮДА ВПИСЫВАЮТСЯ НАЗВАНИЯ ФАЙЛОВ КАРТИНКИ ---
+// --- ОБЪЕКТ ПУТЕЙ К КАРТИНКАМ ИМЕН ---
 const nameLogos = {
     warrior: { 
-        male: 'text_name_thorn_gold.png',    // Имя для Мужчины-Воина
-        female: 'text_name_freya_gold.png'   // Имя для Женщины-Воина
+        male: 'text_name_thorn_gold.png', 
+        female: 'text_name_freya_gold.png' 
     },
     mage: { 
-        male: 'text_name_andrian_purple.png', // Имя для Мужчины-Мага
-        female: 'text_name_elissa_purple.png' // Имя для Женщины-Мага
+        male: 'text_name_andrian_purple.png', 
+        female: 'text_name_elissa_purple.png' 
     },
     archer: { 
-        male: 'text_name_killian_green.png',  // Имя для Мужчины-Лучника
-        female: 'text_name_nari_green.png'    // Имя для Женщины-Лучника
+        male: 'text_name_killian_green.png', 
+        female: 'text_name_nari_green.png' 
     }
 };
 
 /**
- * Функция, которая берет путь из объекта выше и вставляет <img> в блок заголовка
+ * Функция отрисовки имени над героем
  */
 function updateHeroNameLogo() {
+    // Ищем элемент заголовка. Если у тебя в HTML другой ID для этого места, замени 'class-title'
     const titleElement = document.getElementById('class-title');
     
-    // Проверяем, что переменные выбора героя и пола существуют в глобальном коде
     if (titleElement && window.currentHeroKey && window.currentGender) {
         const logoPath = nameLogos[window.currentHeroKey][window.currentGender];
         
-        // Вставляем картинку вместо текста
-        titleElement.innerHTML = `<img src="${logoPath}" style="max-width: 210px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(0,0,0,0.6));">`;
+        // Формируем HTML с картинкой
+        // Стили: max-width подгоняет размер, margin центрирует, filter добавляет свечение для читаемости
+        titleElement.innerHTML = `
+            <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 20px;">
+                <img src="${logoPath}" alt="Hero Name" 
+                     style="max-width: 280px; height: auto; 
+                            filter: drop-shadow(0 0 15px rgba(0,0,0,0.9)) drop-shadow(0 0 5px rgba(255,255,255,0.2));
+                            z-index: 10;">
+            </div>
+        `;
     }
 }
 
 /**
- * Эти обработчики "слушают" когда ты тыкаешь на иконки классов или пол
- * и запускают обновление картинки, не ломая основную логику в HTML
+ * Перехват функций выбора, чтобы имя менялось мгновенно
  */
 const backupSelectHero = window.selectHero;
 window.selectHero = function(key) {
@@ -45,7 +52,8 @@ window.setGender = function(g) {
     updateHeroNameLogo();
 };
 
-// Запуск при старте, чтобы имя подгрузилось сразу после загрузки страницы
+// Авто-запуск при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(updateHeroNameLogo, 200);
+    // Небольшая задержка, чтобы основные скрипты успели определить героя по умолчанию
+    setTimeout(updateHeroNameLogo, 300);
 });
