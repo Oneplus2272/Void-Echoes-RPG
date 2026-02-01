@@ -111,7 +111,6 @@
             box-sizing: border-box; position: relative;
         }
         
-        /* --- КНОПКА VIP --- */
         .vip-button {
             width: 100px; height: 100px; cursor: pointer;
             filter: grayscale(1); transition: filter 0.3s, transform 0.2s;
@@ -202,28 +201,28 @@
             position: relative;
         }
         .equipment-column {
-            display: flex; flex-direction: column; gap: 15px; z-index: 10;
+            display: flex; flex-direction: column; gap: 10px; z-index: 10;
         }
         .item-slot {
-            width: 75px; height: 75px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 50%;
+            width: 90px; height: 90px; /* Увеличен размер рамок */
             display: flex; align-items: center; justify-content: center;
-            position: relative;
+            background: none; border: none; /* Убраны лишние рамки */
         }
-        /* Стилизация рамок как на твоих изображениях */
         .item-slot img { 
             width: 100%; height: 100%; object-fit: contain; 
-            filter: drop-shadow(0 0 5px var(--blue));
         }
 
         .inventory-hero-view {
             position: absolute; left: 50%; bottom: 0;
-            transform: translateX(-50%); width: 100%; height: 90%;
+            transform: translateX(-50%); width: 100%; height: 100%;
             display: flex; align-items: flex-end; justify-content: center;
             pointer-events: none;
         }
-        .inventory-hero-view img { max-height: 90%; max-width: 100%; object-fit: contain; }
+        .inventory-hero-view img { 
+            height: 105%; /* Сделал героя чуть выше */
+            max-width: none; 
+            object-fit: contain; 
+        }
 
         .back-from-inv {
             position: absolute; top: env(safe-area-inset-top, 20px); left: 20px;
@@ -579,16 +578,15 @@
             document.getElementById('selection-screen').style.display = 'none';
             document.getElementById('inventory-screen').style.display = 'none';
             
-            const hero = heroesData[data.hero_class.toLowerCase()];
-            const avatarFile = (currentGender === 'female') ? hero.ava_female : hero.ava_male;
+            const heroData = heroesData[data.hero_class.toLowerCase()];
+            const avatarFile = (currentGender === 'female') ? heroData.ava_female : heroData.ava_male;
             document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
             document.getElementById('player-stats-header').innerText = `Уровень: ${data.level}`;
             document.getElementById('gold-value').innerText = data.gold || 0;
             document.getElementById('crystal-value').innerText = data.crystals || 0;
             
-            // Обновляем картинку героя в инвентаре сразу
-            document.getElementById('inv-hero-img').src = hero[currentGender];
+            document.getElementById('inv-hero-img').src = heroData[currentGender];
 
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
