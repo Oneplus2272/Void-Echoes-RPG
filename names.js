@@ -15,30 +15,46 @@ const nameLogos = {
 };
 
 /**
- * Функция отрисовки имени над героем
+ * Функция отрисовки имени поверх фона героя
  */
 function updateHeroNameLogo() {
-    // Ищем элемент заголовка. Если у тебя в HTML другой ID для этого места, замени 'class-title'
-    const titleElement = document.getElementById('class-title');
+    // Находим контейнер, где отображается герой и фон (Character_preview)
+    const previewContainer = document.querySelector('.character-preview'); 
     
-    if (titleElement && window.currentHeroKey && window.currentGender) {
+    if (previewContainer && window.currentHeroKey && window.currentGender) {
+        // Проверяем, существует ли уже блок для имени, если нет — создаем
+        let nameOverlay = document.getElementById('hero-name-overlay');
+        if (!nameOverlay) {
+            nameOverlay = document.createElement('div');
+            nameOverlay.id = 'hero-name-overlay';
+            // Стили для позиционирования поверх фона
+            Object.assign(nameOverlay.style, {
+                position: 'absolute',
+                top: '10%', // Дистанция от верхнего края
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                pointerEvents: 'none', // Чтобы не мешал кликам
+                zIndex: '100'
+            });
+            previewContainer.appendChild(nameOverlay);
+        }
+
         const logoPath = nameLogos[window.currentHeroKey][window.currentGender];
         
-        // Формируем HTML с картинкой
-        // Стили: max-width подгоняет размер, margin центрирует, filter добавляет свечение для читаемости
-        titleElement.innerHTML = `
-            <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 20px;">
-                <img src="${logoPath}" alt="Hero Name" 
-                     style="max-width: 280px; height: auto; 
-                            filter: drop-shadow(0 0 15px rgba(0,0,0,0.9)) drop-shadow(0 0 5px rgba(255,255,255,0.2));
-                            z-index: 10;">
-            </div>
+        // Вставляем картинку с эффектом свечения
+        nameOverlay.innerHTML = `
+            <img src="${logoPath}" alt="Name" 
+                 style="max-width: 250px; height: auto; 
+                        filter: drop-shadow(0 0 15px rgba(0,0,0,0.8));">
         `;
     }
 }
 
 /**
- * Перехват функций выбора, чтобы имя менялось мгновенно
+ * Перехват стандартных функций выбора
  */
 const backupSelectHero = window.selectHero;
 window.selectHero = function(key) {
@@ -52,8 +68,7 @@ window.setGender = function(g) {
     updateHeroNameLogo();
 };
 
-// Авто-запуск при загрузке страницы
+// Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', () => {
-    // Небольшая задержка, чтобы основные скрипты успели определить героя по умолчанию
     setTimeout(updateHeroNameLogo, 300);
 });
