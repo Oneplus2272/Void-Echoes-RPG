@@ -620,5 +620,34 @@
         }
         function closeModal() { document.getElementById('skill-modal').style.display = 'none'; }
     </script>
+    // --- БЛОК ОТОБРАЖЕНИЯ ИМЕН-ЛОГОТИПОВ ---
+const nameLogos = {
+    warrior: { male: 'text_name_thorn_gold.png', female: 'text_name_freya_gold.png' },
+    mage: { male: 'text_name_andrian_purple.png', female: 'text_name_elissa_purple.png' },
+    archer: { male: 'text_name_killian_green.png', female: 'text_name_nari_green.png' }
+};
+
+function updateNameLogo() {
+    const titleElement = document.getElementById('class-title');
+    if (titleElement) {
+        const logoPath = nameLogos[currentHeroKey][currentGender];
+        titleElement.innerHTML = `<img src="${logoPath}" style="max-width: 200px; height: auto; filter: drop-shadow(0 0 8px rgba(0,0,0,0.8)); vertical-align: middle;">`;
+    }
+}
+
+// Переопределяем функции для обновления логотипа при каждом клике
+const oldSelectHero = selectHero;
+selectHero = function(key) {
+    oldSelectHero(key);
+    updateNameLogo();
+};
+
+const oldSetGender = setGender;
+setGender = function(g) {
+    oldSetGender(g);
+    updateNameLogo();
+};
+// ---------------------------------------
+
 </body>
 </html>
