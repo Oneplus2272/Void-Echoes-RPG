@@ -182,7 +182,7 @@
             transform: translate(-50%, -50%);
         }
 
-        /* --- НАСТРОЙКИ ПОД ТЕЛЕФОНЫ (Скриншот 1) --- */
+        /* --- НАСТРОЙКИ ПОД ТЕЛЕФОНЫ --- */
         @media screen and (max-width: 599px) {
             .hero-preview-box { top: 55%; left: 54%; }
             #inv-hero-img { width: 241px; height: auto; }
@@ -191,7 +191,7 @@
             #col-right { padding-right: -100px; }
         }
 
-        /* --- НАСТРОЙКИ ПОД ПЛАНШЕТЫ (Скриншот 2) --- */
+        /* --- НАСТРОЙКИ ПОД ПЛАНШЕТЫ --- */
         @media screen and (min-width: 600px) {
             .hero-preview-box { top: 54%; left: 50%; }
             #inv-hero-img { width: 376px; height: auto; }
@@ -215,16 +215,6 @@
             transition: all 0.1s ease;
         }
         .inv-slot img { width: 100%; height: 100%; object-fit: contain; }
-
-        /* ПАНЕЛЬ РЕГУЛИРОВКИ */
-        .debug-panel {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: rgba(0,0,0,0.85); padding: 10px;
-            box-sizing: border-box; font-size: 10px; z-index: 500;
-            display: flex; flex-wrap: wrap; gap: 8px; border-top: 1px solid var(--gold);
-        }
-        .debug-panel label { display: flex; flex-direction: column; width: 30%; color: #aaa; }
-        .debug-panel input { margin-top: 4px; }
 
         /* --- МАГАЗИН --- */
         #shop-modal {
@@ -338,7 +328,7 @@
                     <div id="shop-btn" class="shop-button" onclick="openShop()">
                         <img src="icon_shop.png" alt="Магазин">
                     </div>
-                    <div id="inventory-btn-side" class="inventory-button" onclick="/* openInventory() */">
+                    <div id="inventory-btn-side" class="inventory-button" onclick="/* Действие убрано */">
                         <img src="icon_inventory.png" alt="Инвентарь">
                     </div>
                 </div>
@@ -380,14 +370,6 @@
                     <div class="inv-slot"><img src="ring.png"></div>
                 </div>
             </div>
-
-        </div>
-
-        <div class="debug-panel">
-            <label>Слоты Размер (px): <input type="range" min="30" max="400" value="89" oninput="updateSlots('slotSize', this.value)"></label>
-            <label>Отступ Слотов (px): <input type="range" min="-150" max="300" value="0" oninput="updateSlots('slotGap', this.value)"></label>
-            <label>Колонки X (px): <input type="range" min="-150" max="600" value="105" oninput="updateSlots('colX', this.value)"></label>
-            <div id="debug-values" style="width:100%; color: var(--gold); font-family: monospace; font-size: 9px; margin-top: 5px;"></div>
         </div>
     </div>
 
@@ -599,22 +581,6 @@
         function closeInventory() {
             document.getElementById('inventory-screen').style.opacity = '0';
             setTimeout(() => document.getElementById('inventory-screen').style.display = 'none', 600);
-        }
-
-        function updateSlots(key, val) {
-            const slots = document.querySelectorAll('.inv-slot');
-            const colL = document.getElementById('col-left');
-            const colR = document.getElementById('col-right');
-
-            if(key === 'slotSize') {
-                slots.forEach(s => { s.style.width = val + 'px'; s.style.height = val + 'px'; });
-            } else if(key === 'slotGap') {
-                slots.forEach(s => { s.style.marginBottom = val + 'px'; });
-            } else if(key === 'colX') {
-                colL.style.paddingLeft = val + 'px';
-                colR.style.paddingRight = val + 'px';
-            }
-            document.getElementById('debug-values').innerText = `Настройка: ${key}=${val}`;
         }
 
         function toggleVipStatus() { document.getElementById('vip-btn').classList.toggle('active'); }
