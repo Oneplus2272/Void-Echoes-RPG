@@ -110,29 +110,16 @@
             box-sizing: border-box; position: relative;
         }
         
-        /* Группа VIP + Уровень в центре СВЕРХУ */
-        .center-top-group {
-            position: absolute; top: env(safe-area-inset-top); left: 50%; 
-            transform: translateX(-50%); display: flex; flex-direction: column; 
-            align-items: center; z-index: 10;
-        }
-
+        /* Кнопка VIP Сверху по центру */
         .vip-button {
+            position: absolute; top: env(safe-area-inset-top); left: 50%; 
+            transform: translateX(-50%);
             width: 110px; height: 110px; cursor: pointer;
             filter: grayscale(1); transition: filter 0.3s, transform 0.2s;
+            z-index: 10;
         }
-        .vip-button.active { filter: grayscale(0); } /* Цветная когда активна */
+        .vip-button.active { filter: grayscale(0); }
         .vip-button img { width: 100%; height: 100%; object-fit: contain; }
-
-        .level-circle-mini {
-            width: 65px; height: 65px; margin-top: -10px;
-            background: radial-gradient(circle, #222, #000);
-            border: 3px solid var(--gold); border-radius: 50%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-        }
-        .lvl-label { font-size: 0.65rem; color: var(--gold); text-transform: uppercase; line-height: 1; }
-        .lvl-val { font-size: 1.3rem; font-weight: bold; color: #fff; line-height: 1.2; }
 
         .player-header {
             display: inline-flex; align-items: center; 
@@ -186,14 +173,8 @@
 
     <div id="menu-screen" class="screen">
         <div class="menu-container">
-            <div class="center-top-group">
-                <div id="vip-btn" class="vip-button" onclick="toggleVipStatus()">
-                    <img src="icon_vip.png" alt="VIP">
-                </div>
-                <div class="level-circle-mini">
-                    <div class="lvl-label">Ур.</div>
-                    <div id="menu-level-val" class="lvl-val">1</div>
-                </div>
+            <div id="vip-btn" class="vip-button" onclick="toggleVipStatus()">
+                <img src="icon_vip.png" alt="VIP">
             </div>
 
             <div class="player-header">
@@ -343,7 +324,6 @@
             document.getElementById('menu-avatar').src = avatarFile;
             document.getElementById('player-name').innerText = tg?.initDataUnsafe?.user?.first_name || data.username;
             document.getElementById('player-stats-header').innerText = `Уровень: ${data.level}`;
-            document.getElementById('menu-level-val').innerText = data.level;
             const m = document.getElementById('menu-screen');
             m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
         }
