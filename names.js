@@ -1,80 +1,80 @@
 (function() {
-    // Объект с путями к картинкам имен
-    const nameLogos = {
-        warrior: { male: 'text_name_thorn_gold.png', female: 'text_name_freya_gold.png' },
-        mage: { male: 'text_name_andrian_purple.png', female: 'text_name_elissa_purple.png' },
-        archer: { male: 'text_name_killian_green.png', female: 'text_name_nari_green.png' }
-    };
+    /**
+     * Конфигурация: укажи здесь селектор своей шкалы загрузки
+     */
+    const LOADER_SELECTOR = '#loading-bar-container, .loading-progress, #loader'; 
 
     /**
-     * Функция, которая рисует имя ПОВЕРХ фона персонажа
+     * Функция для вывода текста ошибки над шкалой
      */
-    function drawNameOnBackground() {
-        try {
-            // Ищем блок, у которого в стилях прописан твой фон character_preview.png
-            const previewBox = document.querySelector('[style*="character_preview.png"]') || document.querySelector('.character-preview');
-
-            if (previewBox) {
-                // Проверяем, есть ли уже внутри картинка с именем, если нет - создаем контейнер
-                let nameContainer = document.getElementById('name-image-overlay');
-                if (!nameContainer) {
-                    nameContainer = document.createElement('div');
-                    nameContainer.id = 'name-image-overlay';
-                    // Позиционируем строго по центру в верхней части фона
-                    Object.assign(nameContainer.style, {
-                        position: 'absolute',
-                        top: '50px',
-                        left: '0',
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        zIndex: '50',
-                        pointerEvents: 'none'
-                    });
-                    previewBox.style.position = 'relative'; // Чтобы имя не улетело за пределы фона
-                    previewBox.appendChild(nameContainer);
-                }
-
-                // Проверяем наличие глобальных переменных, чтобы не вызывать ошибку
-                const heroKey = window.currentHeroKey || 'warrior';
-                const gender = window.currentGender || 'male';
+    function showErrorMessage(errorText) {
+        // Ищем контейнер шкалы
+        const loader = document.querySelector(LOADER_SELECTOR);
+        
+        if (loader) {
+            // Проверяем, нет ли уже блока с ошибкой
+            let errorDiv = document.getElementById('debug-error-display');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'debug-error-display';
                 
-                if (nameLogos[heroKey] && nameLogos[heroKey][gender]) {
-                    const currentImg = nameLogos[heroKey][gender];
-                    // Вставляем саму картинку
-                    nameContainer.innerHTML = `<img src="${currentImg}" style="max-width: 250px; height: auto; filter: drop-shadow(0 0 10px #000);">`;
+                // Стили для текста ошибки (красный, заметный, над шкалой)
+                Object.assign(errorDiv.style, {
+                    position: 'absolute',
+                    bottom: '120%', // Размещаем над шкалой
+                    left: '0',
+                    width: '100%',
+                    color: '#ff4444',
+                    background: 'rgba(0, 0, 0, 0.8)',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    fontSize: '14px',
+                    textAlign: 'center',
+                    fontFamily: 'monospace',
+                    zIndex: '9999',
+                    border: '1px solid #ff4444',
+                    boxSizing: 'border-box'
+                });
+                
+                // Чтобы bottom: 120% работал, у лоадера должен быть position relative
+                if (window.getComputedStyle(loader).position === 'static') {
+                    loader.style.position = 'relative';
                 }
+                
+                loader.appendChild(errorDiv);
             }
-        } catch (e) {
-            console.warn("Ошибка при отрисовке имени: ", e);
+            
+            // Добавляем текст ошибки (накапливаем, если их несколько)
+            errorDiv.innerText = "Ошибка загрузки: " + errorText;
+            console.error("Критическая ошибка для игрока:", errorText);
         }
     }
 
-    // Безопасная подмена функций выбора героя
-    const safeHook = (fnName, callback) => {
-        const original = window[fnName];
-        window[fnName] = function(...args) {
-            if (typeof original === 'function') {
-                try {
-                    original.apply(this, args);
-                } catch (err) {
-                    console.error(`Ошибка в оригинальной функции ${fnName}:`, err);
-                }
-            }
-            callback();
-        };
+    /**
+     * Перехват всех ошибок JavaScript на странице
+     */
+    window.onerror = function(message, source, lineno, colno, error) {
+        const simpleMessage = `${message} (в файле: ${source.split('/').pop()}, строка: ${lineno})`;
+        showErrorMessage(simpleMessage);
+        return false; // Позволяет ошибке также отображаться в обычной консоли
     };
 
-    // Ожидаем готовности документа
-    const initOverlay = () => {
-        safeHook('selectHero', drawNameOnBackground);
-        safeHook('setGender', drawNameOnBackground);
-        drawNameOnBackground();
-    };
+    /**
+     * Перехват ошибок загрузки ресурсов (картинки, скрипты 404)
+     */
+    window.addEventListener('error', function(event) {
+        if (event.target && (event.target.src || event.target.href)) {
+            const fileName = (event.target.src || event.target.href).split('/').pop();
+            showErrorMessage(`Не удалось загрузить файл: ${fileName}`);
+        }
+    }, true);
 
-    if (document.readyState === 'complete') {
-        initOverlay();
-    } else {
-        window.addEventListener('load', initOverlay);
-    }
+    /**
+     * Перехват необработанных обещаний (Promise)
+     */
+    window.addEventListener('unhandledrejection', function(event) {
+        showErrorMessage("Ошибка в сети/запросе: " + event.reason);
+    });
+
+    console.log("Система отслеживания ошибок над шкалой запущена.");
 })();
