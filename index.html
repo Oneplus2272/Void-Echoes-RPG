@@ -302,9 +302,9 @@
             panel: { x: -24, y: 551, w: 448, h: 99 },
             layout: {
                 quests: {x:-22, y:551, s:106}, battle: {x:59, y:553, s:119}, alliance: {x:154, y:554, s:110},
-                shop: {x:246, y:94, s:115, static: true}, inventory: {x:248, y:547, s:112}, community: {x:17, y:167, s:114, static: true},
+                shop: {x:246, y:94, s:115}, inventory: {x:248, y:547, s:112}, community: {x:17, y:167, s:114},
                 benchmark: {x:238, y:542, s:127}, rating: {x:57, y:544, s:127}, profile: {x:-27, y:543, s:123},
-                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:-14, y:250, s:190, static: true}
+                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188}, mail: {x:-14, y:250, s:190}
             }
         };
 
@@ -353,15 +353,7 @@
         function updateIconVisibility() {
             Object.keys(config.layout).forEach(id => {
                 const el = document.getElementById('icon-' + id);
-                const data = config.layout[id];
-                
-                // Если иконка статическая, всегда показываем её
-                if (data.static) {
-                    el.classList.remove('hidden');
-                } else {
-                    // Иначе показываем только если она принадлежит текущей странице
-                    el.classList.toggle('hidden', !pages[currentPage].includes(id));
-                }
+                el.classList.toggle('hidden', !pages[currentPage].includes(id));
             });
         }
 
