@@ -2,7 +2,6 @@
     const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
     let activeId = null;
 
-    // ТВОИ ТЕКУЩИЕ ДАННЫЕ
     const tabletLayout = {
         "profile":   { x: 367, y: 936, size: 154 },
         "battle":    { x: 81,  y: 938, size: 150 },
@@ -23,41 +22,41 @@
         "battle":    { x: 61,  y: 579, size: 142 },
         "alliance":  { x: 151, y: 584, size: 129 },
         "mail":      { x: 194, y: 538, size: 217 },
-        "profile":   { x: 10,  y: 650, size: 110 },
-        "rating":    { x: 90,  y: 650, size: 110 },
-        "lotto":     { x: 170, y: 650, size: 110 },
-        "benchmark": { x: 250, y: 650, size: 110 }
+        "profile":   { x: 20,  y: 600, size: 120 },
+        "rating":    { x: 100, y: 600, size: 120 },
+        "lotto":     { x: 180, y: 600, size: 120 },
+        "benchmark": { x: 260, y: 600, size: 120 }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
         .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-        .game-icon { 
-            position: absolute; display: flex; align-items: center; justify-content: center;
-            pointer-events: none; transition: opacity 0.3s ease, transform 0.2s ease;
-        }
-        .game-icon img { 
-            width: 100%; height: 100%; object-fit: contain; 
-            pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent;
-        }
-        .game-icon.editing { border: 2px dashed #00ff00; background: rgba(0,255,0,0.1); }
+        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.3s ease; }
+        .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .game-icon.editing { outline: 3px solid #00ff00; background: rgba(0,255,0,0.2); }
         
-        /* Панель редактора для телефона */
         .edit-panel { 
-            position: fixed; top: 10px; left: 10px; z-index: 10001; 
-            display: ${isTablet ? 'none' : 'flex'}; flex-direction: column; gap: 5px; 
-            background: rgba(0,0,0,0.7); padding: 10px; border-radius: 8px;
+            position: fixed; top: 5px; left: 5px; z-index: 10005; 
+            display: ${isTablet ? 'none' : 'flex'}; flex-direction: column; gap: 8px; 
+            background: rgba(0,0,0,0.85); padding: 10px; border-radius: 10px; border: 1px solid #ffd700;
         }
-        .edit-btn { padding: 10px; background: #ffd700; border: none; font-weight: bold; border-radius: 4px; }
+        .edit-btn { padding: 12px; background: #ffd700; border: none; font-weight: bold; border-radius: 6px; color: #000; }
+        
+        /* Окно с результатом */
+        .result-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            z-index: 10010; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; pointer-events: auto;
+        }
+        .result-box { width: 100%; height: 60%; background: #222; color: #00ff00; font-family: monospace; padding: 10px; overflow: auto; border-radius: 10px; font-size: 12px; }
 
         .nav-arrow-min {
-            position: fixed; right: 12px; bottom: 20px; width: 25px; height: 25px;
+            position: fixed; right: 10px; bottom: 30px; width: 30px; height: 30px;
             background: #ffd700; clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
             z-index: 10001; cursor: pointer; pointer-events: auto;
             display: ${isTablet ? 'none' : 'block'};
         }
         .nav-arrow-min.flip { transform: rotate(180deg); }
-        .m-hidden { opacity: 0 !important; pointer-events: none !important; transform: translateX(50px); }
+        .m-hidden { opacity: 0 !important; pointer-events: none !important; }
     `;
     document.head.appendChild(style);
 
@@ -70,40 +69,47 @@
         const refs = {};
         const currentData = isTablet ? tabletLayout : phoneLayout;
 
-        // Создание кнопок
         Object.keys(currentData).forEach(id => {
             const d = currentData[id];
             const icon = createIcon(id, d.x, d.y, d.size, layer);
             refs[id] = icon;
-
             if (!isTablet) {
-                // Логика перетаскивания для телефона
                 setupDrag(icon, id);
-                // Скрываем вторую страницу телефона изначально
-                if (["profile", "rating", "lotto", "benchmark"].includes(id)) {
-                    icon.classList.add('m-hidden');
-                }
+                if (["profile", "rating", "lotto", "benchmark"].includes(id)) icon.classList.add('m-hidden');
             }
         });
 
         if (!isTablet) {
-            // Панель редактора
+            // Редактор для телефона
             const panel = document.createElement('div');
             panel.className = 'edit-panel';
             panel.innerHTML = `
-                <button class="edit-btn" id="save-phone">СОХРАНИТЬ ЦИФРЫ</button>
-                <div style="display:flex; gap:5px">
-                    <button class="edit-btn" onclick="resizeActive(5)">РАЗМЕР +</button>
-                    <button class="edit-btn" onclick="resizeActive(-5)">РАЗМЕР -</button>
+                <button class="edit-btn" id="show-res">ПОКАЗАТЬ ЦИФРЫ</button>
+                <div style="display:flex; gap:10px">
+                    <button class="edit-btn" onclick="resizeActive(5)">БОЛЬШЕ</button>
+                    <button class="edit-btn" onclick="resizeActive(-5)">МЕНЬШЕ</button>
                 </div>
+                <small style="color:white; font-size:10px">Нажми на иконку и тяни</small>
             `;
             document.body.appendChild(panel);
-            document.getElementById('save-phone').onclick = () => {
-                console.log("ДАННЫЕ ДЛЯ ТЕЛЕФОНА:", JSON.stringify(phoneLayout, null, 2));
-                alert("Данные выведены в консоль!");
-            };
 
-            // Стрелка переключения
+            // Окно результата
+            const overlay = document.createElement('div');
+            overlay.className = 'result-overlay';
+            overlay.innerHTML = `
+                <h3 style="color:#ffd700">Твои новые координаты:</h3>
+                <textarea class="result-box" id="result-text" readonly></textarea>
+                <button class="edit-btn" style="margin-top:15px; width:100%" id="close-res">ЗАКРЫТЬ</button>
+            `;
+            document.body.appendChild(overlay);
+
+            document.getElementById('show-res').onclick = () => {
+                document.getElementById('result-text').value = JSON.stringify(phoneLayout, null, 2);
+                overlay.style.display = 'flex';
+            };
+            document.getElementById('close-res').onclick = () => overlay.style.display = 'none';
+
+            // Стрелка
             const arrow = document.createElement('div');
             arrow.className = 'nav-arrow-min';
             let page = 1;
@@ -125,10 +131,8 @@
         btn.id = 'icon-' + id;
         btn.style.width = size + 'px'; btn.style.height = size + 'px';
         btn.style.left = x + 'px'; btn.style.top = y + 'px';
-        
         const img = document.createElement('img');
         img.src = `icon_${id}.png`;
-        
         btn.appendChild(img);
         parent.appendChild(btn);
 
@@ -138,9 +142,7 @@
                 document.querySelectorAll('.game-icon').forEach(el => el.classList.remove('editing'));
                 btn.classList.add('editing');
             }
-            console.log("Клик:", id);
         };
-
         return btn;
     }
 
@@ -160,6 +162,7 @@
             activeId = id;
         });
         el.addEventListener('touchmove', (e) => {
+            e.preventDefault();
             phoneLayout[id].x = e.touches[0].clientX - startX;
             phoneLayout[id].y = e.touches[0].clientY - startY;
             el.style.left = phoneLayout[id].x + 'px';
