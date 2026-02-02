@@ -92,15 +92,15 @@
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1.05rem; font-weight: bold; }
         .player-info p { margin: 2px 0 0 0; font-size: 0.85rem; color: #ccc; }
 
-        /* --- UI MASTER LAYER (ОБНОВЛЕННЫЙ) --- */
+        /* --- UI MASTER LAYER (ПЛАВНАЯ АНИМАЦИЯ) --- */
         .ui-master-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: none; overflow: hidden; }
-        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.1s, opacity 0.5s ease, transform 0.5s ease; -webkit-tap-highlight-color: transparent; }
+        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); -webkit-tap-highlight-color: transparent; }
         
-        /* Стили анимации переключения */
+        /* Иконка плавно уезжает за границы и затухает */
         .game-icon.m-hidden { 
             opacity: 0 !important; 
             pointer-events: none !important;
-            transform: translateX(50px) scale(0.8); /* Уезжает вправо */
+            transform: translateX(100px) scale(0.5); 
         }
         
         .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
@@ -331,21 +331,23 @@
         };
         const config = isTablet ? tabletLayout : phoneLayout;
         
-        // Четкое разделение иконок по страницам
-        const page1Items = ["quests", "battle", "alliance", "inventory"];
-        const page2Items = ["benchmark", "rating", "profile", "lotto"];
-        const staticIcons = ["community", "calendar", "shop", "mail"]; // Эти иконки всегда видны
+        // РАСПРЕДЕЛЕНИЕ ИКОНОК ПО СТРАНИЦАМ (Теперь все иконки привязаны к страницам)
+        const page1Items = ["quests", "battle", "alliance", "inventory", "community", "calendar"];
+        const page2Items = ["benchmark", "rating", "profile", "lotto", "shop", "mail"];
         
         const refs = { icons: {} };
 
         function initMasterLayer() {
             const layer = document.createElement('div');
+            layer.id = 'ui-master-layer';
             layer.className = 'ui-master-layer';
             document.body.appendChild(layer);
+            
             const panel = document.createElement('div');
             panel.className = 'bottom-panel';
             Object.assign(panel.style, { left: config.panel.x+'px', top: config.panel.y+'px', width: config.panel.w+'px', height: config.panel.h+'px' });
             layer.appendChild(panel);
+            
             const arrow = document.createElement('div');
             arrow.className = 'nav-arrow-custom';
             panel.appendChild(arrow);
@@ -354,8 +356,7 @@
                 const d = config.layout[id];
                 const icon = document.createElement('div');
                 icon.className = 'game-icon';
-                // Начальное состояние
-                Object.assign(icon.style, { width: d.size+'px', height: d.size+'px', left: d.x+'px', top: d.y+'px', opacity: '1' });
+                Object.assign(icon.style, { width: d.size+'px', height: d.size+'px', left: d.x+'px', top: d.y+'px' });
                 const img = document.createElement('img');
                 img.src = `icon_${id}.png`;
                 img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
@@ -366,25 +367,12 @@
             });
 
             const updateIcons = () => {
-                // Логика плавной смены: скрываем ненужные, показываем нужные
                 page1Items.forEach(id => {
-                    const icon = refs.icons[id];
-                    if(icon) {
-                        if(currentPage === 1) icon.classList.remove('m-hidden');
-                        else icon.classList.add('m-hidden');
-                    }
+                    if(refs.icons[id]) refs.icons[id].classList.toggle('m-hidden', currentPage !== 1);
                 });
-                
                 page2Items.forEach(id => {
-                    const icon = refs.icons[id];
-                    if(icon) {
-                        if(currentPage === 2) icon.classList.remove('m-hidden');
-                        else icon.classList.add('m-hidden');
-                    }
+                    if(refs.icons[id]) refs.icons[id].classList.toggle('m-hidden', currentPage !== 2);
                 });
-                
-                // Статичные иконки всегда без класса скрытия
-                staticIcons.forEach(id => refs.icons[id]?.classList.remove('m-hidden'));
             };
 
             arrow.onclick = (e) => { 
@@ -396,10 +384,19 @@
             
             updateIcons();
 
+            // СТРОГАЯ ПРОВЕРКА: Видимость слоя только на экране меню
             setInterval(() => {
                 const menu = document.getElementById('menu-screen');
-                layer.style.display = (menu && menu.style.display === 'block') ? 'block' : 'none';
-            }, 150);
+                const inv = document.getElementById('inventory-screen');
+                const shop = document.getElementById('shop-modal');
+                
+                // Если меню активно и при этом НЕ открыт инвентарь или магазин
+                const shouldShow = menu && menu.style.display === 'block' && 
+                                   inv.style.display === 'none' && 
+                                   shop.style.display === 'none';
+                
+                layer.style.display = shouldShow ? 'block' : 'none';
+            }, 100);
         }
 
         window.onload = () => { if (tg) { tg.expand(); tg.ready(); } preloadAssets(); initMasterLayer(); };
@@ -410,10 +407,10 @@
                 const img = new Image();
                 img.onload = img.onerror = () => { loadedCount++; 
                     const pct = Math.floor((loadedCount / assets.length) * 100);
-                    const fill = document.getElementById('progress-fill');
-                    const txt = document.getElementById('loading-pct');
-                    if(fill) fill.style.width = pct + '%';
-                    if(txt) txt.innerText = pct + '%';
+                    const f = document.getElementById('progress-fill');
+                    const t = document.getElementById('loading-pct');
+                    if(f) f.style.width = pct + '%';
+                    if(t) t.innerText = pct + '%';
                     if (loadedCount >= assets.length) checkUser(); 
                 };
                 img.src = src;
