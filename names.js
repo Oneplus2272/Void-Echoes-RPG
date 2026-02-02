@@ -10,18 +10,22 @@
     let config = {
         panel: { x: 0, y: window.innerHeight - 130, w: window.innerWidth, h: 110 },
         layout: isTablet ? {
-            "quests": { x: 50, y: 850, size: 140 }, "battle": { x: 200, y: 850, size: 140 },
-            "alliance": { x: 350, y: 850, size: 140 }, "community": { x: 500, y: 850, size: 140 },
-            "calendar": { x: 650, y: 850, size: 140 }, "shop": { x: 800, y: 850, size: 140 },
-            "inventory": { x: 950, y: 850, size: 140 }, 
-            "benchmark": { x: 50, y: 850, size: 140 }, "rating": { x: 200, y: 850, size: 140 }, 
-            "profile": { x: 350, y: 850, size: 140 }, "lotto": { x: 500, y: 850, size: 140 }, 
-            "mail": { x: 650, y: 850, size: 140 }
+            // Первая страница (в два ряда)
+            "quests": { x: 50, y: 750, size: 140 }, "battle": { x: 220, y: 750, size: 140 },
+            "alliance": { x: 390, y: 750, size: 140 }, "community": { x: 560, y: 750, size: 140 },
+            "calendar": { x: 50, y: 910, size: 140 }, "shop": { x: 220, y: 910, size: 140 },
+            "inventory": { x: 390, y: 910, size: 140 }, 
+            // Вторая страница
+            "benchmark": { x: 50, y: 850, size: 140 }, "rating": { x: 220, y: 850, size: 140 }, 
+            "profile": { x: 390, y: 850, size: 140 }, "lotto": { x: 560, y: 850, size: 140 }, 
+            "mail": { x: 730, y: 850, size: 140 }
         } : {
-            "quests": { x: 20, y: 500, size: 100 }, "battle": { x: 130, y: 500, size: 100 },
-            "alliance": { x: 240, y: 500, size: 100 }, "community": { x: 20, y: 400, size: 100 },
-            "calendar": { x: 130, y: 400, size: 100 }, "shop": { x: 240, y: 400, size: 100 },
-            "inventory": { x: 20, y: 300, size: 100 }, 
+            // Первая страница (в два ряда для телефона)
+            "quests": { x: 20, y: 400, size: 90 }, "battle": { x: 120, y: 400, size: 90 },
+            "alliance": { x: 220, y: 400, size: 90 }, "community": { x: 320, y: 400, size: 90 },
+            "calendar": { x: 20, y: 510, size: 90 }, "shop": { x: 120, y: 510, size: 90 },
+            "inventory": { x: 220, y: 510, size: 90 }, 
+            // Вторая страница
             "benchmark": { x: 20, y: 500, size: 100 }, "rating": { x: 130, y: 500, size: 100 }, 
             "profile": { x: 240, y: 500, size: 100 }, "lotto": { x: 20, y: 400, size: 100 }, 
             "mail": { x: 130, y: 400, size: 100 }
