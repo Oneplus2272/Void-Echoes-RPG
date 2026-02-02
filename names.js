@@ -1,12 +1,13 @@
 (function() {
     const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
-    let isEditMode = false;
     let currentPage = 1;
 
-    const page1List = ["quests", "battle", "alliance", "community", "calendar", "shop", "inventory"];
-    const page2List = ["benchmark", "rating", "profile", "lotto", "mail"];
+    // Списки иконок для нижней панели (которые будут меняться)
+    const bottomPage1 = ["quests", "battle", "alliance", "inventory"];
+    const bottomPage2 = ["benchmark", "rating", "profile", "lotto"];
+    // Иконки, которые стоят намертво (статичные)
+    const staticIcons = ["community", "calendar", "shop", "mail"];
 
-    // ТВОИ ФИКСИРОВАННЫЕ НАСТРОЙКИ ДЛЯ ПЛАНШЕТА
     const tabletLayout = {
         "panel": { "x": -17, "y": 880, "w": 854, "h": 130 },
         "layout": {
@@ -25,22 +26,21 @@
         }
     };
 
-    // БАЗОВЫЕ НАСТРОЙКИ ДЛЯ ТЕЛЕФОНА (ИХ ТЫ СМОЖЕШЬ ПОДПРАВИТЬ)
     const phoneLayout = {
-        "panel": { "x": 0, "y": window.innerHeight - 100, "w": window.innerWidth, "h": 90 },
+        "panel": { "x": -24, "y": 551, "w": 398, "h": 99 },
         "layout": {
-            "quests": { "x": 10, "y": 550, "size": 90 },
-            "battle": { "x": 110, "y": 550, "size": 90 },
-            "alliance": { "x": 210, "y": 550, "size": 90 },
-            "community": { "x": 10, "y": 150, "size": 100 },
-            "calendar": { "x": 10, "y": 260, "size": 110 },
-            "shop": { "x": 310, "y": 550, "size": 90 },
-            "inventory": { "x": 10, "y": 450, "size": 90 },
-            "benchmark": { "x": 10, "y": 550, "size": 100 },
-            "rating": { "x": 110, "y": 550, "size": 100 },
-            "profile": { "x": 210, "y": 550, "size": 100 },
-            "lotto": { "x": 310, "y": 550, "size": 100 },
-            "mail": { "x": 10, "y": 450, "size": 120 }
+            "quests": { "x": -22, "y": 551, "size": 106 },
+            "battle": { "x": 59, "y": 553, "size": 119 },
+            "alliance": { "x": 154, "y": 554, "size": 110 },
+            "community": { "x": 17, "y": 167, "size": 114 },
+            "calendar": { "x": 218, "y": 358, "size": 188 },
+            "shop": { "x": 246, "y": 94, "size": 115 },
+            "inventory": { "x": 248, "y": 547, "size": 112 },
+            "benchmark": { "x": 238, "y": 542, "size": 127 },
+            "rating": { "x": 57, "y": 544, "size": 127 },
+            "profile": { "x": -27, "y": 543, "size": 123 },
+            "lotto": { "x": 143, "y": 543, "size": 131 },
+            "mail": { "x": -14, "y": 250, "size": 190 }
         }
     };
 
@@ -48,40 +48,44 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
-        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; z-index: 10001; }
-        .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); pointer-events: auto; touch-action: none; z-index: 10000; }
-        .panel-line { position: absolute; left: 0; width: 100%; height: 2px; background: #ffd700; opacity: 0.7; }
+        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; transition: opacity 0.5s; }
+        .game-icon { 
+            position: absolute; display: flex; align-items: center; justify-content: center; 
+            pointer-events: auto; cursor: pointer; transition: transform 0.1s, filter 0.1s; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        .game-icon img { width: 100%; height: 100%; object-fit: contain; }
+        
+        /* Эффект нажатия */
+        .game-icon:active { transform: scale(0.9); filter: brightness(0.8); }
+        
+        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); z-index: 10000; pointer-events: none; }
+        .panel-line { position: absolute; left: 0; width: 100%; height: 2px; background: #ffd700; opacity: 0.6; }
         .line-top { top: 20%; } .line-bottom { bottom: 20%; }
+        
         .m-hidden { display: none !important; }
-        .edit-mode-active { outline: 2px dashed #fff; background: rgba(255,255,255,0.1); }
+        .layer-hide { opacity: 0 !important; pointer-events: none !important; }
+
         .nav-arrow-custom {
             position: absolute; left: 50%; top: -65px; transform: translateX(-50%);
-            width: 55px; height: 55px; background: rgba(0,0,0,0.8); border: 3px solid #ffd700;
+            width: 55px; height: 55px; background: rgba(20,10,5,0.9); border: 3px solid #ffd700;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; box-shadow: 0 0 15px #ffd700; z-index: 10010;
+            pointer-events: auto; box-shadow: 0 0 15px #ffd700; cursor: pointer;
         }
-        .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 5px solid #ffd700; border-right: 5px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
+        .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 4px solid #ffd700; border-right: 4px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff; }
-        .save-coords-btn { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: #28a745; color: #fff; border-radius: 30px; font-weight: bold; z-index: 10006; display: none; border: 2px solid #fff; }
-        #code-output-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        #code-text-area { width: 90%; height: 60%; background: #000; color: #0f0; padding: 15px; font-family: monospace; font-size: 10px; border: 1px solid #0f0; overflow: auto; white-space: pre; user-select: all; }
+        .nav-arrow-custom.flip::after { border-color: #00d4ff; }
     `;
     document.head.appendChild(style);
 
     function init() {
-        const container = document.querySelector('.menu-container') || document.body;
         const layer = document.createElement('div');
         layer.className = 'ui-master-layer';
-        container.appendChild(layer);
+        document.body.appendChild(layer);
 
         const panel = document.createElement('div');
         panel.className = 'bottom-panel';
-        Object.assign(panel.style, { 
-            left: config.panel.x+'px', top: config.panel.y+'px', 
-            width: config.panel.w+'px', height: config.panel.h+'px' 
-        });
+        Object.assign(panel.style, { left: config.panel.x+'px', top: config.panel.y+'px', width: config.panel.w+'px', height: config.panel.h+'px' });
         panel.innerHTML = '<div class="panel-line line-top"></div><div class="panel-line line-bottom"></div>';
         layer.appendChild(panel);
 
@@ -89,98 +93,46 @@
         arrow.className = 'nav-arrow-custom';
         panel.appendChild(arrow);
 
-        const refs = { icons: {} };
+        const iconRefs = {};
+
         Object.keys(config.layout).forEach(id => {
             const d = config.layout[id];
-            const icon = createDraggableElement(id, d.x, d.y, d.size, layer, true);
-            refs.icons[id] = icon;
-            updateVisibility(id, icon);
+            const icon = document.createElement('div');
+            icon.className = 'game-icon';
+            Object.assign(icon.style, { width: d.size+'px', height: d.size+'px', left: d.x+'px', top: d.y+'px' });
+            
+            const img = document.createElement('img');
+            img.src = `icon_${id}.png`; 
+            img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
+            
+            icon.appendChild(img);
+            layer.appendChild(icon);
+            iconRefs[id] = icon;
+
+            icon.onclick = () => console.log("Клик по:", id);
         });
 
-        // Делаем панель тоже редактируемой
-        createDraggableElement('panel', config.panel.x, config.panel.y, config.panel.h, layer, false, panel);
+        // Функция обновления страниц
+        const updatePages = () => {
+            bottomPage1.forEach(id => iconRefs[id].classList.toggle('m-hidden', currentPage !== 1));
+            bottomPage2.forEach(id => iconRefs[id].classList.toggle('m-hidden', currentPage !== 2));
+            // staticIcons всегда видны
+        };
 
         arrow.onclick = (e) => {
             e.stopPropagation();
             currentPage = currentPage === 1 ? 2 : 1;
             arrow.classList.toggle('flip', currentPage === 2);
-            Object.keys(refs.icons).forEach(id => updateVisibility(id, refs.icons[id]));
+            updatePages();
         };
 
-        const saveBtn = document.createElement('div');
-        saveBtn.className = 'save-coords-btn';
-        saveBtn.innerText = '💾 СОХРАНИТЬ ДЛЯ ТЕЛЕФОНА';
-        saveBtn.onclick = () => saveAndShowCode(refs, panel);
-        document.body.appendChild(saveBtn);
+        updatePages();
 
-        const overlay = document.createElement('div');
-        overlay.id = 'code-output-overlay';
-        overlay.innerHTML = `<div style="color:gold;margin-bottom:10px;">СКОПИРУЙ ЭТОТ КОД:</div><div id="code-text-area"></div><div style="margin-top:20px;padding:12px 40px;background:red;color:white;border-radius:10px;font-weight:bold;" onclick="location.reload()">ЗАКРЫТЬ</div>`;
-        document.body.appendChild(overlay);
-    }
-
-    function updateVisibility(id, el) {
-        const onPage2 = page2List.includes(id);
-        const shouldShow = (currentPage === 1 && !onPage2) || (currentPage === 2 && onPage2);
-        el.classList.toggle('m-hidden', !shouldShow);
-    }
-
-    function createDraggableElement(id, x, y, size, parent, isIcon, customEl = null) {
-        const el = customEl || document.createElement('div');
-        if (isIcon) {
-            el.className = 'game-icon';
-            Object.assign(el.style, { width: size+'px', height: size+'px', left: x+'px', top: y+'px' });
-            const img = document.createElement('img');
-            img.src = `icon_${id}.png`;
-            img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
-            el.appendChild(img);
-        }
-
-        let sD = 0, sW = 0, sH = 0, pT;
-        el.onpointerdown = (e) => {
-            if (!isEditMode) pT = setTimeout(() => {
-                isEditMode = true;
-                document.querySelectorAll('.game-icon, .bottom-panel').forEach(i => i.classList.add('edit-mode-active'));
-                document.querySelector('.save-coords-btn').style.display = 'block';
-            }, 1500);
-        };
-        el.onpointerup = () => clearTimeout(pT);
-
-        el.ontouchmove = (e) => {
-            if (!isEditMode) return;
-            if (isIcon && el.classList.contains('m-hidden')) return;
-
-            if (e.touches.length === 1) {
-                const t = e.touches[0];
-                el.style.left = (t.clientX - parseFloat(el.style.width)/2) + 'px';
-                el.style.top = (t.clientY - parseFloat(el.style.height)/2) + 'px';
-            } else if (e.touches.length === 2) {
-                const d = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                if (sD === 0) { sD = d; sW = parseFloat(el.style.width); sH = parseFloat(el.style.height); }
-                else { 
-                    const sc = d / sD; 
-                    el.style.width = (sW * sc) + 'px'; 
-                    el.style.height = (isIcon ? (sW * sc) : (sH * sc)) + 'px'; 
-                }
-            }
-        };
-        el.ontouchend = () => { sD = 0; };
-        if (!customEl) parent.appendChild(el);
-        return el;
-    }
-
-    function saveAndShowCode(refs, panel) {
-        let res = { 
-            panel: { x: parseInt(panel.style.left), y: parseInt(panel.style.top), w: parseInt(panel.style.width), h: parseInt(panel.style.height) }, 
-            layout: {} 
-        };
-        Object.keys(refs.icons).forEach(id => { 
-            const i = refs.icons[id]; 
-            res.layout[id] = { x: parseInt(i.style.left), y: parseInt(i.style.top), size: parseInt(i.style.width) }; 
-        });
-        const layoutName = isTablet ? "tabletLayout" : "phoneLayout";
-        document.getElementById('code-text-area').innerText = `const ${layoutName} = ` + JSON.stringify(res, null, 4) + ";";
-        document.getElementById('code-output-overlay').style.display = 'flex';
+        // Проверка: показывать только в меню
+        setInterval(() => {
+            const isMenu = !!document.querySelector('.menu-container');
+            layer.classList.toggle('layer-hide', !isMenu);
+        }, 500);
     }
 
     init();
