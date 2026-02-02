@@ -3,6 +3,7 @@
     let isEditMode = false;
     let currentPage = 1;
 
+    // Списки иконок строго по страницам
     const page1List = ["quests", "battle", "alliance", "community", "calendar", "shop", "inventory"];
     const page2List = ["benchmark", "rating", "profile", "lotto", "mail"];
 
@@ -12,16 +13,18 @@
             "quests": { x: 50, y: 850, size: 140 }, "battle": { x: 200, y: 850, size: 140 },
             "alliance": { x: 350, y: 850, size: 140 }, "community": { x: 500, y: 850, size: 140 },
             "calendar": { x: 650, y: 850, size: 140 }, "shop": { x: 800, y: 850, size: 140 },
-            "inventory": { x: 950, y: 850, size: 140 }, "benchmark": { x: 50, y: 850, size: 140 },
-            "rating": { x: 200, y: 850, size: 140 }, "profile": { x: 350, y: 850, size: 140 },
-            "lotto": { x: 500, y: 850, size: 140 }, "mail": { x: 650, y: 850, size: 140 }
+            "inventory": { x: 950, y: 850, size: 140 }, 
+            "benchmark": { x: 50, y: 850, size: 140 }, "rating": { x: 200, y: 850, size: 140 }, 
+            "profile": { x: 350, y: 850, size: 140 }, "lotto": { x: 500, y: 850, size: 140 }, 
+            "mail": { x: 650, y: 850, size: 140 }
         } : {
             "quests": { x: 20, y: 500, size: 100 }, "battle": { x: 130, y: 500, size: 100 },
             "alliance": { x: 240, y: 500, size: 100 }, "community": { x: 20, y: 400, size: 100 },
             "calendar": { x: 130, y: 400, size: 100 }, "shop": { x: 240, y: 400, size: 100 },
-            "inventory": { x: 20, y: 300, size: 100 }, "benchmark": { x: 20, y: 500, size: 100 },
-            "rating": { x: 130, y: 500, size: 100 }, "profile": { x: 240, y: 500, size: 100 },
-            "lotto": { x: 20, y: 400, size: 100 }, "mail": { x: 130, y: 400, size: 100 }
+            "inventory": { x: 20, y: 300, size: 100 }, 
+            "benchmark": { x: 20, y: 500, size: 100 }, "rating": { x: 130, y: 500, size: 100 }, 
+            "profile": { x: 240, y: 500, size: 100 }, "lotto": { x: 20, y: 400, size: 100 }, 
+            "mail": { x: 130, y: 400, size: 100 }
         }
     };
 
@@ -43,7 +46,6 @@
         }
         .nav-arrow-custom::after { content: ''; width: 14px; height: 14px; border-top: 5px solid #ffd700; border-right: 5px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff; }
-        .nav-arrow-custom.flip::after { border-color: #00d4ff; }
         .save-coords-btn { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: #28a745; color: #fff; border-radius: 30px; font-weight: bold; z-index: 10006; display: none; border: 2px solid #fff; }
         #code-output-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #code-text-area { width: 90%; height: 60%; background: #000; color: #0f0; padding: 15px; font-family: monospace; font-size: 10px; border: 1px solid #0f0; overflow: auto; white-space: pre; user-select: all; }
@@ -124,7 +126,7 @@
 
         el.ontouchmove = (e) => {
             if (!isEditMode) return;
-            if (isIcon && el.classList.contains('m-hidden')) return; // Не двигаем скрытые
+            if (isIcon && el.classList.contains('m-hidden')) return;
 
             if (e.touches.length === 1) {
                 const t = e.touches[0];
@@ -143,7 +145,10 @@
 
     function saveAndShowCode(refs, panel) {
         let res = { panel: { x: parseInt(panel.style.left), y: parseInt(panel.style.top), w: parseInt(panel.style.width), h: parseInt(panel.style.height) }, layout: {} };
-        Object.keys(refs.icons).forEach(id => { const i = refs.icons[id]; res.layout[id] = { x: parseInt(i.style.left), y: parseInt(i.style.top), size: parseInt(i.style.width) }; });
+        Object.keys(refs.icons).forEach(id => { 
+            const i = refs.icons[id]; 
+            res.layout[id] = { x: parseInt(i.style.left), y: parseInt(i.style.top), size: parseInt(i.style.width) }; 
+        });
         document.getElementById('code-text-area').innerText = (isTablet ? "const tabletLayout = " : "const phoneLayout = ") + JSON.stringify(res, null, 4) + ";";
         document.getElementById('code-output-overlay').style.display = 'flex';
     }
