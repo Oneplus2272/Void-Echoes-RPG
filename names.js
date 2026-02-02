@@ -2,11 +2,10 @@
     const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
     let currentPage = 1;
 
-    // Списки иконок для нижней панели (которые будут меняться)
+    // Группировка
     const bottomPage1 = ["quests", "battle", "alliance", "inventory"];
     const bottomPage2 = ["benchmark", "rating", "profile", "lotto"];
-    // Иконки, которые стоят намертво (статичные)
-    const staticIcons = ["community", "calendar", "shop", "mail"];
+    const staticIcons = ["community", "calendar", "shop", "mail"]; 
 
     const tabletLayout = {
         "panel": { "x": -17, "y": 880, "w": 854, "h": 130 },
@@ -29,18 +28,18 @@
     const phoneLayout = {
         "panel": { "x": -24, "y": 551, "w": 398, "h": 99 },
         "layout": {
-            "quests": { "x": -22, "y": 551, "size": 106 },
-            "battle": { "x": 59, "y": 553, "size": 119 },
-            "alliance": { "x": 154, "y": 554, "size": 110 },
-            "community": { "x": 17, "y": 167, "size": 114 },
-            "calendar": { "x": 218, "y": 358, "size": 188 },
+            "community": { "x": 5, "y": 164, "size": 136 },
+            "calendar": { "x": -6, "y": 245, "size": 161 },
+            "quests": { "x": -18, "y": 580, "size": 128 },
+            "battle": { "x": 63.13, "y": 582, "size": 137 },
+            "alliance": { "x": 152.5, "y": 584.5, "size": 129 },
+            "mail": { "x": 195.5, "y": 538.5, "size": 217 },
+            "profile": { "x": -26.5, "y": 574, "size": 145 },
+            "rating": { "x": 153.75, "y": 567.7, "size": 160 },
+            "lotto": { "x": 60.25, "y": 565.2, "size": 160 },
+            "benchmark": { "x": 252.8, "y": 558.2, "size": 160 },
             "shop": { "x": 246, "y": 94, "size": 115 },
-            "inventory": { "x": 248, "y": 547, "size": 112 },
-            "benchmark": { "x": 238, "y": 542, "size": 127 },
-            "rating": { "x": 57, "y": 544, "size": 127 },
-            "profile": { "x": -27, "y": 543, "size": 123 },
-            "lotto": { "x": 143, "y": 543, "size": 131 },
-            "mail": { "x": -14, "y": 250, "size": 190 }
+            "inventory": { "x": 248, "y": 547, "size": 112 }
         }
     };
 
@@ -48,33 +47,27 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; transition: opacity 0.5s; }
+        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; transition: opacity 0.2s; }
         .game-icon { 
             position: absolute; display: flex; align-items: center; justify-content: center; 
-            pointer-events: auto; cursor: pointer; transition: transform 0.1s, filter 0.1s; 
+            pointer-events: auto; cursor: pointer; transition: transform 0.1s; 
             -webkit-tap-highlight-color: transparent;
         }
-        .game-icon img { width: 100%; height: 100%; object-fit: contain; }
-        
-        /* Эффект нажатия */
+        .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         .game-icon:active { transform: scale(0.9); filter: brightness(0.8); }
         
-        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); z-index: 10000; pointer-events: none; }
-        .panel-line { position: absolute; left: 0; width: 100%; height: 2px; background: #ffd700; opacity: 0.6; }
-        .line-top { top: 20%; } .line-bottom { bottom: 20%; }
-        
+        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); z-index: 998; pointer-events: none; }
         .m-hidden { display: none !important; }
-        .layer-hide { opacity: 0 !important; pointer-events: none !important; }
+        .layer-hide { display: none !important; }
 
         .nav-arrow-custom {
             position: absolute; left: 50%; top: -65px; transform: translateX(-50%);
             width: 55px; height: 55px; background: rgba(20,10,5,0.9); border: 3px solid #ffd700;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; box-shadow: 0 0 15px #ffd700; cursor: pointer;
+            pointer-events: auto; box-shadow: 0 0 15px #ffd700; cursor: pointer; z-index: 1000;
         }
         .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 4px solid #ffd700; border-right: 4px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff; }
-        .nav-arrow-custom.flip::after { border-color: #00d4ff; }
     `;
     document.head.appendChild(style);
 
@@ -86,7 +79,6 @@
         const panel = document.createElement('div');
         panel.className = 'bottom-panel';
         Object.assign(panel.style, { left: config.panel.x+'px', top: config.panel.y+'px', width: config.panel.w+'px', height: config.panel.h+'px' });
-        panel.innerHTML = '<div class="panel-line line-top"></div><div class="panel-line line-bottom"></div>';
         layer.appendChild(panel);
 
         const arrow = document.createElement('div');
@@ -108,15 +100,11 @@
             icon.appendChild(img);
             layer.appendChild(icon);
             iconRefs[id] = icon;
-
-            icon.onclick = () => console.log("Клик по:", id);
         });
 
-        // Функция обновления страниц
         const updatePages = () => {
-            bottomPage1.forEach(id => iconRefs[id].classList.toggle('m-hidden', currentPage !== 1));
-            bottomPage2.forEach(id => iconRefs[id].classList.toggle('m-hidden', currentPage !== 2));
-            // staticIcons всегда видны
+            bottomPage1.forEach(id => { if(iconRefs[id]) iconRefs[id].classList.toggle('m-hidden', currentPage !== 1); });
+            bottomPage2.forEach(id => { if(iconRefs[id]) iconRefs[id].classList.toggle('m-hidden', currentPage !== 2); });
         };
 
         arrow.onclick = (e) => {
@@ -128,11 +116,24 @@
 
         updatePages();
 
-        // Проверка: показывать только в меню
+        // Умная проверка видимости
         setInterval(() => {
-            const isMenu = !!document.querySelector('.menu-container');
-            layer.classList.toggle('layer-hide', !isMenu);
-        }, 500);
+            const menu = document.querySelector('.menu-container');
+            if (!menu) {
+                layer.classList.add('layer-hide');
+                return;
+            }
+
+            // Проверяем, не открыто ли что-то поверх меню (диалоги, окна героя и т.д.)
+            // Если в DOM после menu-container есть активные модальные окна, скрываем иконки
+            const overlays = document.querySelectorAll('.dialog-container, .popup, .hero-selection, .mail-open'); 
+            let hasActiveOverlay = false;
+            overlays.forEach(el => {
+                if (window.getComputedStyle(el).display !== 'none') hasActiveOverlay = true;
+            });
+
+            layer.classList.toggle('layer-hide', hasActiveOverlay);
+        }, 200);
     }
 
     init();
