@@ -2,16 +2,14 @@
     let EDIT_MODE = true; 
     let currentPage = 1;
 
-    // Полный список всех твоих кнопок
+    // Список твоих кнопок (Магазин и Инвентарь удалены)
     const buttonsData = [
         { id: 'profile',   img: 'icon_profile.png',   label: 'Профиль',    page: 1 },
         { id: 'battle',    img: 'icon_battle.png',    label: 'Сражения',   page: 1 },
         { id: 'quests',    img: 'icon_quests.png',    label: 'Задания',    page: 1 },
-        { id: 'shop',      img: 'icon_shop.png',      label: 'Магазин',    page: 1 },
-        { id: 'inventory', img: 'icon_inventory.png', label: 'Инвентарь',  page: 1 },
-        { id: 'community', img: 'icon_community.png', label: 'Сообщество',  page: 1 },
-        { id: 'calendar',  img: 'icon_calendar.png',  label: 'Календарь',  page: 2 },
-        { id: 'alliance',  img: 'icon_alliance.png',  label: 'Союз',       page: 2 },
+        { id: 'calendar',  img: 'icon_calendar.png',  label: 'Календарь',  page: 1 },
+        { id: 'alliance',  img: 'icon_alliance.png',  label: 'Союз',       page: 1 },
+        { id: 'community', img: 'icon_community.png', label: 'Сообщество',  page: 2 },
         { id: 'mail',      img: 'icon_mail.png',      label: 'Письмо',     page: 2 },
         { id: 'rating',    img: 'icon_rating.png',    label: 'Рейтинг',    page: 2 },
         { id: 'benchmark', img: 'icon_benchmark.png', label: 'Эталон',     page: 2 },
@@ -29,13 +27,12 @@
         .draggable-btn {
             position: absolute; display: flex; flex-direction: column; align-items: center;
             touch-action: none; user-select: none; z-index: 1000;
-            left: 50px; top: 50px; /* Начальная позиция, пока ты не расставишь */
         }
         .draggable-btn img { pointer-events: none; object-fit: contain; width: 80px; height: 80px; }
         .draggable-btn span { font-size: 11px; color: #ffd700; font-weight: bold; pointer-events: none; text-shadow: 1px 1px 2px #000; margin-top: 2px; }
         
         #ui-controls { position: fixed; top: 10px; right: 10px; z-index: 10000; }
-        .save-btn { padding: 15px; background: #ffd700; border: none; font-weight: bold; border-radius: 8px; color: #000; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .save-btn { padding: 15px; background: #ffd700; border: none; font-weight: bold; border-radius: 8px; color: #000; }
         
         #layout-output {
             position: fixed; top: 5%; left: 5%; width: 90%; height: 80%;
@@ -46,8 +43,8 @@
         .page-arrow-bottom {
             position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
             width: 60px; height: 40px; background: rgba(255,215,0,0.8);
-            clip-path: polygon(50% 100%, 0% 0%, 100% 0%); /* Треугольник вниз */
-            z-index: 10000; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+            z-index: 10000; cursor: pointer;
         }
         .page-arrow-bottom.up { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
     `;
@@ -70,9 +67,9 @@
             btn.id = data.id;
             btn.dataset.page = data.page;
             
-            // Распределяем их немного в начале, чтобы не были в одной куче
-            btn.style.left = (20 + (index % 3) * 100) + 'px';
-            btn.style.top = (20 + Math.floor(index / 3) * 100) + 'px';
+            // Начальный разброс, чтобы удобно было брать
+            btn.style.left = (40 + (index % 4) * 90) + 'px';
+            btn.style.top = (100 + Math.floor(index / 4) * 110) + 'px';
 
             btn.innerHTML = `<img src="${data.img}"><span>${data.label}</span>`;
 
@@ -80,7 +77,6 @@
             if (data.page === 1) p1.appendChild(btn); else p2.appendChild(btn);
         });
 
-        // Стрелка переключения (внизу)
         const arrow = document.createElement('div');
         arrow.className = 'page-arrow-bottom';
         arrow.onclick = () => {
@@ -95,15 +91,14 @@
             }
         };
 
-        // Кнопка сохранения
         const saveBtn = document.createElement('button');
-        saveBtn.className = 'save-btn'; saveBtn.innerText = 'СОХРАНИТЬ РЕЗУЛЬТАТ';
+        saveBtn.className = 'save-btn'; saveBtn.innerText = 'СОХРАНИТЬ КООРДИНАТЫ';
         const controls = document.createElement('div');
         controls.id = 'ui-controls'; controls.appendChild(saveBtn);
         
         const output = document.createElement('textarea');
         output.id = 'layout-output';
-        output.onclick = () => output.style.display = 'none'; // Скрыть по клику
+        output.onclick = () => output.style.display = 'none';
 
         saveBtn.onclick = () => {
             const res = [];
@@ -116,7 +111,7 @@
                     size: parseInt(el.querySelector('img').style.width || 80)
                 });
             });
-            output.value = "// СКОПИРУЙ ЭТОТ КОД И ПРИШЛИ МНЕ:\n" + JSON.stringify(res, null, 2);
+            output.value = JSON.stringify(res, null, 2);
             output.style.display = 'block';
         };
 
