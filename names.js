@@ -2,21 +2,20 @@
     let EDIT_MODE = true; 
     let currentPage = 1;
     
-    // Определяем, планшет это или телефон
+    // Проверка: планшет (true) или телефон (false)
     const isTablet = window.innerWidth > 768;
 
     const buttonsData = [
-        { id: 'profile',   img: 'icon_profile.png',   page: 1 },
-        { id: 'battle',    img: 'icon_battle.png',    page: 1 },
-        { id: 'quests',    img: 'icon_quests.png',    page: 1 },
-        { id: 'calendar',  img: 'icon_calendar.png',  page: 1 },
-        { id: 'alliance',  img: 'icon_alliance.png',  page: 1 },
-        // На планшете принудительно ставим все на 1 страницу
-        { id: 'community', img: 'icon_community.png', page: isTablet ? 1 : 2 },
-        { id: 'mail',      img: 'icon_mail.png',      page: isTablet ? 1 : 2 },
-        { id: 'rating',    img: 'icon_rating.png',    page: isTablet ? 1 : 2 },
-        { id: 'benchmark', img: 'icon_benchmark.png', page: isTablet ? 1 : 2 },
-        { id: 'lotto',     img: 'icon_lotto.png',     page: isTablet ? 1 : 2 }
+        { id: 'profile',   img: 'icon_profile.png' },
+        { id: 'battle',    img: 'icon_battle.png' },
+        { id: 'quests',    img: 'icon_quests.png' },
+        { id: 'calendar',  img: 'icon_calendar.png' },
+        { id: 'alliance',  img: 'icon_alliance.png' },
+        { id: 'community', img: 'icon_community.png' },
+        { id: 'mail',      img: 'icon_mail.png' },
+        { id: 'rating',    img: 'icon_rating.png' },
+        { id: 'benchmark', img: 'icon_benchmark.png' },
+        { id: 'lotto',     img: 'icon_lotto.png' }
     ];
 
     const style = document.createElement('style');
@@ -42,25 +41,26 @@
             display: none; font-family: monospace; border: 2px solid #ffd700; font-size: 12px;
         }
         
+        /* Стрелка внизу */
         .page-arrow-bottom {
             position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%);
             width: 60px; height: 40px; background: rgba(255,215,0,0.8);
             clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
             z-index: 10000; cursor: pointer;
-            /* Скрываем стрелку на планшетах */
-            display: ${isTablet ? 'none' : 'flex'};
+            display: flex; align-items: center; justify-content: center;
         }
         .page-arrow-bottom.up { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
     `;
     document.head.appendChild(style);
 
-    function initLayoutEditor() {
+    function initLayout() {
         const menu = document.querySelector('#menu-screen .menu-container');
         if (!menu) return;
 
         const p1 = document.createElement('div'); p1.id = 'page-1'; p1.className = 'canvas-page active';
         const p2 = document.createElement('div'); p2.id = 'page-2'; p2.className = 'canvas-page';
         
+        // На телефоне вторая страница за экраном справа
         if (!isTablet) p2.style.transform = 'translateX(100%)';
 
         menu.appendChild(p1);
@@ -70,22 +70,27 @@
             const btn = document.createElement('div');
             btn.className = 'draggable-btn';
             btn.id = data.id;
-            btn.dataset.page = data.page;
             
-            // Начальный разброс иконок (чуть плотнее для планшета)
-            let cols = isTablet ? 5 : 3;
-            btn.style.left = (40 + (index % cols) * 110) + 'px';
-            btn.style.top = (80 + Math.floor(index / cols) * 120) + 'px';
-
+            // Распределяем иконки для удобства хватания
+            btn.style.left = (50 + (index % (isTablet ? 5 : 3)) * 120) + 'px';
+            btn.style.top = (100 + Math.floor(index / (isTablet ? 5 : 3)) * 130) + 'px';
             btn.innerHTML = `<img src="${data.img}">`;
 
             setupTouchEvents(btn);
             
-            // На планшете все в p1, на телефоне согласно данным
-            if (isTablet || data.page === 1) p1.appendChild(btn); 
-            else p2.appendChild(btn);
+            if (isTablet) {
+                // Планшет: Все 10 штук на первую страницу
+                p1.appendChild(btn);
+            } else {
+                // Телефон: Делим 5 на 5
+                if (index < 5) p1.appendChild(btn); else {
+                    p2.appendChild(btn);
+                    btn.dataset.page = "2"; // Пометка для сохранения
+                }
+            }
         });
 
+        // Если это телефон, добавляем стрелку
         if (!isTablet) {
             const arrow = document.createElement('div');
             arrow.className = 'page-arrow-bottom';
@@ -103,6 +108,7 @@
             document.body.appendChild(arrow);
         }
 
+        // Кнопка сохранения
         const saveBtn = document.createElement('button');
         saveBtn.className = 'save-btn'; saveBtn.innerText = 'СОХРАНИТЬ КООРДИНАТЫ';
         const controls = document.createElement('div');
@@ -117,13 +123,13 @@
             document.querySelectorAll('.draggable-btn').forEach(el => {
                 res.push({
                     id: el.id,
-                    page: isTablet ? 1 : parseInt(el.dataset.page),
+                    page: isTablet ? 1 : (el.dataset.page === "2" ? 2 : 1),
                     x: parseInt(el.style.left),
                     y: parseInt(el.style.top),
                     size: parseInt(el.querySelector('img').style.width || 90)
                 });
             });
-            output.value = JSON.stringify(res, null, 2);
+            output.value = "// КООРДИНАТЫ:\n" + JSON.stringify(res, null, 2);
             output.style.display = 'block';
         };
 
@@ -133,34 +139,30 @@
 
     function setupTouchEvents(el) {
         let startDist = 0, startSize = 90;
-
         el.addEventListener('touchstart', function(e) {
             if (e.touches.length === 1) {
                 let touch = e.touches[0];
-                let shiftX = touch.clientX - el.offsetLeft;
-                let shiftY = touch.clientY - el.offsetTop;
-
+                let sX = touch.clientX - el.offsetLeft;
+                let sY = touch.clientY - el.offsetTop;
                 function move(ev) {
-                    el.style.left = (ev.touches[0].clientX - shiftX) + 'px';
-                    el.style.top = (ev.touches[0].clientY - shiftY) + 'px';
+                    el.style.left = (ev.touches[0].clientX - sX) + 'px';
+                    el.style.top = (ev.touches[0].clientY - sY) + 'px';
                 }
                 el.addEventListener('touchmove', move);
                 el.addEventListener('touchend', () => el.removeEventListener('touchmove', move), {once:true});
             } else if (e.touches.length === 2) {
-                startDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
+                startDist = Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY);
                 startSize = parseInt(el.querySelector('img').style.width || 90);
             }
         });
-
         el.addEventListener('touchmove', function(e) {
             if (e.touches.length === 2) {
-                let newDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-                let newSize = Math.max(30, Math.min(500, startSize * (newDist / startDist)));
-                el.querySelector('img').style.width = newSize + 'px';
-                el.querySelector('img').style.height = newSize + 'px';
+                let newDist = Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY);
+                let newS = Math.max(30, Math.min(500, startSize * (newDist / startDist)));
+                el.querySelector('img').style.width = el.querySelector('img').style.height = newS + 'px';
             }
         });
     }
 
-    initLayoutEditor();
+    initLayout();
 })();
