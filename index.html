@@ -302,20 +302,20 @@
             panel: { x: -24, y: 551, w: 448, h: 99 },
             layout: {
                 quests: {x:-22, y:551, s:106}, battle: {x:59, y:553, s:119}, alliance: {x:154, y:554, s:110},
-                shop: {x:246, y:94, s:115, static: true}, inventory: {x:248, y:547, s:112}, community: {x:17, y:167, s:114, static: true},
+                shop: {x:246, y:94, s:115, static: true}, inventory: {x:248, y:547, s:112}, community: {x:10, y:167, s:114, static: true},
                 benchmark: {x:238, y:542, s:127}, rating: {x:57, y:544, s:127}, profile: {x:-27, y:543, s:123},
-                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:-14, y:250, s:190, static: true}
+                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:10, y:250, s:190, static: true}
             }
         };
 
-        // Корректировка для мобильных иконок сообщества и письма - переместить к левой стенке но не сильно
+        // Корректировка для мобильных иконок сообщества и письма - переместить ближе к левой стенке и выровнять
         if (!isTablet) {
-            // Подвинуть иконку сообщества к левой стенке (но не сильно)
-            config.layout.community.x = 20;
+            // Подвинуть иконку сообщества ближе к левой стенке и выровнять
+            config.layout.community.x = 8;
             config.layout.community.y = 167;
             
-            // Подвинуть иконку письма к левой стенке (но не сильно)
-            config.layout.mail.x = 20;
+            // Подвинуть иконку письма ближе к левой стенке и выровнять
+            config.layout.mail.x = 8;
             config.layout.mail.y = 250;
         }
 
