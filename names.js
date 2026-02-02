@@ -1,149 +1,144 @@
 (function() {
-    const isTablet = window.innerWidth > 1024;
-    let activeIcon = null;
+    const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
 
-    // Исходные данные
-    const layout = isTablet ? {
-        "profile": { x: 367, y: 936, size: 154 },
-        "battle": { x: 81, y: 938, size: 150 },
-        "quests": { x: -9, y: 938, size: 139 },
-        "calendar": { x: -21, y: 314, size: 161 },
-        "alliance": { x: 179, y: 938, size: 147 },
+    const tabletLayout = {
+        "profile":   { x: 367, y: 936, size: 154 },
+        "battle":    { x: 81,  y: 938, size: 150 },
+        "quests":    { x: -9,  y: 938, size: 139 },
+        "calendar":  { x: -21, y: 314, size: 161 },
+        "alliance":  { x: 179, y: 938, size: 147 },
         "community": { x: -17, y: 211, size: 144 },
-        "mail": { x: 230, y: 891, size: 234 },
-        "rating": { x: -24, y: 88, size: 159 },
+        "mail":      { x: 230, y: 891, size: 234 },
+        "rating":    { x: -24, y: 88,  size: 159 },
         "benchmark": { x: 571, y: 924, size: 152 },
-        "lotto": { x: 468, y: 930, size: 159 }
-    } : {
-        "community": { x: 5, y: 164, size: 136 },
-        "calendar": { x: -6, y: 245, size: 161 },
-        "quests": { x: -18, y: 580, size: 128 },
-        "battle": { x: 61, y: 579, size: 142 },
-        "alliance": { x: 151, y: 584, size: 129 },
-        "mail": { x: 194, y: 538, size: 217 },
-        "profile": { x: 50, y: 700, size: 140 },
-        "rating": { x: 120, y: 700, size: 140 },
-        "lotto": { x: 190, y: 700, size: 140 },
-        "benchmark": { x: 260, y: 700, size: 140 }
+        "lotto":     { x: 468, y: 930, size: 159 }
+    };
+
+    const phoneLayout = {
+        "community": { x: 5,   y: 164, size: 136 },
+        "calendar":  { x: -6,  y: 245, size: 161 },
+        "quests":    { x: -18, y: 580, size: 128 },
+        "battle":    { x: 61,  y: 579, size: 142 },
+        "alliance":  { x: 151, y: 584, size: 129 },
+        "mail":      { x: 194, y: 538, size: 217 },
+        // Базовые размеры для 2 страницы
+        "profile":   { size: 110 }, 
+        "rating":    { size: 110 },
+        "lotto":     { size: 110 },
+        "benchmark": { size: 110 }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .editor-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; pointer-events: none; }
-        .edit-icon { 
-            position: absolute; pointer-events: auto; cursor: move; border: 2px dashed transparent;
-            transition: border 0.2s; user-select: none;
+        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .game-icon { 
+            position: absolute; display: flex; align-items: center; justify-content: center;
+            pointer-events: none; /* Отключаем клик по всему квадрату */
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            user-select: none;
         }
-        .edit-icon.active { border: 2px solid #00ff00; background: rgba(0, 255, 0, 0.1); }
-        .panel { 
-            position: fixed; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 5px; 
-            z-index: 10001; pointer-events: auto;
+        .game-icon img { 
+            width: 100%; height: 100%; object-fit: contain; 
+            pointer-events: auto; /* Клик работает ТОЛЬКО по самой картинке */
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
-        .btn-edit { 
-            padding: 8px 12px; background: #ffd700; border: none; font-weight: bold; 
-            cursor: pointer; border-radius: 4px; font-size: 12px;
+        .game-icon:active { transform: scale(0.9) !important; }
+        
+        .nav-arrow-min {
+            position: fixed; right: 12px; bottom: 20px; width: 22px; height: 22px;
+            background: #ffd700; clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            z-index: 10001; cursor: pointer; pointer-events: auto;
+            transition: transform 0.3s ease; display: none;
         }
-        .size-ctrl { display: ${isTablet ? 'none' : 'flex'}; gap: 5px; margin-top: 5px; }
+        .menu-container ~ .nav-arrow-min, body:has(.menu-container) .nav-arrow-min { display: block; }
+        .nav-arrow-min.flip { transform: rotate(180deg); }
+
+        .phone-group-hidden { opacity: 0; pointer-events: none !important; transform: translateX(100%); }
+        .phone-group-out { opacity: 0; pointer-events: none !important; transform: translateX(-100%); }
     `;
     document.head.appendChild(style);
 
-    function initEditor() {
+    function init() {
+        const container = document.querySelector('.menu-container') || document.body;
         const layer = document.createElement('div');
-        layer.className = 'editor-layer';
-        document.body.appendChild(layer);
+        layer.className = 'ui-master-layer';
+        container.appendChild(layer);
 
-        const panel = document.createElement('div');
-        panel.className = 'panel';
-        
-        const saveBtn = document.createElement('button');
-        saveBtn.className = 'btn-edit';
-        saveBtn.innerText = isTablet ? 'СОХРАНИТЬ (ПЛАНШЕТ)' : 'СОХРАНИТЬ ИКОНКИ';
-        saveBtn.onclick = () => console.log("КООРДИНАТЫ:", JSON.stringify(layout, null, 2));
-
-        panel.appendChild(saveBtn);
-
-        if (!isTablet) {
-            const saveClickBtn = document.createElement('button');
-            saveClickBtn.className = 'btn-edit';
-            saveClickBtn.innerText = 'СОХРАНИТЬ КЛИКИ';
-            saveClickBtn.onclick = () => console.log("ЛОГ КЛИКОВ СОХРАНЕН");
-            panel.appendChild(saveClickBtn);
-
-            const sizePanel = document.createElement('div');
-            sizePanel.className = 'size-ctrl';
-            sizePanel.innerHTML = `
-                <button class="btn-edit" onclick="changeSize(5)">+</button>
-                <button class="btn-edit" onclick="changeSize(-5)">-</button>
-            `;
-            panel.appendChild(sizePanel);
-        }
-        document.body.appendChild(panel);
-
-        Object.keys(layout).forEach(id => {
-            const d = layout[id];
-            const img = document.createElement('div');
-            img.className = 'edit-icon';
-            img.id = 'edit-' + id;
-            updateStyle(img, d);
-            img.innerHTML = `<img src="icon_${id}.png" style="width:100%;height:100%;">`;
-
-            img.onmousedown = img.ontouchstart = (e) => {
-                activeIcon = id;
-                document.querySelectorAll('.edit-icon').forEach(el => el.classList.remove('active'));
-                img.classList.add('active');
-                if (!isTablet) startDrag(e, id, img);
-            };
-
-            layer.appendChild(img);
-        });
+        const refs = {};
 
         if (isTablet) {
-            document.body.onclick = (e) => {
-                if (activeIcon && e.target === document.body) {
-                    layout[activeIcon].x = e.clientX - (layout[activeIcon].size / 2);
-                    layout[activeIcon].y = e.clientY - (layout[activeIcon].size / 2);
-                    updateStyle(document.getElementById('edit-' + activeIcon), layout[activeIcon]);
-                }
+            Object.keys(tabletLayout).forEach((id, idx) => {
+                const d = tabletLayout[id];
+                const icon = createIcon(id, d.x, d.y, d.size, layer);
+                icon.style.zIndex = 100 + idx;
+            });
+        } else {
+            const p1 = ["quests", "battle", "alliance", "mail"];
+            const p2 = ["profile", "rating", "lotto", "benchmark"];
+
+            ["community", "calendar"].forEach(id => {
+                createIcon(id, phoneLayout[id].x, phoneLayout[id].y, phoneLayout[id].size, layer);
+            });
+
+            p1.forEach(id => {
+                refs[id] = createIcon(id, phoneLayout[id].x, phoneLayout[id].y, phoneLayout[id].size, layer);
+            });
+
+            // ЮВЕЛИРНОЕ ВЫРАВНИВАНИЕ 2 СТРАНИЦЫ В РЯД
+            const screenW = window.innerWidth;
+            p2.forEach((id, i) => {
+                const size = phoneLayout[id].size;
+                const x = (i * (screenW / 4)) + (screenW / 8) - (size / 2);
+                const y = window.innerHeight - size - 30; // 30px отступ снизу
+                
+                const icon = createIcon(id, x, y, size, layer);
+                icon.classList.add('phone-group-hidden');
+                refs[id] = icon;
+            });
+
+            const arrow = document.createElement('div');
+            arrow.className = 'nav-arrow-min';
+            let page = 1;
+            arrow.onclick = (e) => {
+                e.stopPropagation();
+                page = page === 1 ? 2 : 1;
+                arrow.classList.toggle('flip', page === 2);
+
+                p1.forEach(id => {
+                    if (page === 2) refs[id].classList.add('phone-group-out');
+                    else refs[id].classList.remove('phone-group-out');
+                });
+                p2.forEach(id => {
+                    if (page === 2) {
+                        refs[id].classList.remove('phone-group-hidden');
+                        refs[id].querySelector('img').style.pointerEvents = "auto";
+                    } else {
+                        refs[id].classList.add('phone-group-hidden');
+                        refs[id].querySelector('img').style.pointerEvents = "none";
+                    }
+                });
             };
+            document.body.appendChild(arrow);
         }
     }
 
-    window.changeSize = (delta) => {
-        if (activeIcon) {
-            layout[activeIcon].size += delta;
-            updateStyle(document.getElementById('edit-' + activeIcon), layout[activeIcon]);
-        }
-    };
-
-    function startDrag(e, id, el) {
-        const touch = e.touches ? e.touches[0] : e;
-        const startX = touch.clientX - layout[id].x;
-        const startY = touch.clientY - layout[id].y;
-
-        function move(e) {
-            const t = e.touches ? e.touches[0] : e;
-            layout[id].x = t.clientX - startX;
-            layout[id].y = t.clientY - startY;
-            updateStyle(el, layout[id]);
-        }
-
-        function stop() {
-            document.removeEventListener('mousemove', move);
-            document.removeEventListener('touchmove', move);
-        }
-
-        document.addEventListener('mousemove', move);
-        document.addEventListener('touchmove', move);
-        document.addEventListener('mouseup', stop);
-        document.addEventListener('touchend', stop);
+    function createIcon(id, x, y, size, parent) {
+        const btn = document.createElement('div');
+        btn.className = 'game-icon';
+        btn.style.width = size + 'px'; btn.style.height = size + 'px';
+        btn.style.left = x + 'px'; btn.style.top = y + 'px';
+        
+        const img = document.createElement('img');
+        img.src = `icon_${id}.png`;
+        
+        img.addEventListener('pointerdown', (e) => e.stopPropagation());
+        img.onclick = () => console.log("Click:", id);
+        
+        btn.appendChild(img);
+        parent.appendChild(btn);
+        return btn;
     }
 
-    function updateStyle(el, d) {
-        el.style.width = d.size + 'px';
-        el.style.height = d.size + 'px';
-        el.style.left = d.x + 'px';
-        el.style.top = d.y + 'px';
-    }
-
-    initEditor();
+    init();
 })();
