@@ -294,17 +294,17 @@
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
                 quests: {x:-19, y:877, s:145}, battle: {x:102, y:880, s:160}, alliance: {x:237, y:882, s:150},
-                shop: {x:357, y:886, s:152}, inventory: {x:487, y:872, s:150}, community: {x:-15, y:127, s:153},
+                shop: {x:357, y:886, s:152}, inventory: {x:487, y:872, s:150}, community: {x:-15, y:127, s:153, static: true},
                 benchmark: {x:477, y:868, s:162}, rating: {x:229, y:871, s:162}, profile: {x:99, y:867, s:165},
-                lotto: {x:344, y:870, s:167}, calendar: {x:-69, y:414, s:256}, mail: {x:-79, y:835, s:243}
+                lotto: {x:344, y:870, s:167}, calendar: {x:-69, y:414, s:256, static: true}, mail: {x:-79, y:835, s:243, static: true}
             }
         } : {
             panel: { x: -24, y: 551, w: 448, h: 99 },
             layout: {
                 quests: {x:-22, y:551, s:106}, battle: {x:59, y:553, s:119}, alliance: {x:154, y:554, s:110},
-                shop: {x:246, y:94, s:115}, inventory: {x:248, y:547, s:112}, community: {x:17, y:167, s:114},
+                shop: {x:246, y:94, s:115, static: true}, inventory: {x:248, y:547, s:112}, community: {x:17, y:167, s:114, static: true},
                 benchmark: {x:238, y:542, s:127}, rating: {x:57, y:544, s:127}, profile: {x:-27, y:543, s:123},
-                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188}, mail: {x:-14, y:250, s:190}
+                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:-14, y:250, s:190, static: true}
             }
         };
 
@@ -353,7 +353,15 @@
         function updateIconVisibility() {
             Object.keys(config.layout).forEach(id => {
                 const el = document.getElementById('icon-' + id);
-                el.classList.toggle('hidden', !pages[currentPage].includes(id));
+                const data = config.layout[id];
+                
+                // Если иконка статическая, всегда показываем её
+                if (data.static) {
+                    el.classList.remove('hidden');
+                } else {
+                    // Иначе показываем только если она принадлежит текущей странице
+                    el.classList.toggle('hidden', !pages[currentPage].includes(id));
+                }
             });
         }
 
