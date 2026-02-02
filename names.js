@@ -1,19 +1,22 @@
 (function() {
     let EDIT_MODE = true; 
     let currentPage = 1;
+    
+    // Определяем, планшет это или телефон
+    const isTablet = window.innerWidth > 768;
 
-    // Список кнопок без подписей
     const buttonsData = [
         { id: 'profile',   img: 'icon_profile.png',   page: 1 },
         { id: 'battle',    img: 'icon_battle.png',    page: 1 },
         { id: 'quests',    img: 'icon_quests.png',    page: 1 },
         { id: 'calendar',  img: 'icon_calendar.png',  page: 1 },
         { id: 'alliance',  img: 'icon_alliance.png',  page: 1 },
-        { id: 'community', img: 'icon_community.png', page: 2 },
-        { id: 'mail',      img: 'icon_mail.png',      page: 2 },
-        { id: 'rating',    img: 'icon_rating.png',    page: 2 },
-        { id: 'benchmark', img: 'icon_benchmark.png', page: 2 },
-        { id: 'lotto',     img: 'icon_lotto.png',     page: 2 }
+        // На планшете принудительно ставим все на 1 страницу
+        { id: 'community', img: 'icon_community.png', page: isTablet ? 1 : 2 },
+        { id: 'mail',      img: 'icon_mail.png',      page: isTablet ? 1 : 2 },
+        { id: 'rating',    img: 'icon_rating.png',    page: isTablet ? 1 : 2 },
+        { id: 'benchmark', img: 'icon_benchmark.png', page: isTablet ? 1 : 2 },
+        { id: 'lotto',     img: 'icon_lotto.png',     page: isTablet ? 1 : 2 }
     ];
 
     const style = document.createElement('style');
@@ -44,6 +47,8 @@
             width: 60px; height: 40px; background: rgba(255,215,0,0.8);
             clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
             z-index: 10000; cursor: pointer;
+            /* Скрываем стрелку на планшетах */
+            display: ${isTablet ? 'none' : 'flex'};
         }
         .page-arrow-bottom.up { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
     `;
@@ -55,7 +60,8 @@
 
         const p1 = document.createElement('div'); p1.id = 'page-1'; p1.className = 'canvas-page active';
         const p2 = document.createElement('div'); p2.id = 'page-2'; p2.className = 'canvas-page';
-        p2.style.transform = 'translateX(100%)';
+        
+        if (!isTablet) p2.style.transform = 'translateX(100%)';
 
         menu.appendChild(p1);
         menu.appendChild(p2);
@@ -66,29 +72,36 @@
             btn.id = data.id;
             btn.dataset.page = data.page;
             
-            // Начальный разброс иконок
-            btn.style.left = (50 + (index % 5) * 110) + 'px';
-            btn.style.top = (120 + Math.floor(index / 5) * 120) + 'px';
+            // Начальный разброс иконок (чуть плотнее для планшета)
+            let cols = isTablet ? 5 : 3;
+            btn.style.left = (40 + (index % cols) * 110) + 'px';
+            btn.style.top = (80 + Math.floor(index / cols) * 120) + 'px';
 
             btn.innerHTML = `<img src="${data.img}">`;
 
             setupTouchEvents(btn);
-            if (data.page === 1) p1.appendChild(btn); else p2.appendChild(btn);
+            
+            // На планшете все в p1, на телефоне согласно данным
+            if (isTablet || data.page === 1) p1.appendChild(btn); 
+            else p2.appendChild(btn);
         });
 
-        const arrow = document.createElement('div');
-        arrow.className = 'page-arrow-bottom';
-        arrow.onclick = () => {
-            if (currentPage === 1) {
-                p1.style.transform = 'translateX(-100%)'; p2.style.transform = 'translateX(0)';
-                p1.classList.remove('active'); p2.classList.add('active');
-                currentPage = 2; arrow.classList.add('up');
-            } else {
-                p1.style.transform = 'translateX(0)'; p2.style.transform = 'translateX(100%)';
-                p2.classList.remove('active'); p1.classList.add('active');
-                currentPage = 1; arrow.classList.remove('up');
-            }
-        };
+        if (!isTablet) {
+            const arrow = document.createElement('div');
+            arrow.className = 'page-arrow-bottom';
+            arrow.onclick = () => {
+                if (currentPage === 1) {
+                    p1.style.transform = 'translateX(-100%)'; p2.style.transform = 'translateX(0)';
+                    p1.classList.remove('active'); p2.classList.add('active');
+                    currentPage = 2; arrow.classList.add('up');
+                } else {
+                    p1.style.transform = 'translateX(0)'; p2.style.transform = 'translateX(100%)';
+                    p2.classList.remove('active'); p1.classList.add('active');
+                    currentPage = 1; arrow.classList.remove('up');
+                }
+            };
+            document.body.appendChild(arrow);
+        }
 
         const saveBtn = document.createElement('button');
         saveBtn.className = 'save-btn'; saveBtn.innerText = 'СОХРАНИТЬ КООРДИНАТЫ';
@@ -104,7 +117,7 @@
             document.querySelectorAll('.draggable-btn').forEach(el => {
                 res.push({
                     id: el.id,
-                    page: parseInt(el.dataset.page),
+                    page: isTablet ? 1 : parseInt(el.dataset.page),
                     x: parseInt(el.style.left),
                     y: parseInt(el.style.top),
                     size: parseInt(el.querySelector('img').style.width || 90)
@@ -115,7 +128,6 @@
         };
 
         document.body.appendChild(controls);
-        document.body.appendChild(arrow);
         document.body.appendChild(output);
     }
 
