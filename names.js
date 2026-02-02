@@ -4,8 +4,7 @@
 
     const bottomPage1 = ["quests", "battle", "alliance", "inventory"];
     const bottomPage2 = ["benchmark", "rating", "profile", "lotto"];
-    const staticIcons = ["community", "calendar", "shop", "mail"]; 
-
+    
     const tabletLayout = {
         "panel": { "x": -17, "y": 880, "w": 854, "h": 130 },
         "layout": {
@@ -34,11 +33,11 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000; }
-        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
-        .game-icon img { width: 100%; height: 100%; object-fit: contain; }
-        .game-icon:active { transform: scale(0.9); }
-        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); z-index: 9999; pointer-events: none; }
+        .custom-ui-root { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20000; }
+        .game-icon { position: absolute; pointer-events: auto; cursor: pointer; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
+        .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+        .game-icon:active { transform: scale(0.9); filter: brightness(0.8); }
+        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); pointer-events: none; }
         .m-hidden { display: none !important; }
         .nav-arrow-custom {
             position: absolute; left: 50%; top: -65px; transform: translateX(-50%);
@@ -51,23 +50,24 @@
     `;
     document.head.appendChild(style);
 
-    function init() {
-        if (document.querySelector('.ui-master-layer')) return;
+    let root = null;
+    let iconRefs = {};
 
-        const layer = document.createElement('div');
-        layer.className = 'ui-master-layer';
-        document.body.appendChild(layer);
+    function createUI() {
+        if (root) return;
+        root = document.createElement('div');
+        root.className = 'custom-ui-root';
+        document.body.appendChild(root);
 
         const panel = document.createElement('div');
         panel.className = 'bottom-panel';
         Object.assign(panel.style, { left: config.panel.x+'px', top: config.panel.y+'px', width: config.panel.w+'px', height: config.panel.h+'px' });
-        layer.appendChild(panel);
+        root.appendChild(panel);
 
         const arrow = document.createElement('div');
         arrow.className = 'nav-arrow-custom';
         panel.appendChild(arrow);
 
-        const iconRefs = {};
         Object.keys(config.layout).forEach(id => {
             const d = config.layout[id];
             const icon = document.createElement('div');
@@ -77,31 +77,35 @@
             img.src = `icon_${id}.png`; 
             img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
             icon.appendChild(img);
-            layer.appendChild(icon);
+            root.appendChild(icon);
             iconRefs[id] = icon;
         });
 
-        const updatePages = () => {
-            bottomPage1.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 1));
-            bottomPage2.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 2));
+        arrow.onclick = () => {
+            currentPage = currentPage === 1 ? 2 : 1;
+            arrow.classList.toggle('flip', currentPage === 2);
+            updateVisibility();
         };
-
-        arrow.onclick = () => { currentPage = currentPage === 1 ? 2 : 1; arrow.classList.toggle('flip', currentPage === 2); updatePages(); };
-        updatePages();
-
-        // Цикл проверки: убивать иконки везде, кроме главного хаба
-        setInterval(() => {
-            const isHeroSelection = !!document.querySelector('.character-selection, .hero-selection, [class*="Warrior"]');
-            const isMenu = !!document.querySelector('.menu-container');
-            
-            // Если мы в выборе героя (как на скриншоте) - скрываем наглухо
-            if (isHeroSelection || !isMenu) {
-                layer.classList.add('m-hidden');
-            } else {
-                layer.classList.remove('m-hidden');
-            }
-        }, 100);
+        updateVisibility();
     }
 
-    init();
+    function updateVisibility() {
+        if (!iconRefs["quests"]) return;
+        bottomPage1.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 1));
+        bottomPage2.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 2));
+    }
+
+    // Главный цикл контроля
+    setInterval(() => {
+        // Условия, при которых иконки ДОЛЖНЫ быть скрыты (экраны выбора героя, как на скриншотах)
+        const isBlacklisted = !!document.querySelector('.character-selection, .hero-selection, .gender-btn, #character-create, .skills-list');
+        const isMenu = !!document.querySelector('.menu-container');
+
+        if (isBlacklisted || !isMenu) {
+            if (root) { root.remove(); root = null; iconRefs = {}; }
+        } else {
+            if (!root) createUI();
+        }
+    }, 200);
+
 })();
