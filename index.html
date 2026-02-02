@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Void Echoes RPG</title>
+    <title>Void Echoes RPG Official</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --gold: #ffd700;
             --blue: #00d4ff;
-            --purple: #bf40bf;
             --bg-panel: rgba(10, 10, 15, 0.9);
             --bg-modal: rgba(5, 5, 10, 0.95);
         }
@@ -24,15 +23,15 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
+            /* Убираем белый квадрат при нажатии */
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Эффект нажатия без квадратов */
+        /* Эффект клика для всех активных элементов */
         .game-icon, .icon-btn, .confirm-btn, .gender-btn, .skill-item, .inv-slot, .player-header, .nav-arrow-custom {
             transition: transform 0.1s ease;
             cursor: pointer;
         }
-
         .game-icon:active, .icon-btn:active, .confirm-btn:active, .gender-btn:active, .skill-item:active, .inv-slot:active, .player-header:active, .nav-arrow-custom:active {
             transform: scale(0.92) !important;
         }
@@ -44,7 +43,7 @@
             position: absolute; top: 0; left: 0;
         }
 
-        /* --- LOADING --- */
+        /* --- LOADING SCREEN --- */
         #loading-screen {
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
@@ -53,11 +52,11 @@
         }
         .logo-main { width: 220px; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--blue)); }
         .loader-container { width: 70%; max-width: 300px; text-align: center; }
-        #loading-pct { margin-bottom: 8px; font-weight: bold; color: var(--blue); font-size: 1.2rem; text-shadow: 0 0 10px var(--blue); }
+        #loading-pct { margin-bottom: 8px; font-weight: bold; color: var(--blue); font-size: 1.2rem; }
         .progress-bar { height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width 0.3s; }
 
-        /* --- HERO SELECT --- */
+        /* --- HERO SELECTION --- */
         .selection-container { 
             display: flex; flex-direction: column; 
             width: 100%; height: 100%; 
@@ -74,7 +73,7 @@
         .skills-card h2 { margin: 0 0 8px 0; text-align: center; color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
         .skill-item { display: flex; align-items: center; margin-bottom: 6px; background: rgba(255, 255, 255, 0.05); padding: 6px 10px; border-radius: 8px; }
         .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 12px; }
-        .skill-name { font-size: 0.85rem; font-weight: bold; color: #fff; }
+        .skill-name { font-size: 0.85rem; font-weight: bold; }
         .confirm-btn { margin-top: 8px; width: 100%; padding: 12px; background: linear-gradient(180deg, var(--gold), #b8860b); color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
 
         .class-selector { width: 100%; display: flex; justify-content: center; gap: 15px; padding: 10px 0 20px 0; flex-shrink: 0; }
@@ -87,22 +86,22 @@
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; z-index: 10; }
         .menu-container { position: relative; width: 100%; height: 100%; box-sizing: border-box; }
 
-        .resources-column { position: absolute; top: env(safe-area-inset-top, 20px); right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 20; }
-        .resource-panel { display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 5px 12px; border-radius: 20px; backdrop-filter: blur(8px); border: 1px solid var(--gold); min-width: 100px; }
-        .resource-panel.blue { border-color: var(--blue); }
-        .resource-panel img { width: 22px; height: 22px; margin-right: 8px; }
-        .resource-panel .value { font-size: 1rem; font-weight: bold; }
-
-        .player-header { position: absolute; top: env(safe-area-inset-top, 20px); left: 15px; display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 8px; border-radius: 14px; border: 1px solid var(--blue); backdrop-filter: blur(10px); z-index: 20; }
+        /* Фиксированная верхняя панель */
+        .player-header { position: absolute; top: env(safe-area-inset-top, 20px); left: 15px; display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 8px; border-radius: 14px; border: 1px solid var(--blue); backdrop-filter: blur(10px); z-index: 100; }
         .player-avatar { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 12px; }
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1rem; }
         .player-info p { margin: 0; font-size: 0.8rem; color: #ccc; }
 
-        .vip-button { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 80px; height: 80px; z-index: 20; filter: grayscale(1); transition: 0.3s; }
+        .vip-button { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 80px; height: 80px; z-index: 100; filter: grayscale(1); transition: 0.3s; }
         .vip-button.active { filter: grayscale(0); }
-        .vip-button img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Bottom Panel UI */
+        .resources-column { position: absolute; top: env(safe-area-inset-top, 20px); right: 15px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+        .resource-panel { display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--gold); min-width: 100px; }
+        .resource-panel.blue { border-color: var(--blue); }
+        .resource-panel img { width: 22px; height: 22px; margin-right: 8px; }
+        .resource-panel .value { font-size: 1rem; font-weight: bold; }
+
+        /* Динамическая нижняя панель */
         .bottom-panel-bg { 
             position: absolute; background: rgba(30, 15, 5, 0.8); 
             border-top: 3px solid var(--gold); pointer-events: none; 
@@ -129,12 +128,11 @@
         .game-icon.hidden { opacity: 0; transform: translateY(100px) scale(0.5); pointer-events: none; }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* --- INVENTORY --- */
+        /* --- INVENTORY SCREEN --- */
         #inventory-screen { background: url('character_preview.png') no-repeat center center/cover; z-index: 500; }
-        .close-inv { position: absolute; top: 30px; left: 30px; font-size: 3rem; color: white; cursor: pointer; z-index: 600; text-shadow: 0 0 10px #000; }
+        .close-inv { position: absolute; top: 30px; left: 30px; font-size: 3rem; color: white; cursor: pointer; z-index: 600; }
         .inv-container { width: 100%; height: 100%; position: relative; display: flex; justify-content: center; align-items: center; }
         .hero-preview-box { position: absolute; transform: translate(-50%, -50%); }
-        
         @media screen and (max-width: 599px) {
             .hero-preview-box { top: 55%; left: 54%; }
             #inv-hero-img { width: 241px; height: auto; }
@@ -145,11 +143,11 @@
             #inv-hero-img { width: 376px; height: auto; }
             .inv-slot { width: 235px; height: 235px; margin-bottom: -96px; }
         }
-
         .equipment-grid { position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; pointer-events: none; padding: 0 5%; box-sizing: border-box; }
         .inv-column { display: flex; flex-direction: column; pointer-events: auto; }
         .inv-slot img { width: 100%; height: 100%; object-fit: contain; }
 
+        /* --- MODAL --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
@@ -195,11 +193,14 @@
                     <p id="p-level-display">Уровень: 1</p>
                 </div>
             </div>
+
             <div id="vip-btn" class="vip-button" onclick="this.classList.toggle('active')"><img src="icon_vip.png"></div>
+
             <div class="resources-column">
                 <div class="resource-panel"><img src="icon_gold.png"><span id="gold-val" class="value">1500</span></div>
                 <div class="resource-panel blue"><img src="icon_crystal.png"><span id="crys-val" class="value">50</span></div>
             </div>
+
             <div id="ui-dynamic-layer"></div>
         </div>
     </div>
@@ -236,33 +237,29 @@
 
     <script>
         const tg = window.Telegram?.WebApp;
-        const SERVER_URL = 'https://void-echoes-rpg.onrender.com';
-        let userId = tg?.initDataUnsafe?.user?.id || 12345;
         let currentPage = 1;
         let currentHeroKey = 'warrior';
         let currentGender = 'male';
 
         const heroesData = {
-            warrior: { title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png", ava_m: "ava_warrior_male.png", ava_f: "ava_warrior_female.png", skills: [{ n: "Удар", i: "war_1.png", d: "Урон 120%." }, { n: "Вихрь", i: "war_2.png", d: "AOE урон." }, { n: "Рывок", i: "war_3.png", d: "Оглушение." }, { n: "Щит", i: "war_4.png", d: "+25% брони." }, { n: "Гнев", i: "war_5.png", d: "Криты 10с." }] },
-            mage: { title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png", ava_m: "ava_mage_male.png", ava_f: "ava_mage_female.png", skills: [{ n: "Стрела", i: "mag_1.png", d: "Замедление." }, { n: "Шторм", i: "mag_2.png", d: "Метеориты." }, { n: "Кольцо", i: "mag_3.png", d: "Заморозка." }, { n: "Барьер", i: "mag_4.png", d: "Мана-щит." }, { n: "Разлом", i: "mag_5.png", d: "Чистый урон." }] },
-            archer: { title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png", ava_m: "ava_archer_male.png", ava_f: "ava_archer_female.png", skills: [{ n: "Выстрел", i: "arc_1.png", d: "Крит шанс." }, { n: "Град", i: "arc_2.png", d: "Массовый урон." }, { n: "Ловушка", i: "arc_3.png", d: "Контроль." }, { n: "Мастер", i: "arc_4.png", d: "Уклонение." }, { n: "Око", i: "arc_5.png", d: "Ульта." }] }
+            warrior: { title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png", ava_m: "ava_warrior_male.png", ava_f: "ava_warrior_female.png", skills: [{ n: "Удар", i: "war_1.png", d: "Урон 120%." }, { n: "Вихрь", i: "war_2.png", d: "AOE урон." }, { n: "Рывок", i: "war_3.png", d: "Оглушение." }, { n: "Щит", i: "war_4.png", d: "Защита." }, { n: "Гнев", i: "war_5.png", d: "Ульта." }] },
+            mage: { title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png", ava_m: "ava_mage_male.png", ava_f: "ava_mage_female.png", skills: [{ n: "Стрела", i: "mag_1.png", d: "Замедление." }, { n: "Шторм", i: "mag_2.png", d: "Метеориты." }, { n: "Кольцо", i: "mag_3.png", d: "Заморозка." }, { n: "Барьер", i: "mag_4.png", d: "Мана-щит." }, { n: "Разлом", i: "mag_5.png", d: "Ульта." }] },
+            archer: { title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png", ava_m: "ava_archer_male.png", ava_f: "ava_archer_female.png", skills: [{ n: "Выстрел", i: "arc_1.png", d: "Крит." }, { n: "Град", i: "arc_2.png", d: "Массовый." }, { n: "Ловушка", i: "arc_3.png", d: "Контроль." }, { n: "Мастер", i: "arc_4.png", d: "Уклонение." }, { n: "Око", i: "arc_5.png", d: "Ульта." }] }
         };
 
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
         
-        // Список иконок, которые НЕ меняются при смене страниц
+        // Какие иконки НЕ скрываются при смене страниц
         const stickyIcons = isTablet ? ["calendar", "community"] : ["mail", "calendar", "community", "shop"];
 
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
                 quests: {x:-19, y:877, s:145}, battle: {x:102, y:880, s:160}, alliance: {x:237, y:882, s:150},
-                shop: {x:357, y:886, s:152}, inventory: {x:487, y:872, s:150}, 
-                community: {x:-15, y:127, s:153}, // Community - Sticky
+                inventory: {x:487, y:872, s:150}, shop: {x:357, y:886, s:152},
+                community: {x:-15, y:127, s:153}, calendar: {x:-69, y:414, s:256}, 
                 benchmark: {x:477, y:868, s:162}, rating: {x:229, y:871, s:162}, profile: {x:99, y:867, s:165},
-                lotto: {x:344, y:870, s:167}, 
-                calendar: {x:-69, y:414, s:256}, // Calendar - Sticky
-                mail: {x:-79, y:835, s:243}
+                lotto: {x:344, y:870, s:167}, mail: {x:-79, y:835, s:243}
             }
         } : {
             panel: { x: -24, y: 551, w: 448, h: 99 },
@@ -271,11 +268,11 @@
                 inventory: {x:248, y:547, s:112}, 
                 benchmark: {x:238, y:542, s:127}, rating: {x:57, y:544, s:127}, profile: {x:-27, y:543, s:123},
                 lotto: {x:143, y:543, s:131},
-                // Прижаты к левой стенке (x: 0 или отрицательный):
-                mail: {x:-15, y:250, s:190}, // Sticky
-                community: {x:0, y:167, s:114}, // Sticky
-                calendar: {x:218, y:358, s:188}, // Sticky
-                shop: {x:246, y:94, s:115} // Sticky
+                // Прижаты к левой стенке на телефоне:
+                mail: {x:-20, y:250, s:190}, 
+                community: {x:-5, y:167, s:114},
+                calendar: {x:218, y:358, s:188}, 
+                shop: {x:246, y:94, s:115}
             }
         };
 
@@ -287,6 +284,7 @@
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
             layer.innerHTML = '';
+            
             const bg = document.createElement('div');
             bg.id = 'bottom-panel-main'; bg.className = 'bottom-panel-bg';
             Object.assign(bg.style, { left: config.panel.x+'px', top: config.panel.y+'px', width: config.panel.w+'px', height: config.panel.h+'px' });
@@ -318,15 +316,10 @@
         function updateIconVisibility() {
             Object.keys(config.layout).forEach(id => {
                 const el = document.getElementById('icon-' + id);
-                // Если иконка "липкая" (sticky) ИЛИ входит в текущую страницу
+                if (!el) return;
                 const isSticky = stickyIcons.includes(id);
                 const isCurrent = pages[currentPage].includes(id);
-                
-                if (isSticky || isCurrent) {
-                    el.classList.remove('hidden');
-                } else {
-                    el.classList.add('hidden');
-                }
+                el.classList.toggle('hidden', !(isSticky || isCurrent));
             });
         }
 
@@ -349,7 +342,9 @@
 
         function showMenu() {
             document.getElementById('selection-screen').style.display = 'none';
-            const m = document.getElementById('menu-screen'); m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
+            const m = document.getElementById('menu-screen'); 
+            m.style.display = 'block'; 
+            setTimeout(() => m.style.opacity = '1', 50);
             const h = heroesData[currentHeroKey];
             document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
             buildDynamicUI();
