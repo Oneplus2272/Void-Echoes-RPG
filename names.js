@@ -1,8 +1,6 @@
 (function() {
-    // ЖЕСТКАЯ ПРОВЕРКА УСТРОЙСТВА
     const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
 
-    // КООРДИНАТЫ ПЛАНШЕТА (БЕЗ ИЗМЕНЕНИЙ)
     const tabletLayout = {
         "profile":   { x: 367, y: 936, size: 154 },
         "battle":    { x: 81,  y: 938, size: 150 },
@@ -16,7 +14,6 @@
         "lotto":     { x: 468, y: 930, size: 159 }
     };
 
-    // КООРДИНАТЫ ТЕЛЕФОНА (СТРОГО ПО ТВОИМ ДАННЫМ)
     const phoneLayout = {
         "community": { x: 5,   y: 164, size: 136 },
         "calendar":  { x: -6,  y: 245, size: 161 },
@@ -24,7 +21,6 @@
         "battle":    { x: 61,  y: 579, size: 142 },
         "alliance":  { x: 151, y: 584, size: 129 },
         "mail":      { x: 194, y: 538, size: 217 },
-        // Группа 2 (размеры твои, позиции будут подменены)
         "profile":   { size: 167 },
         "rating":    { size: 161 },
         "lotto":     { size: 165 },
@@ -33,29 +29,33 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; user-select: none; -webkit-user-select: none; }
+        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
         .game-icon { 
             position: absolute; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; cursor: pointer; transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-            -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation;
+            pointer-events: auto; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            -webkit-tap-highlight-color: transparent; user-select: none;
         }
-        .game-icon:active { transform: scale(0.85); }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+        .game-icon:active { transform: scale(0.88) !important; }
         
+        /* Стили стрелки (меньше и только в меню) */
         .nav-arrow-min {
-            position: fixed; right: 8px; bottom: 25px; width: 25px; height: 25px;
-            background: rgba(255, 215, 0, 0.9); clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-            z-index: 10000; cursor: pointer; pointer-events: auto;
-            display: ${isTablet ? 'none' : 'block'};
-            transition: transform 0.3s ease;
+            position: fixed; right: 12px; bottom: 20px; width: 22px; height: 22px;
+            background: #ffd700; clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            z-index: 10001; cursor: pointer; pointer-events: auto;
+            transition: transform 0.3s ease; display: none;
         }
+        /* Показываем стрелку только если есть контейнер меню */
+        .menu-container ~ .nav-arrow-min, body:has(.menu-container) .nav-arrow-min { display: block; }
         .nav-arrow-min.flip { transform: rotate(180deg); }
-        .slide-out { opacity: 0 !important; pointer-events: none !important; transform: translateX(-20px) scale(0.8); }
-        .slide-in { opacity: 1 !important; pointer-events: auto !important; transform: translateX(0) scale(1); }
+
+        /* Состояния анимации телефона */
+        .phone-group-hidden { opacity: 0; pointer-events: none; transform: translateX(100%); }
+        .phone-group-out { opacity: 0; pointer-events: none; transform: translateX(-100%); }
     `;
     document.head.appendChild(style);
 
-    function initUI() {
+    function init() {
         const container = document.querySelector('.menu-container') || document.body;
         const layer = document.createElement('div');
         layer.className = 'ui-master-layer';
@@ -64,60 +64,49 @@
         const refs = {};
 
         if (isTablet) {
-            Object.keys(tabletLayout).forEach(id => {
+            Object.keys(tabletLayout).forEach((id, idx) => {
                 const d = tabletLayout[id];
-                createIcon(id, d.x, d.y, d.size, layer);
+                const icon = createIcon(id, d.x, d.y, d.size, layer);
+                icon.style.zIndex = 100 + idx; // Разделяем слои для четкого клика
             });
         } else {
-            const p1Ids = ["quests", "battle", "alliance", "mail"];
-            const p2Ids = ["profile", "rating", "lotto", "benchmark"];
+            const p1 = ["quests", "battle", "alliance", "mail"];
+            const p2 = ["profile", "rating", "lotto", "benchmark"];
 
-            // Статичные верхние
             ["community", "calendar"].forEach(id => {
-                const d = phoneLayout[id];
-                createIcon(id, d.x, d.y, d.size, layer);
+                createIcon(id, phoneLayout[id].x, phoneLayout[id].y, phoneLayout[id].size, layer);
             });
 
-            // Страница 1
-            p1Ids.forEach(id => {
-                const d = phoneLayout[id];
-                refs[id] = createIcon(id, d.x, d.y, d.size, layer);
+            p1.forEach(id => {
+                refs[id] = createIcon(id, phoneLayout[id].x, phoneLayout[id].y, phoneLayout[id].size, layer);
             });
 
-            // Страница 2 (Выравниваем точно по местам первой группы)
-            p2Ids.forEach((id, i) => {
-                const d = phoneLayout[id];
-                const targetId = p1Ids[i]; // Берем координаты соответствующей иконки из p1
-                const targetPos = phoneLayout[targetId];
-                
-                const icon = createIcon(id, targetPos.x, targetPos.y, d.size, layer);
-                icon.style.opacity = "0";
-                icon.style.pointerEvents = "none";
-                icon.classList.add('slide-out');
+            p2.forEach((id, i) => {
+                const target = phoneLayout[p1[i]]; // Берем координаты первой группы
+                const icon = createIcon(id, target.x, target.y, phoneLayout[id].size, layer);
+                icon.classList.add('phone-group-hidden');
                 refs[id] = icon;
             });
 
-            // Маленькая стрелка
             const arrow = document.createElement('div');
             arrow.className = 'nav-arrow-min';
-            let currentPage = 1;
-            
+            let page = 1;
             arrow.onclick = (e) => {
                 e.stopPropagation();
-                currentPage = currentPage === 1 ? 2 : 1;
-                arrow.classList.toggle('flip', currentPage === 2);
-                
-                p1Ids.forEach(id => {
-                    if(currentPage === 1) refs[id].classList.remove('slide-out');
-                    else refs[id].classList.add('slide-out');
+                page = page === 1 ? 2 : 1;
+                arrow.classList.toggle('flip', page === 2);
+
+                p1.forEach(id => {
+                    if (page === 2) refs[id].classList.add('phone-group-out');
+                    else refs[id].classList.remove('phone-group-out');
                 });
-                p2Ids.forEach(id => {
-                    if(currentPage === 2) {
-                        refs[id].classList.remove('slide-out');
-                        refs[id].classList.add('slide-in');
+                p2.forEach(id => {
+                    if (page === 2) {
+                        refs[id].classList.remove('phone-group-hidden');
+                        refs[id].style.opacity = "1";
                     } else {
-                        refs[id].classList.add('slide-out');
-                        refs[id].classList.remove('slide-in');
+                        refs[id].classList.add('phone-group-hidden');
+                        refs[id].style.opacity = "0";
                     }
                 });
             };
@@ -126,23 +115,19 @@
     }
 
     function createIcon(id, x, y, size, parent) {
-        const div = document.createElement('div');
-        div.className = 'game-icon';
-        div.style.width = size + 'px';
-        div.style.height = size + 'px';
-        div.style.left = x + 'px';
-        div.style.top = y + 'px';
-        div.innerHTML = `<img src="icon_${id}.png">`;
+        const btn = document.createElement('div');
+        btn.className = 'game-icon';
+        btn.style.width = size + 'px'; btn.style.height = size + 'px';
+        btn.style.left = x + 'px'; btn.style.top = y + 'px';
+        btn.innerHTML = `<img src="icon_${id}.png">`;
         
-        // Четкий проклик
-        div.addEventListener('click', (e) => {
-            console.log("Action:", id);
-            // Здесь вызывай свои функции открытия окон
-        });
+        // Улучшенная область клика
+        btn.addEventListener('pointerdown', (e) => e.stopPropagation());
+        btn.onclick = () => console.log("Click:", id);
         
-        parent.appendChild(div);
-        return div;
+        parent.appendChild(btn);
+        return btn;
     }
 
-    initUI();
+    init();
 })();
