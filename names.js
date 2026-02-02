@@ -2,7 +2,7 @@
     // ЖЕСТКАЯ ПРОВЕРКА УСТРОЙСТВА
     const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
 
-    // КООРДИНАТЫ ПЛАНШЕТА (СТРОГО ПО ТВОИМ ДАННЫМ)
+    // КООРДИНАТЫ ПЛАНШЕТА (БЕЗ ИЗМЕНЕНИЙ)
     const tabletLayout = {
         "profile":   { x: 367, y: 936, size: 154 },
         "battle":    { x: 81,  y: 938, size: 150 },
@@ -24,7 +24,7 @@
         "battle":    { x: 61,  y: 579, size: 142 },
         "alliance":  { x: 151, y: 584, size: 129 },
         "mail":      { x: 194, y: 538, size: 217 },
-        // Вторая страница (размеры из твоих данных, позиция - в ряд)
+        // Группа 2 (размеры твои, позиции будут подменены)
         "profile":   { size: 167 },
         "rating":    { size: 161 },
         "lotto":     { size: 165 },
@@ -33,23 +33,25 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; user-select: none; -webkit-user-select: none; }
         .game-icon { 
             position: absolute; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; cursor: pointer; transition: transform 0.1s ease, opacity 0.3s ease;
-            -webkit-tap-highlight-color: transparent; outline: none;
+            pointer-events: auto; cursor: pointer; transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation;
         }
-        .game-icon:active { transform: scale(0.9); }
+        .game-icon:active { transform: scale(0.85); }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         
         .nav-arrow-min {
-            position: fixed; right: 10px; bottom: 30px; width: 35px; height: 35px;
-            background: #ffd700; clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            position: fixed; right: 8px; bottom: 25px; width: 25px; height: 25px;
+            background: rgba(255, 215, 0, 0.9); clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
             z-index: 10000; cursor: pointer; pointer-events: auto;
             display: ${isTablet ? 'none' : 'block'};
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
         }
         .nav-arrow-min.flip { transform: rotate(180deg); }
+        .slide-out { opacity: 0 !important; pointer-events: none !important; transform: translateX(-20px) scale(0.8); }
+        .slide-in { opacity: 1 !important; pointer-events: auto !important; transform: translateX(0) scale(1); }
     `;
     document.head.appendChild(style);
 
@@ -62,55 +64,61 @@
         const refs = {};
 
         if (isTablet) {
-            // ПЛАНШЕТ: Просто выводим всё по списку без условий
             Object.keys(tabletLayout).forEach(id => {
                 const d = tabletLayout[id];
                 createIcon(id, d.x, d.y, d.size, layer);
             });
         } else {
-            // ТЕЛЕФОН: Слайдер страниц
-            const p1 = ["quests", "battle", "alliance", "mail"];
-            const p2 = ["profile", "rating", "lotto", "benchmark"];
+            const p1Ids = ["quests", "battle", "alliance", "mail"];
+            const p2Ids = ["profile", "rating", "lotto", "benchmark"];
 
-            // Статичные (верх)
+            // Статичные верхние
             ["community", "calendar"].forEach(id => {
                 const d = phoneLayout[id];
                 createIcon(id, d.x, d.y, d.size, layer);
             });
 
-            // Страница 1 (низ)
-            p1.forEach(id => {
+            // Страница 1
+            p1Ids.forEach(id => {
                 const d = phoneLayout[id];
                 refs[id] = createIcon(id, d.x, d.y, d.size, layer);
             });
 
-            // Страница 2 (низ - в ряд)
-            p2.forEach((id, i) => {
+            // Страница 2 (Выравниваем точно по местам первой группы)
+            p2Ids.forEach((id, i) => {
                 const d = phoneLayout[id];
-                const screenW = window.innerWidth;
-                const x = (i * (screenW / 4)) + 5;
-                const y = window.innerHeight - (d.size * 0.9) - 40;
+                const targetId = p1Ids[i]; // Берем координаты соответствующей иконки из p1
+                const targetPos = phoneLayout[targetId];
                 
-                const icon = createIcon(id, x, y, d.size, layer);
+                const icon = createIcon(id, targetPos.x, targetPos.y, d.size, layer);
                 icon.style.opacity = "0";
                 icon.style.pointerEvents = "none";
+                icon.classList.add('slide-out');
                 refs[id] = icon;
             });
 
-            // Стрелка переключения
+            // Маленькая стрелка
             const arrow = document.createElement('div');
             arrow.className = 'nav-arrow-min';
-            let curPage = 1;
-            arrow.onclick = () => {
-                curPage = curPage === 1 ? 2 : 1;
-                arrow.classList.toggle('flip', curPage === 2);
-                p1.forEach(id => {
-                    refs[id].style.opacity = curPage === 1 ? "1" : "0";
-                    refs[id].style.pointerEvents = curPage === 1 ? "auto" : "none";
+            let currentPage = 1;
+            
+            arrow.onclick = (e) => {
+                e.stopPropagation();
+                currentPage = currentPage === 1 ? 2 : 1;
+                arrow.classList.toggle('flip', currentPage === 2);
+                
+                p1Ids.forEach(id => {
+                    if(currentPage === 1) refs[id].classList.remove('slide-out');
+                    else refs[id].classList.add('slide-out');
                 });
-                p2.forEach(id => {
-                    refs[id].style.opacity = curPage === 2 ? "1" : "0";
-                    refs[id].style.pointerEvents = curPage === 2 ? "auto" : "none";
+                p2Ids.forEach(id => {
+                    if(currentPage === 2) {
+                        refs[id].classList.remove('slide-out');
+                        refs[id].classList.add('slide-in');
+                    } else {
+                        refs[id].classList.add('slide-out');
+                        refs[id].classList.remove('slide-in');
+                    }
                 });
             };
             document.body.appendChild(arrow);
@@ -125,6 +133,13 @@
         div.style.left = x + 'px';
         div.style.top = y + 'px';
         div.innerHTML = `<img src="icon_${id}.png">`;
+        
+        // Четкий проклик
+        div.addEventListener('click', (e) => {
+            console.log("Action:", id);
+            // Здесь вызывай свои функции открытия окон
+        });
+        
         parent.appendChild(div);
         return div;
     }
