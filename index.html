@@ -201,20 +201,6 @@
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; }
 
         /* --- ОСТАЛЬНЫЕ МОДАЛКИ --- */
-        #shop-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('bg_shop_main.png') no-repeat center center/cover; z-index: 300; flex-direction: column; align-items: center; padding-top: env(safe-area-inset-top); }
-        #shop-modal::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); z-index: -1; }
-        .shop-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; box-sizing: border-box; z-index: 5; }
-        .shop-header h2 { color: var(--gold); margin: 0; font-size: 1.2rem; letter-spacing: 2px; text-shadow: 0 0 10px #000; }
-        .close-shop { font-size: 2.2rem; color: #fff; cursor: pointer; text-shadow: 0 0 10px #000; }
-        .shop-tabs { width: 100%; display: flex; justify-content: space-around; padding: 5px 10px; box-sizing: border-box; background: rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 5; }
-        .shop-tab { padding: 10px 15px; color: #ccc; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s; }
-        .shop-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-        .shop-content { width: 100%; overflow-y: auto; padding: 20px; box-sizing: border-box; z-index: 5; }
-        .shop-category { display: none; }
-        .shop-category.active { display: block; }
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .shop-item { background: rgba(10, 10, 15, 0.85); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; backdrop-filter: blur(5px); }
-        .buy-btn { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid var(--gold); color: var(--gold); padding: 10px; border-radius: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; }
         .modal-content { width: 85%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
@@ -301,8 +287,14 @@
         </div>
     </div>
 
-    <div id="shop-modal">...</div>
-    <div id="skill-modal" onclick="closeModal()">...</div>
+    <div id="skill-modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-img" src="" style="width:60px; height:60px; border:2px solid var(--gold); border-radius: 10px; margin-bottom: 10px;">
+            <div id="modal-name" style="color:var(--gold); font-size:1.2rem; margin-bottom:10px; font-weight: bold; text-transform: uppercase;"></div>
+            <div id="modal-text" style="color:#eee; font-size:0.9rem; line-height: 1.4; text-align: left;"></div>
+            <button style="margin-top: 15px; background: var(--gold); border:none; padding:8px 25px; border-radius:5px; font-weight:bold; cursor: pointer;" onclick="closeModal()">ПОНЯТНО</button>
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
@@ -322,7 +314,46 @@
             'helmet.png', 'chestplate.png', 'bracers.png', 'boots.png', 'hammer.png', 'ring.png'
         ];
 
-        // --- ЛОГИКА КАСТОМНЫХ ИКОНОК ---
+        // --- ДАННЫЕ ГЕРОЕВ ---
+        const heroesData = {
+            warrior: {
+                title: "ВОИН", bg: "UI_Background_Warrior.png", 
+                male: "hero_warrior_male.png", female: "hero_warrior_female.png",
+                ava_male: "ava_warrior_male.png", ava_female: "ava_warrior_female.png",
+                skills: [
+                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Базовая атака мечом. Наносит 120% физического урона." },
+                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Герой вращается, нанося 80% урона всем окружающим противникам." },
+                    { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Стремительный выпад. Оглушает цель на 2.5 секунды." },
+                    { n: "Бастион веры", i: "war_4_survivability.png", d: "Увеличивает броню на 25%." },
+                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Ярость на 10 сек: все удары критические." }
+                ]
+            },
+            mage: {
+                title: "МАГ", bg: "UI_Background_Mage.png",
+                male: "hero_mage_male.png", female: "hero_mage_female.png",
+                ava_male: "ava_mage_male.png", ava_female: "ava_mage_female.png",
+                skills: [
+                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Наносит 140% магического урона." },
+                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Метеоритный дождь по области." },
+                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Мгновенно замораживает всех врагов вокруг." },
+                    { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Поглощает 50% входящего урона за счет маны." },
+                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Аннигиляция цели: 500% чистого урона." }
+                ]
+            },
+            archer: {
+                title: "ЛУЧНИК", bg: "UI_Background_Archer.png",
+                male: "hero_archer_male.png", female: "hero_archer_female.png",
+                ava_male: "ava_archer_male.png", ava_female: "ava_archer_female.png",
+                skills: [
+                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Наносит 130% урона." },
+                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Выпускает 12 стрел, поражая и отталкивая врагов." },
+                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Обездвиживает врага на 4 сек." },
+                    { n: "Мастерство уклонения", i: "arc_4_survivability.png", d: "Увеличивает шанс уклониться на 20%." },
+                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "8 секунд каждый выстрел гарантированно критует." }
+                ]
+            }
+        };
+
         const page1Bottom = ["quests", "battle", "alliance", "inventory"];
         const page2Bottom = ["benchmark", "rating", "profile", "lotto"];
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
@@ -391,7 +422,6 @@
 
             updateIconVisibility();
             
-            // Цикл контроля видимости
             setInterval(() => {
                 const menu = document.getElementById('menu-screen');
                 if (menu && menu.style.display === 'block') {
@@ -407,19 +437,17 @@
             page2Bottom.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 2));
         }
 
-        // --- ОСТАЛЬНАЯ ЛОГИКА ИГРЫ ---
-        const heroesData = { ... }; // Данные героев как в твоем коде
-
         window.onload = () => { 
             if (tg) { tg.expand(); tg.ready(); } 
             preloadAssets(); 
-            initCustomUI(); // Запускаем иконки
+            initCustomUI(); 
         };
 
         function preloadAssets() {
             assetsToLoad.forEach(src => {
                 const img = new Image();
                 img.onload = () => { loadedCount++; updateLoader(); if (loadedCount >= assetsToLoad.length) checkUserOnServer(); };
+                img.onerror = () => { loadedCount++; updateLoader(); if (loadedCount >= assetsToLoad.length) checkUserOnServer(); };
                 img.src = src;
             });
         }
@@ -515,6 +543,5 @@
         }
         function closeModal() { document.getElementById('skill-modal').style.display = 'none'; }
     </script>
-    <script src="names.js"></script>
 </body>
 </html>
