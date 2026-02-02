@@ -156,6 +156,75 @@
         /* --- МОДАЛКА НАВЫКОВ --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
+
+        /* Панель редактирования */
+        #edit-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 300px;
+            color: white;
+        }
+
+        #edit-panel h3 {
+            margin: 0;
+            text-align: center;
+            color: var(--gold);
+        }
+
+        .coord-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .coord-input label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .coord-input input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--gold);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #save-edit-btn {
+            background: linear-gradient(180deg, var(--gold), #b8860b);
+            color: black;
+        }
+
+        #cancel-edit-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid #666;
+        }
     </style>
 </head>
 <body>
@@ -210,6 +279,11 @@
             </div>
 
             <div id="ui-dynamic-layer"></div>
+
+            <!-- Кнопка редактирования иконок (видна только на телефоне) -->
+            <div id="edit-icons-btn" style="position: absolute; bottom: 20px; right: 20px; background: var(--gold); color: black; padding: 10px 15px; border-radius: 8px; font-weight: bold; display: none; cursor: pointer; z-index: 1000;">
+                Редактировать иконки
+            </div>
         </div>
     </div>
 
@@ -240,6 +314,36 @@
             <h3 id="modal-name" style="color:var(--gold); margin:5px 0;"></h3>
             <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
             <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Панель редактирования иконок -->
+    <div id="edit-panel">
+        <h3>Редактировать иконки</h3>
+        
+        <div class="coord-input">
+            <label>Сообщество - X координата:</label>
+            <input type="number" id="edit-community-x" value="17">
+        </div>
+        
+        <div class="coord-input">
+            <label>Сообщество - Y координата:</label>
+            <input type="number" id="edit-community-y" value="167">
+        </div>
+        
+        <div class="coord-input">
+            <label>Письмо - X координата:</label>
+            <input type="number" id="edit-mail-x" value="-14">
+        </div>
+        
+        <div class="coord-input">
+            <label>Письмо - Y координата:</label>
+            <input type="number" id="edit-mail-y" value="250">
+        </div>
+        
+        <div class="edit-buttons">
+            <button class="edit-btn" id="save-edit-btn">СОХРАНИТЬ</button>
+            <button class="edit-btn" id="cancel-edit-btn">ОТМЕНА</button>
         </div>
     </div>
 
@@ -290,6 +394,7 @@
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
         const pages = { 1: ["quests", "battle", "alliance", "shop", "inventory", "community"], 2: ["benchmark", "rating", "profile", "lotto", "calendar", "mail"] };
 
+        // Начальная конфигурация
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
@@ -302,22 +407,11 @@
             panel: { x: -24, y: 551, w: 448, h: 99 },
             layout: {
                 quests: {x:-22, y:551, s:106}, battle: {x:59, y:553, s:119}, alliance: {x:154, y:554, s:110},
-                shop: {x:246, y:94, s:115, static: true}, inventory: {x:248, y:547, s:112}, community: {x:10, y:167, s:114, static: true},
+                shop: {x:246, y:94, s:115, static: true}, inventory: {x:248, y:547, s:112}, community: {x:17, y:167, s:114, static: true},
                 benchmark: {x:238, y:542, s:127}, rating: {x:57, y:544, s:127}, profile: {x:-27, y:543, s:123},
-                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:10, y:250, s:190, static: true}
+                lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:-14, y:250, s:190, static: true}
             }
         };
-
-        // Корректировка для мобильных иконок сообщества и письма - переместить ближе к левой стенке и выровнять
-        if (!isTablet) {
-            // Подвинуть иконку сообщества ближе к левой стенке и выровнять
-            config.layout.community.x = 8;
-            config.layout.community.y = 167;
-            
-            // Подвинуть иконку письма ближе к левой стенке и выровнять
-            config.layout.mail.x = 8;
-            config.layout.mail.y = 250;
-        }
 
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
@@ -348,6 +442,11 @@
                 layer.appendChild(icon);
             });
             updateIconVisibility();
+            
+            // Показать кнопку редактирования только на телефоне
+            if (!isTablet) {
+                document.getElementById('edit-icons-btn').style.display = 'block';
+            }
         }
 
         function updateIconVisibility() {
@@ -396,6 +495,55 @@
 
         function openInventory() { const inv = document.getElementById('inventory-screen'); inv.style.display = 'block'; setTimeout(() => inv.style.opacity = '1', 50); }
         function closeInventory() { const inv = document.getElementById('inventory-screen'); inv.style.opacity = '0'; setTimeout(() => inv.style.display = 'none', 400); }
+
+        // Функции для редактирования иконок
+        function openEditPanel() {
+            // Заполняем поля текущими значениями
+            document.getElementById('edit-community-x').value = config.layout.community.x;
+            document.getElementById('edit-community-y').value = config.layout.community.y;
+            document.getElementById('edit-mail-x').value = config.layout.mail.x;
+            document.getElementById('edit-mail-y').value = config.layout.mail.y;
+            
+            // Показываем панель редактирования
+            document.getElementById('edit-panel').style.display = 'flex';
+        }
+
+        function saveEdit() {
+            // Получаем новые значения из полей ввода
+            const communityX = parseInt(document.getElementById('edit-community-x').value);
+            const communityY = parseInt(document.getElementById('edit-community-y').value);
+            const mailX = parseInt(document.getElementById('edit-mail-x').value);
+            const mailY = parseInt(document.getElementById('edit-mail-y').value);
+            
+            // Обновляем конфигурацию
+            config.layout.community.x = communityX;
+            config.layout.community.y = communityY;
+            config.layout.mail.x = mailX;
+            config.layout.mail.y = mailY;
+            
+            // Закрываем панель редактирования
+            document.getElementById('edit-panel').style.display = 'none';
+            
+            // Перестраиваем UI с новыми координатами
+            buildDynamicUI();
+            
+            // Показываем новые координаты в консоли (ты увидишь цифры здесь)
+            console.log('Новые координаты иконок (только для телефона):');
+            console.log('Сообщество: x=' + communityX + ', y=' + communityY);
+            console.log('Письмо: x=' + mailX + ', y=' + mailY);
+            
+            // Также показываем alert с координатами
+            alert('Координаты сохранены!\n\nСообщество: x=' + communityX + ', y=' + communityY + '\nПисьмо: x=' + mailX + ', y=' + mailY + '\n\nКоординаты также выведены в консоль (F12)');
+        }
+
+        function cancelEdit() {
+            document.getElementById('edit-panel').style.display = 'none';
+        }
+
+        // Инициализация событий для редактирования
+        document.getElementById('edit-icons-btn').onclick = openEditPanel;
+        document.getElementById('save-edit-btn').onclick = saveEdit;
+        document.getElementById('cancel-edit-btn').onclick = cancelEdit;
 
         window.onload = () => {
             if(tg) { tg.expand(); tg.ready(); }
