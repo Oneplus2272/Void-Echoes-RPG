@@ -33,11 +33,10 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        #main-game-ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99999; opacity: 0; transition: opacity 0.1s; }
-        .ui-visible { opacity: 1 !important; }
+        #fixed-ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 99999; display: none; }
         .game-icon { position: absolute; pointer-events: auto; cursor: pointer; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; }
-        .game-icon:active { transform: scale(0.9); filter: brightness(0.85); }
+        .game-icon:active { transform: scale(0.92); filter: brightness(0.8); }
         .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); pointer-events: none; }
         .m-hidden { display: none !important; }
         .nav-arrow-custom {
@@ -52,7 +51,7 @@
     document.head.appendChild(style);
 
     const layer = document.createElement('div');
-    layer.id = 'main-game-ui-layer';
+    layer.id = 'fixed-ui-layer';
     document.body.appendChild(layer);
 
     const panel = document.createElement('div');
@@ -91,22 +90,17 @@
 
     updatePages();
 
-    // ПРОВЕРКА ФОНА
+    // Проверка фона раз в 150мс
     setInterval(() => {
         const menu = document.querySelector('.menu-container');
-        if (!menu) {
-            layer.classList.remove('ui-visible');
-            return;
+        if (menu) {
+            const bg = window.getComputedStyle(menu).backgroundImage;
+            if (bg.includes('Bg_menu_main.png')) {
+                layer.style.display = 'block';
+                return;
+            }
         }
-
-        const bg = window.getComputedStyle(menu).backgroundImage;
-        
-        // Если в пути фона есть имя нужного файла - показываем
-        if (bg.includes('Bg_menu_main.png')) {
-            layer.classList.add('ui-visible');
-        } else {
-            layer.classList.remove('ui-visible');
-        }
-    }, 100);
+        layer.style.display = 'none';
+    }, 150);
 
 })();
