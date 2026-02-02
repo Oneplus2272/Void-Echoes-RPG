@@ -2,7 +2,6 @@
     const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
     let currentPage = 1;
 
-    // Группировка
     const bottomPage1 = ["quests", "battle", "alliance", "inventory"];
     const bottomPage2 = ["benchmark", "rating", "profile", "lotto"];
     const staticIcons = ["community", "calendar", "shop", "mail"]; 
@@ -10,36 +9,24 @@
     const tabletLayout = {
         "panel": { "x": -17, "y": 880, "w": 854, "h": 130 },
         "layout": {
-            "quests": { "x": -19, "y": 877, "size": 145 },
-            "battle": { "x": 102, "y": 880, "size": 160 },
-            "alliance": { "x": 237, "y": 882, "size": 150 },
-            "community": { "x": -15, "y": 127, "size": 153 },
-            "calendar": { "x": -69, "y": 414, "size": 256 },
-            "shop": { "x": 357, "y": 886, "size": 152 },
-            "inventory": { "x": 487, "y": 872, "size": 150 },
-            "benchmark": { "x": 477, "y": 868, "size": 162 },
-            "rating": { "x": 229, "y": 871, "size": 162 },
-            "profile": { "x": 99, "y": 867, "size": 165 },
-            "lotto": { "x": 344, "y": 870, "size": 167 },
-            "mail": { "x": -79, "y": 835, "size": 243 }
+            "quests": { "x": -19, "y": 877, "size": 145 }, "battle": { "x": 102, "y": 880, "size": 160 },
+            "alliance": { "x": 237, "y": 882, "size": 150 }, "community": { "x": -15, "y": 127, "size": 153 },
+            "calendar": { "x": -69, "y": 414, "size": 256 }, "shop": { "x": 357, "y": 886, "size": 152 },
+            "inventory": { "x": 487, "y": 872, "size": 150 }, "benchmark": { "x": 477, "y": 868, "size": 162 },
+            "rating": { "x": 229, "y": 871, "size": 162 }, "profile": { "x": 99, "y": 867, "size": 165 },
+            "lotto": { "x": 344, "y": 870, "size": 167 }, "mail": { "x": -79, "y": 835, "size": 243 }
         }
     };
 
     const phoneLayout = {
         "panel": { "x": -24, "y": 551, "w": 398, "h": 99 },
         "layout": {
-            "community": { "x": 5, "y": 164, "size": 136 },
-            "calendar": { "x": -6, "y": 245, "size": 161 },
-            "quests": { "x": -18, "y": 580, "size": 128 },
-            "battle": { "x": 63.13, "y": 582, "size": 137 },
-            "alliance": { "x": 152.5, "y": 584.5, "size": 129 },
-            "mail": { "x": 195.5, "y": 538.5, "size": 217 },
-            "profile": { "x": -26.5, "y": 574, "size": 145 },
-            "rating": { "x": 153.75, "y": 567.7, "size": 160 },
-            "lotto": { "x": 60.25, "y": 565.2, "size": 160 },
-            "benchmark": { "x": 252.8, "y": 558.2, "size": 160 },
-            "shop": { "x": 246, "y": 94, "size": 115 },
-            "inventory": { "x": 248, "y": 547, "size": 112 }
+            "community": { "x": 5, "y": 164, "size": 136 }, "calendar": { "x": -6, "y": 245, "size": 161 },
+            "quests": { "x": -18, "y": 580, "size": 128 }, "battle": { "x": 63.13, "y": 582, "size": 137 },
+            "alliance": { "x": 152.5, "y": 584.5, "size": 129 }, "mail": { "x": 195.5, "y": 538.5, "size": 217 },
+            "profile": { "x": -26.5, "y": 574, "size": 145 }, "rating": { "x": 153.75, "y": 567.7, "size": 160 },
+            "lotto": { "x": 60.25, "y": 565.2, "size": 160 }, "benchmark": { "x": 252.8, "y": 558.2, "size": 160 },
+            "shop": { "x": 246, "y": 94, "size": 115 }, "inventory": { "x": 248, "y": 547, "size": 112 }
         }
     };
 
@@ -47,24 +34,17 @@
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; transition: opacity 0.2s; }
-        .game-icon { 
-            position: absolute; display: flex; align-items: center; justify-content: center; 
-            pointer-events: auto; cursor: pointer; transition: transform 0.1s; 
-            -webkit-tap-highlight-color: transparent;
-        }
-        .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-        .game-icon:active { transform: scale(0.9); filter: brightness(0.8); }
-        
-        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); z-index: 998; pointer-events: none; }
+        .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000; }
+        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
+        .game-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .game-icon:active { transform: scale(0.9); }
+        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); z-index: 9999; pointer-events: none; }
         .m-hidden { display: none !important; }
-        .layer-hide { display: none !important; }
-
         .nav-arrow-custom {
             position: absolute; left: 50%; top: -65px; transform: translateX(-50%);
             width: 55px; height: 55px; background: rgba(20,10,5,0.9); border: 3px solid #ffd700;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; box-shadow: 0 0 15px #ffd700; cursor: pointer; z-index: 1000;
+            pointer-events: auto; box-shadow: 0 0 15px #ffd700; cursor: pointer;
         }
         .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 4px solid #ffd700; border-right: 4px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff; }
@@ -72,6 +52,8 @@
     document.head.appendChild(style);
 
     function init() {
+        if (document.querySelector('.ui-master-layer')) return;
+
         const layer = document.createElement('div');
         layer.className = 'ui-master-layer';
         document.body.appendChild(layer);
@@ -86,54 +68,39 @@
         panel.appendChild(arrow);
 
         const iconRefs = {};
-
         Object.keys(config.layout).forEach(id => {
             const d = config.layout[id];
             const icon = document.createElement('div');
             icon.className = 'game-icon';
             Object.assign(icon.style, { width: d.size+'px', height: d.size+'px', left: d.x+'px', top: d.y+'px' });
-            
             const img = document.createElement('img');
             img.src = `icon_${id}.png`; 
             img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
-            
             icon.appendChild(img);
             layer.appendChild(icon);
             iconRefs[id] = icon;
         });
 
         const updatePages = () => {
-            bottomPage1.forEach(id => { if(iconRefs[id]) iconRefs[id].classList.toggle('m-hidden', currentPage !== 1); });
-            bottomPage2.forEach(id => { if(iconRefs[id]) iconRefs[id].classList.toggle('m-hidden', currentPage !== 2); });
+            bottomPage1.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 1));
+            bottomPage2.forEach(id => iconRefs[id]?.classList.toggle('m-hidden', currentPage !== 2));
         };
 
-        arrow.onclick = (e) => {
-            e.stopPropagation();
-            currentPage = currentPage === 1 ? 2 : 1;
-            arrow.classList.toggle('flip', currentPage === 2);
-            updatePages();
-        };
-
+        arrow.onclick = () => { currentPage = currentPage === 1 ? 2 : 1; arrow.classList.toggle('flip', currentPage === 2); updatePages(); };
         updatePages();
 
-        // Умная проверка видимости
+        // Цикл проверки: убивать иконки везде, кроме главного хаба
         setInterval(() => {
-            const menu = document.querySelector('.menu-container');
-            if (!menu) {
-                layer.classList.add('layer-hide');
-                return;
+            const isHeroSelection = !!document.querySelector('.character-selection, .hero-selection, [class*="Warrior"]');
+            const isMenu = !!document.querySelector('.menu-container');
+            
+            // Если мы в выборе героя (как на скриншоте) - скрываем наглухо
+            if (isHeroSelection || !isMenu) {
+                layer.classList.add('m-hidden');
+            } else {
+                layer.classList.remove('m-hidden');
             }
-
-            // Проверяем, не открыто ли что-то поверх меню (диалоги, окна героя и т.д.)
-            // Если в DOM после menu-container есть активные модальные окна, скрываем иконки
-            const overlays = document.querySelectorAll('.dialog-container, .popup, .hero-selection, .mail-open'); 
-            let hasActiveOverlay = false;
-            overlays.forEach(el => {
-                if (window.getComputedStyle(el).display !== 'none') hasActiveOverlay = true;
-            });
-
-            layer.classList.toggle('layer-hide', hasActiveOverlay);
-        }, 200);
+        }, 100);
     }
 
     init();
