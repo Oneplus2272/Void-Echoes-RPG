@@ -1,7 +1,8 @@
 (function() {
-    const isTablet = window.innerWidth > 768;
+    // ЖЕСТКАЯ ПРОВЕРКА УСТРОЙСТВА
+    const isTablet = window.innerWidth > 768 || window.screen.width > 768;
 
-    // ТВОИ КООРДИНАТЫ И РАЗМЕРЫ (ПЛАНШЕТ)
+    // ТВОИ ДАННЫЕ ДЛЯ ПЛАНШЕТА (БЕЗ ИЗМЕНЕНИЙ)
     const tabletLayout = {
         "profile":   { x: 367, y: 936, size: 154 },
         "battle":    { x: 81,  y: 938, size: 150 },
@@ -15,42 +16,39 @@
         "lotto":     { x: 468, y: 930, size: 159 }
     };
 
-    // ТВОИ КООРДИНАТЫ И РАЗМЕРЫ (ТЕЛЕФОН)
+    // ТВОИ ДАННЫЕ ДЛЯ ТЕЛЕФОНА
     const phoneLayout = {
-        // Статичные
         "community": { x: 5,   y: 164, size: 136 },
         "calendar":  { x: -6,  y: 245, size: 161 },
-        // Группа 1 (Низ)
         "quests":    { x: -18, y: 580, size: 128 },
         "battle":    { x: 61,  y: 579, size: 142 },
         "alliance":  { x: 151, y: 584, size: 129 },
         "mail":      { x: 194, y: 538, size: 217 },
-        // Группа 2 (Низ - заменяют первую группу)
-        "profile":   { x: 220, y: 379, size: 167 }, 
-        "rating":    { x: 218, y: 286, size: 161 },
-        "lotto":     { x: -10, y: 342, size: 165 },
-        "benchmark": { x: 227, y: 469, size: 157 }
+        // Вторая страница (будут выровнены в ряд программно ниже)
+        "profile":   { size: 120 },
+        "rating":    { size: 120 },
+        "lotto":     { size: 120 },
+        "benchmark": { size: 120 }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .game-nav-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
+        .game-nav-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
         .nav-icon { 
             position: absolute; display: flex; align-items: center; justify-content: center; 
-            pointer-events: auto; cursor: pointer; transition: transform 0.1s ease, opacity 0.3s ease;
+            pointer-events: auto; cursor: pointer; transition: opacity 0.3s ease, transform 0.1s ease;
             -webkit-tap-highlight-color: transparent; 
         }
-        .nav-icon:active { transform: scale(0.9); }
+        .nav-icon:active { transform: scale(0.92); }
         .nav-icon img { width: 100%; height: 100%; object-fit: contain; }
         
-        .side-arrow {
-            position: fixed; right: 10px; bottom: 15%; width: 45px; height: 45px;
-            background: rgba(255, 215, 0, 0.9); clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-            z-index: 2001; cursor: pointer; pointer-events: auto;
-            display: ${isTablet ? 'none' : 'block'};
+        .side-arrow-min {
+            position: fixed; right: 5px; bottom: 10%; width: 30px; height: 30px;
+            background: rgba(255, 215, 0, 0.8); clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            z-index: 2005; cursor: pointer; pointer-events: auto;
+            display: ${isTablet ? 'none' : 'block'}; /* ПЛАНШЕТ СТРЕЛКУ НЕ ВИДИТ */
         }
-        .side-arrow.left { transform: rotate(180deg); }
-        .hidden-group { opacity: 0; pointer-events: none; transform: translateX(50px); }
+        .side-arrow-min.rev { transform: rotate(180deg); }
     `;
     document.head.appendChild(style);
 
@@ -60,47 +58,54 @@
         layer.className = 'game-nav-layer';
         menu.appendChild(layer);
 
+        const icons = {};
+
         if (isTablet) {
-            // ПЛАНШЕТ - Все 10 иконок сразу
+            // ЛОГИКА ПЛАНШЕТА
             Object.keys(tabletLayout).forEach(id => {
                 const c = tabletLayout[id];
-                createIcon(id, c.x, c.y, c.size, layer);
+                icons[id] = createIcon(id, c.x, c.y, c.size, layer);
             });
         } else {
-            // ТЕЛЕФОН
-            const group1Ids = ["quests", "battle", "alliance", "mail"];
-            const group2Ids = ["profile", "rating", "lotto", "benchmark"];
-            const icons = {};
+            // ЛОГИКА ТЕЛЕФОНА
+            const group1 = ["quests", "battle", "alliance", "mail"];
+            const group2 = ["profile", "rating", "lotto", "benchmark"];
 
-            // 1. Создаем все иконки
-            Object.keys(phoneLayout).forEach(id => {
+            // Статичные и 1-я группа
+            ["community", "calendar", ...group1].forEach(id => {
                 const c = phoneLayout[id];
-                const btn = createIcon(id, c.x, c.y, c.size, layer);
-                icons[id] = btn;
-
-                // Скрываем вторую группу изначально
-                if (group2Ids.includes(id)) {
-                    btn.classList.add('hidden-group');
-                }
+                icons[id] = createIcon(id, c.x, c.y, c.size, layer);
             });
 
-            // 2. Стрелка переключения
+            // 2-я группа: Профиль, Рейтинг, Лото, Эталон (В ряд внизу)
+            group2.forEach((id, i) => {
+                const c = phoneLayout[id];
+                const screenW = window.innerWidth;
+                const spacing = screenW / 4;
+                const x = (i * spacing) + (spacing / 2) - (c.size / 2);
+                const y = window.innerHeight - c.size - 20; // В ряд в самом низу
+                
+                const btn = createIcon(id, x, y, c.size, layer);
+                btn.style.opacity = "0";
+                btn.style.pointerEvents = "none";
+                icons[id] = btn;
+            });
+
+            // Маленькая стрелка
             const arrow = document.createElement('div');
-            arrow.className = 'side-arrow';
-            let showGroup2 = false;
-
+            arrow.className = 'side-arrow-min';
+            let state = 1;
             arrow.onclick = () => {
-                showGroup2 = !showGroup2;
-                arrow.classList.toggle('left', showGroup2);
-
-                group1Ids.forEach(id => {
-                    icons[id].style.opacity = showGroup2 ? "0" : "1";
-                    icons[id].style.pointerEvents = showGroup2 ? "none" : "auto";
+                state = state === 1 ? 2 : 1;
+                arrow.classList.toggle('rev', state === 2);
+                
+                group1.forEach(id => {
+                    icons[id].style.opacity = state === 1 ? "1" : "0";
+                    icons[id].style.pointerEvents = state === 1 ? "auto" : "none";
                 });
-                group2Ids.forEach(id => {
-                    icons[id].style.opacity = showGroup2 ? "1" : "0";
-                    icons[id].style.pointerEvents = showGroup2 ? "auto" : "none";
-                    icons[id].classList.toggle('hidden-group', !showGroup2);
+                group2.forEach(id => {
+                    icons[id].style.opacity = state === 2 ? "1" : "0";
+                    icons[id].style.pointerEvents = state === 2 ? "auto" : "none";
                 });
             };
             document.body.appendChild(arrow);
@@ -110,10 +115,10 @@
     function createIcon(id, x, y, size, parent) {
         const btn = document.createElement('div');
         btn.className = 'nav-icon';
-        btn.style.left = x + 'px';
-        btn.style.top = y + 'px';
         btn.style.width = size + 'px';
         btn.style.height = size + 'px';
+        btn.style.left = x + 'px';
+        btn.style.top = y + 'px';
         btn.innerHTML = `<img src="icon_${id}.png">`;
         parent.appendChild(btn);
         return btn;
