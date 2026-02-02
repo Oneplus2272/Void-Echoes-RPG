@@ -92,18 +92,26 @@
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1.05rem; font-weight: bold; }
         .player-info p { margin: 2px 0 0 0; font-size: 0.85rem; color: #ccc; }
 
-        /* --- UI MASTER LAYER --- */
-        .ui-master-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: none; }
-        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
+        /* --- UI MASTER LAYER (ОБНОВЛЕННЫЙ) --- */
+        .ui-master-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; display: none; overflow: hidden; }
+        .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.1s, opacity 0.5s ease, transform 0.5s ease; -webkit-tap-highlight-color: transparent; }
+        
+        /* Стили анимации переключения */
+        .game-icon.m-hidden { 
+            opacity: 0 !important; 
+            pointer-events: none !important;
+            transform: translateX(50px) scale(0.8); /* Уезжает вправо */
+        }
+        
         .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
         .game-icon:active { transform: scale(0.9); filter: brightness(0.8); }
         .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); pointer-events: none; }
-        .m-hidden { display: none !important; }
+        
         .nav-arrow-custom {
             position: absolute; left: 50%; top: -65px; transform: translateX(-50%);
             width: 55px; height: 55px; background: rgba(15,5,0,0.9); border: 3px solid #ffd700;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; cursor: pointer; z-index: 10000;
+            pointer-events: auto; cursor: pointer; z-index: 10000; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 5px solid #ffd700; border-right: 5px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; }
@@ -266,7 +274,6 @@
         let loadedCount = 0;
         let currentPage = 1;
 
-        // --- ДАННЫЕ ГЕРОЕВ ---
         const heroesData = {
             warrior: {
                 title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png",
@@ -303,7 +310,6 @@
             }
         };
 
-        // --- ВШИТЫЕ НАСТРОЙКИ ИКОНОК ---
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
         const tabletLayout = {
             "panel": { "x": -17, "y": 880, "w": 854, "h": 130 },
@@ -324,8 +330,12 @@
             }
         };
         const config = isTablet ? tabletLayout : phoneLayout;
+        
+        // Четкое разделение иконок по страницам
         const page1Items = ["quests", "battle", "alliance", "inventory"];
         const page2Items = ["benchmark", "rating", "profile", "lotto"];
+        const staticIcons = ["community", "calendar", "shop", "mail"]; // Эти иконки всегда видны
+        
         const refs = { icons: {} };
 
         function initMasterLayer() {
@@ -344,7 +354,8 @@
                 const d = config.layout[id];
                 const icon = document.createElement('div');
                 icon.className = 'game-icon';
-                Object.assign(icon.style, { width: d.size+'px', height: d.size+'px', left: d.x+'px', top: d.y+'px' });
+                // Начальное состояние
+                Object.assign(icon.style, { width: d.size+'px', height: d.size+'px', left: d.x+'px', top: d.y+'px', opacity: '1' });
                 const img = document.createElement('img');
                 img.src = `icon_${id}.png`;
                 img.onerror = () => img.src = 'https://cdn-icons-png.flaticon.com/512/236/236831.png';
@@ -355,10 +366,34 @@
             });
 
             const updateIcons = () => {
-                page1Items.forEach(id => refs.icons[id]?.classList.toggle('m-hidden', currentPage !== 1));
-                page2Items.forEach(id => refs.icons[id]?.classList.toggle('m-hidden', currentPage !== 2));
+                // Логика плавной смены: скрываем ненужные, показываем нужные
+                page1Items.forEach(id => {
+                    const icon = refs.icons[id];
+                    if(icon) {
+                        if(currentPage === 1) icon.classList.remove('m-hidden');
+                        else icon.classList.add('m-hidden');
+                    }
+                });
+                
+                page2Items.forEach(id => {
+                    const icon = refs.icons[id];
+                    if(icon) {
+                        if(currentPage === 2) icon.classList.remove('m-hidden');
+                        else icon.classList.add('m-hidden');
+                    }
+                });
+                
+                // Статичные иконки всегда без класса скрытия
+                staticIcons.forEach(id => refs.icons[id]?.classList.remove('m-hidden'));
             };
-            arrow.onclick = (e) => { e.stopPropagation(); currentPage = (currentPage === 1) ? 2 : 1; arrow.classList.toggle('flip', currentPage === 2); updateIcons(); };
+
+            arrow.onclick = (e) => { 
+                e.stopPropagation(); 
+                currentPage = (currentPage === 1) ? 2 : 1; 
+                arrow.classList.toggle('flip', currentPage === 2); 
+                updateIcons(); 
+            };
+            
             updateIcons();
 
             setInterval(() => {
@@ -367,7 +402,6 @@
             }, 150);
         }
 
-        // --- ЛОГИКА ИГРЫ ---
         window.onload = () => { if (tg) { tg.expand(); tg.ready(); } preloadAssets(); initMasterLayer(); };
 
         function preloadAssets() {
@@ -376,8 +410,10 @@
                 const img = new Image();
                 img.onload = img.onerror = () => { loadedCount++; 
                     const pct = Math.floor((loadedCount / assets.length) * 100);
-                    document.getElementById('progress-fill').style.width = pct + '%';
-                    document.getElementById('loading-pct').innerText = pct + '%';
+                    const fill = document.getElementById('progress-fill');
+                    const txt = document.getElementById('loading-pct');
+                    if(fill) fill.style.width = pct + '%';
+                    if(txt) txt.innerText = pct + '%';
                     if (loadedCount >= assets.length) checkUser(); 
                 };
                 img.src = src;
