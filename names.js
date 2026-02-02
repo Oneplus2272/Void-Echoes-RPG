@@ -1,7 +1,7 @@
 (function() {
     const isTablet = window.innerWidth > 768;
 
-    // ФИКСИРОВАННЫЕ КООРДИНАТЫ ДЛЯ ПЛАНШЕТА (больше не трогаем)
+    // 1. ФИКСИРОВАННЫЕ КООРДИНАТЫ ДЛЯ ПЛАНШЕТА
     const tabletLayout = {
         "profile":   { x: 367, y: 936, size: 154 },
         "battle":    { x: 81,  y: 938, size: 150 },
@@ -15,98 +15,95 @@
         "lotto":     { x: 468, y: 930, size: 159 }
     };
 
-    const ids = Object.keys(tabletLayout);
+    // 2. КООРДИНАТЫ ДЛЯ ТЕЛЕФОНА (из твоих скриншотов)
+    const phoneLayout = {
+        "community": { x: 5,   y: 164, size: 136, page: 1 },
+        "quests":    { x: -18, y: 580, size: 128, page: 1 },
+        "battle":    { x: 61,  y: 579, size: 142, page: 1 },
+        "alliance":  { x: 151, y: 584, size: 129, page: 1 },
+        "mail":      { x: 194, y: 538, size: 217, page: 1 },
+        "calendar":  { x: -6,  y: 245, size: 161, page: 1 },
+        // Эти 4 иконки на 2-ю страницу (в нижнюю панель)
+        "profile":   { x: 220, y: 379, size: 167, page: 2 },
+        "rating":    { x: 218, y: 286, size: 161, page: 2 },
+        "benchmark": { x: 227, y: 469, size: 157, page: 2 },
+        "lotto":     { x: -10, y: 342, size: 165, page: 2 }
+    };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .game-nav-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
-        .nav-icon { position: absolute; display: flex; align-items: center; justify-content: center; touch-action: none; pointer-events: auto; }
-        .nav-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-        #ui-save-mobile { position: fixed; top: 10px; right: 10px; z-index: 10001; padding: 15px; background: #ffd700; font-weight: bold; border-radius: 8px; display: ${isTablet ? 'none' : 'block'}; }
-        #mobile-output { position: fixed; top: 10%; left: 10%; width: 80%; height: 70%; background: #000; color: #0f0; z-index: 10002; display: none; padding: 20px; font-family: monospace; }
+        .canvas-page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            transition: transform 0.4s ease-out; pointer-events: none;
+        }
+        .canvas-page.active { pointer-events: auto; }
+        .nav-icon { 
+            position: absolute; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer;
+        }
+        .nav-icon img { width: 100%; height: 100%; object-fit: contain; }
+        
+        .page-arrow {
+            position: fixed; left: 50%; bottom: 15px; transform: translateX(-50%);
+            width: 50px; height: 35px; background: rgba(255, 215, 0, 0.8);
+            clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+            z-index: 2000; cursor: pointer; display: ${isTablet ? 'none' : 'block'};
+        }
+        .page-arrow.up { transform: translateX(-50%) rotate(180deg); }
     `;
     document.head.appendChild(style);
 
-    function init() {
-        const menu = document.querySelector('#menu-screen .menu-container') || document.body;
-        const layer = document.createElement('div');
-        layer.className = 'game-nav-layer';
-        menu.appendChild(layer);
+    let currentPage = 1;
 
-        ids.forEach((id, index) => {
+    function init() {
+        const container = document.querySelector('#menu-screen .menu-container') || document.body;
+        
+        const p1 = document.createElement('div'); p1.className = 'canvas-page active';
+        const p2 = document.createElement('div'); p2.className = 'canvas-page';
+        if(!isTablet) p2.style.transform = 'translateY(100%)';
+
+        container.appendChild(p1);
+        container.appendChild(p2);
+
+        Object.keys(phoneLayout).forEach(id => {
             const btn = document.createElement('div');
             btn.className = 'nav-icon';
-            btn.id = 'btn-' + id;
+            btn.innerHTML = `<img src="icon_${id}.png">`;
 
             if (isTablet) {
-                // ПРИМЕНЯЕМ ГОТОВОЕ ДЛЯ ПЛАНШЕТА
-                const config = tabletLayout[id];
-                btn.style.left = config.x + 'px';
-                btn.style.top = config.y + 'px';
-                btn.style.width = config.size + 'px';
-                btn.style.height = config.size + 'px';
+                const conf = tabletLayout[id];
+                btn.style.left = conf.x + 'px';
+                btn.style.top = conf.y + 'px';
+                btn.style.width = btn.style.height = conf.size + 'px';
+                p1.appendChild(btn);
             } else {
-                // РЕЖИМ РЕДАКТИРОВАНИЯ ДЛЯ ТЕЛЕФОНА (Сетка 5х2)
-                const col = index % 5;
-                const row = Math.floor(index / 5);
-                const size = 70; // Начальный размер для телефона
-                btn.style.width = btn.style.height = size + 'px';
-                btn.style.left = (col * (window.innerWidth / 5) + 5) + 'px';
-                btn.style.top = (window.innerHeight - 200 + (row * 80)) + 'px';
-                
-                setupMobileTouch(btn); // Включаем тач только для телефона
+                const conf = phoneLayout[id];
+                btn.style.left = conf.x + 'px';
+                btn.style.top = conf.y + 'px';
+                btn.style.width = btn.style.height = conf.size + 'px';
+                (conf.page === 1 ? p1 : p2).appendChild(btn);
             }
-
-            btn.innerHTML = `<img src="icon_${id}.png">`;
-            layer.appendChild(btn);
-        });
-
-        // Кнопка сохранения только для телефона
-        if (!isTablet) {
-            const sBtn = document.createElement('button');
-            sBtn.id = 'ui-save-mobile';
-            sBtn.innerText = 'СОХРАНИТЬ (ТЕЛЕФОН)';
-            const out = document.createElement('textarea');
-            out.id = 'mobile-output';
             
-            sBtn.onclick = () => {
-                const res = [];
-                document.querySelectorAll('.nav-icon').forEach(el => {
-                    res.push({ id: el.id.replace('btn-',''), x: parseInt(el.style.left), y: parseInt(el.style.top), size: parseInt(el.style.width) });
-                });
-                out.value = JSON.stringify(res, null, 2);
-                out.style.display = 'block';
-            };
-            document.body.appendChild(sBtn);
-            document.body.appendChild(out);
-        }
-    }
+            // Здесь можно добавить функции клика
+            btn.onclick = () => console.log("Нажато:", id);
+        });
 
-    function setupMobileTouch(el) {
-        let startDist = 0, startSize = 70;
-        el.addEventListener('touchstart', function(e) {
-            if (e.touches.length === 1) {
-                let t = e.touches[0];
-                let sX = t.clientX - el.offsetLeft;
-                let sY = t.clientY - el.offsetTop;
-                function move(ev) {
-                    el.style.left = (ev.touches[0].clientX - sX) + 'px';
-                    el.style.top = (ev.touches[0].clientY - sY) + 'px';
+        if (!isTablet) {
+            const arrow = document.createElement('div');
+            arrow.className = 'page-arrow';
+            arrow.onclick = () => {
+                if (currentPage === 1) {
+                    p1.style.transform = 'translateY(-100%)';
+                    p2.style.transform = 'translateY(0)';
+                    currentPage = 2; arrow.classList.add('up');
+                } else {
+                    p1.style.transform = 'translateY(0)';
+                    p2.style.transform = 'translateY(100%)';
+                    currentPage = 1; arrow.classList.remove('up');
                 }
-                el.addEventListener('touchmove', move);
-                el.addEventListener('touchend', () => el.removeEventListener('touchmove', move), {once:true});
-            } else if (e.touches.length === 2) {
-                startDist = Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY);
-                startSize = parseInt(el.style.width);
-            }
-        });
-        el.addEventListener('touchmove', function(e) {
-            if (e.touches.length === 2) {
-                let d = Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY);
-                let nS = Math.max(30, startSize * (d / startDist));
-                el.style.width = el.style.height = nS + 'px';
-            }
-        });
+            };
+            document.body.appendChild(arrow);
+        }
     }
 
     init();
