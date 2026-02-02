@@ -1,9 +1,9 @@
 (function() {
-    // ЖЕСТКАЯ ПРОВЕРКА УСТРОЙСТВА
-    const isTablet = window.innerWidth > 768 || window.screen.width > 768;
+    // ЖЕСТКАЯ ПРОВЕРКА: Планшет или Телефон
+    const isTablet = window.innerWidth > 1024; 
 
-    // ТВОИ ДАННЫЕ ДЛЯ ПЛАНШЕТА (БЕЗ ИЗМЕНЕНИЙ)
-    const tabletLayout = {
+    // 1. ТВОИ ДАННЫЕ ДЛЯ ПЛАНШЕТА (БЕЗ ИЗМЕНЕНИЙ)
+    const tabletData = {
         "profile":   { x: 367, y: 936, size: 154 },
         "battle":    { x: 81,  y: 938, size: 150 },
         "quests":    { x: -9,  y: 938, size: 139 },
@@ -16,113 +16,111 @@
         "lotto":     { x: 468, y: 930, size: 159 }
     };
 
-    // ТВОИ ДАННЫЕ ДЛЯ ТЕЛЕФОНА
-    const phoneLayout = {
+    // 2. ТВОИ ДАННЫЕ ДЛЯ ТЕЛЕФОНА
+    const phoneData = {
         "community": { x: 5,   y: 164, size: 136 },
         "calendar":  { x: -6,  y: 245, size: 161 },
         "quests":    { x: -18, y: 580, size: 128 },
         "battle":    { x: 61,  y: 579, size: 142 },
         "alliance":  { x: 151, y: 584, size: 129 },
         "mail":      { x: 194, y: 538, size: 217 },
-        // Вторая страница (будут выровнены в ряд программно ниже)
-        "profile":   { size: 120 },
-        "rating":    { size: 120 },
-        "lotto":     { size: 120 },
-        "benchmark": { size: 120 }
+        // Вторая страница (низ)
+        "profile":   { size: 110 },
+        "rating":    { size: 110 },
+        "lotto":     { size: 110 },
+        "benchmark": { size: 110 }
     };
 
     const style = document.createElement('style');
     style.innerHTML = `
-        .game-nav-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; overflow: hidden; }
-        .nav-icon { 
-            position: absolute; display: flex; align-items: center; justify-content: center; 
-            pointer-events: auto; cursor: pointer; transition: opacity 0.3s ease, transform 0.1s ease;
+        .ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .icon { 
+            position: absolute; pointer-events: auto; cursor: pointer; 
+            transition: transform 0.1s ease, opacity 0.2s ease;
             -webkit-tap-highlight-color: transparent; 
+            display: flex; align-items: center; justify-content: center;
         }
-        .nav-icon:active { transform: scale(0.92); }
-        .nav-icon img { width: 100%; height: 100%; object-fit: contain; }
+        .icon:active { transform: scale(0.9); }
+        .icon img { width: 100%; height: 100%; object-fit: contain; }
         
-        .side-arrow-min {
-            position: fixed; right: 5px; bottom: 10%; width: 30px; height: 30px;
-            background: rgba(255, 215, 0, 0.8); clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-            z-index: 2005; cursor: pointer; pointer-events: auto;
-            display: ${isTablet ? 'none' : 'block'}; /* ПЛАНШЕТ СТРЕЛКУ НЕ ВИДИТ */
+        .m-arrow {
+            position: fixed; right: 10px; bottom: 50px; width: 35px; height: 35px;
+            background: #ffd700; clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            z-index: 10000; cursor: pointer; pointer-events: auto;
+            display: ${isTablet ? 'none' : 'block'};
         }
-        .side-arrow-min.rev { transform: rotate(180deg); }
+        .m-arrow.back { transform: rotate(180deg); }
     `;
     document.head.appendChild(style);
 
-    function init() {
-        const menu = document.querySelector('#menu-screen .menu-container') || document.body;
+    function build() {
+        const container = document.querySelector('.menu-container') || document.body;
         const layer = document.createElement('div');
-        layer.className = 'game-nav-layer';
-        menu.appendChild(layer);
+        layer.className = 'ui-layer';
+        container.appendChild(layer);
 
-        const icons = {};
+        const storage = {};
 
         if (isTablet) {
-            // ЛОГИКА ПЛАНШЕТА
-            Object.keys(tabletLayout).forEach(id => {
-                const c = tabletLayout[id];
-                icons[id] = createIcon(id, c.x, c.y, c.size, layer);
+            // ПЛАНШЕТ: Просто ставим иконки по твоим X, Y, Size
+            Object.keys(tabletData).forEach(id => {
+                const d = tabletData[id];
+                const el = createEl(id, d.x, d.y, d.size, layer);
+                storage[id] = el;
             });
         } else {
-            // ЛОГИКА ТЕЛЕФОНА
-            const group1 = ["quests", "battle", "alliance", "mail"];
-            const group2 = ["profile", "rating", "lotto", "benchmark"];
+            // ТЕЛЕФОН
+            const g1 = ["quests", "battle", "alliance", "mail"];
+            const g2 = ["profile", "rating", "lotto", "benchmark"];
 
-            // Статичные и 1-я группа
-            ["community", "calendar", ...group1].forEach(id => {
-                const c = phoneLayout[id];
-                icons[id] = createIcon(id, c.x, c.y, c.size, layer);
+            // Статичные и первая группа
+            ["community", "calendar", ...g1].forEach(id => {
+                const d = phoneData[id];
+                storage[id] = createEl(id, d.x, d.y, d.size, layer);
             });
 
-            // 2-я группа: Профиль, Рейтинг, Лото, Эталон (В ряд внизу)
-            group2.forEach((id, i) => {
-                const c = phoneLayout[id];
-                const screenW = window.innerWidth;
-                const spacing = screenW / 4;
-                const x = (i * spacing) + (spacing / 2) - (c.size / 2);
-                const y = window.innerHeight - c.size - 20; // В ряд в самом низу
-                
-                const btn = createIcon(id, x, y, c.size, layer);
-                btn.style.opacity = "0";
-                btn.style.pointerEvents = "none";
-                icons[id] = btn;
+            // Вторая группа (выравнивание в ряд внизу)
+            g2.forEach((id, i) => {
+                const d = phoneData[id];
+                const x = (i * (window.innerWidth / 4)) + 10;
+                const y = window.innerHeight - d.size - 30;
+                const el = createEl(id, x, y, d.size, layer);
+                el.style.opacity = "0";
+                el.style.pointerEvents = "none";
+                storage[id] = el;
             });
 
-            // Маленькая стрелка
+            // Маленькая стрелка для телефона
             const arrow = document.createElement('div');
-            arrow.className = 'side-arrow-min';
-            let state = 1;
+            arrow.className = 'm-arrow';
+            let page = 1;
             arrow.onclick = () => {
-                state = state === 1 ? 2 : 1;
-                arrow.classList.toggle('rev', state === 2);
-                
-                group1.forEach(id => {
-                    icons[id].style.opacity = state === 1 ? "1" : "0";
-                    icons[id].style.pointerEvents = state === 1 ? "auto" : "none";
+                page = page === 1 ? 2 : 1;
+                arrow.classList.toggle('back', page === 2);
+                g1.forEach(id => { 
+                    storage[id].style.opacity = page === 1 ? "1" : "0";
+                    storage[id].style.pointerEvents = page === 1 ? "auto" : "none";
                 });
-                group2.forEach(id => {
-                    icons[id].style.opacity = state === 2 ? "1" : "0";
-                    icons[id].style.pointerEvents = state === 2 ? "auto" : "none";
+                g2.forEach(id => { 
+                    storage[id].style.opacity = page === 2 ? "1" : "0";
+                    storage[id].style.pointerEvents = page === 2 ? "auto" : "none";
                 });
             };
             document.body.appendChild(arrow);
         }
     }
 
-    function createIcon(id, x, y, size, parent) {
-        const btn = document.createElement('div');
-        btn.className = 'nav-icon';
-        btn.style.width = size + 'px';
-        btn.style.height = size + 'px';
-        btn.style.left = x + 'px';
-        btn.style.top = y + 'px';
-        btn.innerHTML = `<img src="icon_${id}.png">`;
-        parent.appendChild(btn);
-        return btn;
+    function createEl(id, x, y, size, parent) {
+        const div = document.createElement('div');
+        div.className = 'icon';
+        div.style.width = size + 'px';
+        div.style.height = size + 'px';
+        div.style.left = x + 'px';
+        div.style.top = y + 'px';
+        div.innerHTML = `<img src="icon_${id}.png">`;
+        parent.appendChild(div);
+        return div;
     }
 
-    init();
+    build();
 })();
