@@ -3,26 +3,25 @@
     let isEditMode = false;
     let currentPage = 1;
 
-    // Списки строго по твоему запросу
     const page1List = ["quests", "battle", "alliance", "community", "calendar", "shop", "inventory"];
     const page2List = ["benchmark", "rating", "profile", "lotto", "mail"];
 
     let config = {
         panel: { x: 0, y: window.innerHeight - 130, w: window.innerWidth, h: 110 },
         layout: isTablet ? {
-            "quests": { x: 50, y: 900, size: 140 }, "battle": { x: 200, y: 900, size: 140 },
-            "alliance": { x: 350, y: 900, size: 140 }, "community": { x: 500, y: 900, size: 140 },
-            "calendar": { x: 650, y: 900, size: 140 }, "shop": { x: 800, y: 900, size: 140 },
-            "inventory": { x: 950, y: 900, size: 140 }, "benchmark": { x: 50, y: 900, size: 140 },
-            "rating": { x: 200, y: 900, size: 140 }, "profile": { x: 350, y: 900, size: 140 },
-            "lotto": { x: 500, y: 900, size: 140 }, "mail": { x: 650, y: 900, size: 140 }
+            "quests": { x: 50, y: 850, size: 140 }, "battle": { x: 200, y: 850, size: 140 },
+            "alliance": { x: 350, y: 850, size: 140 }, "community": { x: 500, y: 850, size: 140 },
+            "calendar": { x: 650, y: 850, size: 140 }, "shop": { x: 800, y: 850, size: 140 },
+            "inventory": { x: 950, y: 850, size: 140 }, "benchmark": { x: 50, y: 850, size: 140 },
+            "rating": { x: 200, y: 850, size: 140 }, "profile": { x: 350, y: 850, size: 140 },
+            "lotto": { x: 500, y: 850, size: 140 }, "mail": { x: 650, y: 850, size: 140 }
         } : {
-            "quests": { x: 10, y: 550, size: 110 }, "battle": { x: 130, y: 550, size: 110 },
-            "alliance": { x: 250, y: 550, size: 110 }, "community": { x: 10, y: 430, size: 110 },
-            "calendar": { x: 130, y: 430, size: 110 }, "shop": { x: 250, y: 430, size: 110 },
-            "inventory": { x: 10, y: 310, size: 110 }, "benchmark": { x: 10, y: 550, size: 110 },
-            "rating": { x: 130, y: 550, size: 110 }, "profile": { x: 250, y: 550, size: 110 },
-            "lotto": { x: 10, y: 430, size: 110 }, "mail": { x: 130, y: 430, size: 110 }
+            "quests": { x: 20, y: 500, size: 100 }, "battle": { x: 130, y: 500, size: 100 },
+            "alliance": { x: 240, y: 500, size: 100 }, "community": { x: 20, y: 400, size: 100 },
+            "calendar": { x: 130, y: 400, size: 100 }, "shop": { x: 240, y: 400, size: 100 },
+            "inventory": { x: 20, y: 300, size: 100 }, "benchmark": { x: 20, y: 500, size: 100 },
+            "rating": { x: 130, y: 500, size: 100 }, "profile": { x: 240, y: 500, size: 100 },
+            "lotto": { x: 20, y: 400, size: 100 }, "mail": { x: 130, y: 400, size: 100 }
         }
     };
 
@@ -31,21 +30,21 @@
         .ui-master-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
         .game-icon { position: absolute; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; z-index: 10001; }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-        .bottom-panel { position: absolute; background: rgba(80, 50, 30, 0.5); border-top: 1px solid rgba(255,215,0,0.3); pointer-events: auto; touch-action: none; z-index: 10000; }
-        .panel-line { position: absolute; left: 0; width: 100%; height: 2px; background: #ffd700; opacity: 0.8; pointer-events: none; }
+        .bottom-panel { position: absolute; background: rgba(85, 45, 25, 0.6); border-top: 2px solid rgba(255,215,0,0.4); pointer-events: auto; touch-action: none; z-index: 10000; }
+        .panel-line { position: absolute; left: 0; width: 100%; height: 2px; background: #ffd700; opacity: 0.7; pointer-events: none; }
         .line-top { top: 20%; } .line-bottom { bottom: 20%; }
         .m-hidden { display: none !important; }
-        .edit-active { outline: 2px dashed #fff; background: rgba(255,255,255,0.1); }
+        .edit-border { outline: 2px dashed #fff; background: rgba(255,255,255,0.1); }
         .nav-arrow-custom {
-            position: absolute; left: 50%; top: -65px; transform: translateX(-50%);
-            width: 55px; height: 55px; background: rgba(0,0,0,0.8); border: 3px solid #ffd700;
+            position: absolute; left: 50%; top: -70px; transform: translateX(-50%);
+            width: 60px; height: 60px; background: rgba(20,10,5,0.9); border: 3px solid #ffd700;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; box-shadow: 0 0 15px #ffd700;
+            pointer-events: auto; box-shadow: 0 0 15px #ffd700; z-index: 10005;
         }
-        .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 5px solid #ffd700; border-right: 5px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
+        .nav-arrow-custom::after { content: ''; width: 14px; height: 14px; border-top: 5px solid #ffd700; border-right: 5px solid #ffd700; transform: rotate(45deg); margin-right: 5px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: #00d4ff; box-shadow: 0 0 15px #00d4ff; }
         .nav-arrow-custom.flip::after { border-color: #00d4ff; }
-        .save-coords-btn { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: #28a745; color: #fff; border-radius: 30px; font-weight: bold; z-index: 10005; display: none; border: 2px solid #fff; font-size: 18px; }
+        .save-coords-btn { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: #28a745; color: #fff; border-radius: 30px; font-weight: bold; z-index: 10006; display: none; border: 2px solid #fff; }
         #code-output-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         #code-text-area { width: 90%; height: 60%; background: #000; color: #0f0; padding: 15px; font-family: monospace; font-size: 10px; border: 1px solid #0f0; overflow: auto; white-space: pre; user-select: all; }
     `;
@@ -78,7 +77,7 @@
         createDraggableElement('panel', config.panel.x, config.panel.y, config.panel.h, layer, false, panel);
 
         arrow.onclick = (e) => {
-            e.stopPropagation(); if (isEditMode) return;
+            e.stopPropagation();
             currentPage = currentPage === 1 ? 2 : 1;
             arrow.classList.toggle('flip', currentPage === 2);
             Object.keys(refs.icons).forEach(id => updateVisibility(id, refs.icons[id]));
@@ -92,13 +91,14 @@
 
         const overlay = document.createElement('div');
         overlay.id = 'code-output-overlay';
-        overlay.innerHTML = `<div style="color:gold;margin-bottom:10px;">КОПИРУЙ КОД:</div><div id="code-text-area"></div><div style="margin-top:20px;padding:12px 40px;background:red;color:white;border-radius:10px;font-weight:bold;" onclick="location.reload()">ЗАКРЫТЬ</div>`;
+        overlay.innerHTML = `<div style="color:gold;margin-bottom:10px;">СКОПИРУЙ ЭТОТ КОД:</div><div id="code-text-area"></div><div style="margin-top:20px;padding:12px 40px;background:red;color:white;border-radius:10px;font-weight:bold;" onclick="location.reload()">ЗАКРЫТЬ</div>`;
         document.body.appendChild(overlay);
     }
 
     function updateVisibility(id, el) {
         const onPage2 = page2List.includes(id);
-        el.classList.toggle('m-hidden', currentPage === 1 ? onPage2 : !onPage2);
+        const shouldShow = (currentPage === 1 && !onPage2) || (currentPage === 2 && onPage2);
+        el.classList.toggle('m-hidden', !shouldShow);
     }
 
     function createDraggableElement(id, x, y, size, parent, isIcon, customEl = null) {
@@ -116,14 +116,16 @@
         el.onpointerdown = (e) => {
             if (!isEditMode) pT = setTimeout(() => {
                 isEditMode = true;
-                document.querySelectorAll('.game-icon, .bottom-panel').forEach(i => i.classList.add('edit-active'));
-                document.querySelectorAll('.m-hidden').forEach(i => i.classList.remove('m-hidden'));
+                document.querySelectorAll('.game-icon, .bottom-panel').forEach(i => i.classList.add('edit-border'));
                 document.querySelector('.save-coords-btn').style.display = 'block';
             }, 1500);
         };
         el.onpointerup = () => clearTimeout(pT);
+
         el.ontouchmove = (e) => {
             if (!isEditMode) return;
+            if (isIcon && el.classList.contains('m-hidden')) return; // Не двигаем скрытые
+
             if (e.touches.length === 1) {
                 const t = e.touches[0];
                 el.style.left = (t.clientX - parseFloat(el.style.width)/2) + 'px';
