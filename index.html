@@ -158,8 +158,8 @@
             cursor: grabbing;
         }
 
-        /* Текстовые колонки */
-        .text-column {
+        /* Стили для текстовых строк (отдельных текстов) */
+        .text-line {
             position: absolute;
             text-align: center;
             color: white;
@@ -173,28 +173,21 @@
             background: rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 8px;
-            padding: 10px;
+            padding: 8px 15px;
             backdrop-filter: blur(5px);
+            min-width: 120px;
         }
 
-        .text-column.hidden { 
+        .text-line.hidden { 
             opacity: 0; 
             transform: translateY(100px) scale(0.5); 
             pointer-events: none; 
         }
 
-        .text-column.dragging {
+        .text-line.dragging {
             opacity: 0.9;
             z-index: 1000;
             cursor: grabbing;
-        }
-
-        .text-item {
-            margin: 8px 0;
-            padding: 5px 10px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            font-size: 0.9rem;
         }
 
         /* Адаптивные размеры шрифта для планшета и телефона */
@@ -202,33 +195,30 @@
             .icon-label {
                 font-size: 11px;
             }
-            .text-item {
-                font-size: 0.8rem;
-            }
-            .text-column {
-                width: 140px;
+            .text-line {
+                font-size: 0.9rem;
+                min-width: 100px;
+                padding: 6px 10px;
             }
         }
         @media screen and (min-width: 600px) and (max-width: 1024px) {
             .icon-label {
                 font-size: 12px;
             }
-            .text-item {
-                font-size: 0.9rem;
-            }
-            .text-column {
-                width: 160px;
+            .text-line {
+                font-size: 1rem;
+                min-width: 120px;
+                padding: 8px 15px;
             }
         }
         @media screen and (min-width: 1025px) {
             .icon-label {
                 font-size: 13px;
             }
-            .text-item {
-                font-size: 1rem;
-            }
-            .text-column {
-                width: 180px;
+            .text-line {
+                font-size: 1.1rem;
+                min-width: 140px;
+                padding: 10px 20px;
             }
         }
 
@@ -436,24 +426,8 @@
     <div id="edit-text-panel">
         <h3>Редактировать позиции текста</h3>
         
-        <div class="text-coord-input">
-            <label>Текстовый столбец 1 - X координата:</label>
-            <input type="number" id="edit-col1-x" value="50">
-        </div>
-        
-        <div class="text-coord-input">
-            <label>Текстовый столбец 1 - Y координата:</label>
-            <input type="number" id="edit-col1-y" value="150">
-        </div>
-        
-        <div class="text-coord-input">
-            <label>Текстовый столбец 2 - X координата:</label>
-            <input type="number" id="edit-col2-x" value="250">
-        </div>
-        
-        <div class="text-coord-input">
-            <label>Текстовый столбец 2 - Y координата:</label>
-            <input type="number" id="edit-col2-y" value="150">
+        <div id="text-coord-inputs">
+            <!-- Поля будут добавлены динамически -->
         </div>
         
         <div class="text-edit-buttons">
@@ -528,26 +502,33 @@
             benchmark: "Эталон"
         };
 
-        // Текстовые столбцы для страниц
+        // Текстовые строки для страниц
         const pageTexts = {
-            1: {
-                column1: ["Сообщество", "Календарь", "Задание"],
-                column2: ["Бой", "Союз", "Магазин", "Инвентарь"]
-            },
-            2: {
-                column1: ["Письмо", "Профиль", "Рейтинг"],
-                column2: ["Лото", "Эталон"]
-            }
+            1: ["Сообщество", "Календарь", "Задание", "Бой", "Союз", "Магазин", "Инвентарь"],
+            2: ["Письмо", "Профиль", "Рейтинг", "Лото", "Эталон"]
         };
 
-        // Позиции текстовых столбцов
-        let textColumnPositions = {
-            col1: {x: 50, y: 150},
-            col2: {x: 250, y: 150}
+        // Позиции текстовых строк (каждая строка отдельно)
+        let textPositions = {
+            // Страница 1
+            "Сообщество": {x: 50, y: 100},
+            "Календарь": {x: 50, y: 140},
+            "Задание": {x: 50, y: 180},
+            "Бой": {x: 50, y: 220},
+            "Союз": {x: 50, y: 260},
+            "Магазин": {x: 50, y: 300},
+            "Инвентарь": {x: 50, y: 340},
+            
+            // Страница 2
+            "Письмо": {x: 50, y: 100},
+            "Профиль": {x: 50, y: 140},
+            "Рейтинг": {x: 50, y: 180},
+            "Лото": {x: 50, y: 220},
+            "Эталон": {x: 50, y: 260}
         };
 
         // Позиции текста для иконок (X, Y)
-        let textPositions = {
+        let iconTextPositions = {
             quests: {x: -22, y: 661},
             battle: {x: 59, y: 663},
             alliance: {x: 154, y: 664},
@@ -603,7 +584,7 @@
                 bg.classList.toggle('page2', currentPage === 2); 
                 arrow.classList.toggle('flip', currentPage === 2); 
                 updateIconVisibility(); 
-                updateTextColumns();
+                updateTextLines();
             };
             bg.appendChild(arrow);
             layer.appendChild(bg);
@@ -626,7 +607,7 @@
                 label.innerText = iconNames[id] || id;
                 
                 // Используем сохраненные позиции текста или вычисляем по умолчанию
-                const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
+                const textPos = iconTextPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
                 Object.assign(label.style, {
                     top: textPos.y + 'px',
@@ -642,125 +623,103 @@
                 layer.appendChild(label);
             });
             
-            // Создаем текстовые столбцы
-            createTextColumns();
+            // Создаем текстовые строки
+            createTextLines();
             
             updateIconVisibility();
-            updateTextColumns();
+            updateTextLines();
         }
 
-        function createTextColumns() {
+        function createTextLines() {
             const layer = document.getElementById('ui-dynamic-layer');
             
-            // Столбец 1
-            const col1 = document.createElement('div');
-            col1.id = 'text-col-1';
-            col1.className = 'text-column';
-            Object.assign(col1.style, {
-                left: textColumnPositions.col1.x + 'px',
-                top: textColumnPositions.col1.y + 'px'
-            });
+            // Удаляем старые текстовые строки
+            document.querySelectorAll('.text-line').forEach(el => el.remove());
             
-            // Столбец 2
-            const col2 = document.createElement('div');
-            col2.id = 'text-col-2';
-            col2.className = 'text-column';
-            Object.assign(col2.style, {
-                left: textColumnPositions.col2.x + 'px',
-                top: textColumnPositions.col2.y + 'px'
-            });
-            
-            // Добавляем обработчики для перетаскивания столбцов
-            col1.addEventListener('mousedown', startColumnDrag);
-            col1.addEventListener('touchstart', startColumnDragTouch);
-            col2.addEventListener('mousedown', startColumnDrag);
-            col2.addEventListener('touchstart', startColumnDragTouch);
-            
-            layer.appendChild(col1);
-            layer.appendChild(col2);
-            
-            updateTextColumns();
-        }
-
-        function updateTextColumns() {
-            const col1 = document.getElementById('text-col-1');
-            const col2 = document.getElementById('text-col-2');
-            
-            if (!col1 || !col2) return;
-            
-            // Обновляем позиции
-            col1.style.left = textColumnPositions.col1.x + 'px';
-            col1.style.top = textColumnPositions.col1.y + 'px';
-            col2.style.left = textColumnPositions.col2.x + 'px';
-            col2.style.top = textColumnPositions.col2.y + 'px';
-            
-            // Обновляем содержимое в зависимости от страницы
+            // Создаем новые текстовые строки для текущей страницы
             const texts = pageTexts[currentPage];
-            col1.innerHTML = '';
-            col2.innerHTML = '';
-            
-            texts.column1.forEach(text => {
-                const item = document.createElement('div');
-                item.className = 'text-item';
-                item.innerText = text;
-                col1.appendChild(item);
+            texts.forEach(text => {
+                const textLine = document.createElement('div');
+                textLine.className = 'text-line';
+                textLine.id = 'text-' + text.replace(/\s+/g, '-');
+                textLine.innerText = text;
+                
+                // Используем сохраненные позиции или значения по умолчанию
+                const pos = textPositions[text] || {x: 50, y: 100 + (texts.indexOf(text) * 40)};
+                
+                Object.assign(textLine.style, {
+                    left: pos.x + 'px',
+                    top: pos.y + 'px'
+                });
+                
+                // Добавляем обработчики для перетаскивания
+                textLine.addEventListener('mousedown', startTextLineDrag);
+                textLine.addEventListener('touchstart', startTextLineDragTouch);
+                
+                layer.appendChild(textLine);
             });
-            
-            texts.column2.forEach(text => {
-                const item = document.createElement('div');
-                item.className = 'text-item';
-                item.innerText = text;
-                col2.appendChild(item);
-            });
-            
-            // Показываем/скрываем в зависимости от страницы
-            col1.classList.toggle('hidden', false);
-            col2.classList.toggle('hidden', false);
         }
 
-        // Функции для перетаскивания столбцов
-        function startColumnDrag(e) {
+        function updateTextLines() {
+            const texts = pageTexts[currentPage];
+            
+            // Показываем/скрываем текстовые строки в зависимости от страницы
+            document.querySelectorAll('.text-line').forEach(el => {
+                const text = el.innerText;
+                const isVisible = texts.includes(text);
+                el.classList.toggle('hidden', !isVisible);
+                
+                // Обновляем позиции из сохраненных данных
+                if (isVisible && textPositions[text]) {
+                    el.style.left = textPositions[text].x + 'px';
+                    el.style.top = textPositions[text].y + 'px';
+                }
+            });
+        }
+
+        // Функции для перетаскивания текстовых строк
+        function startTextLineDrag(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            const colId = e.target.id;
-            if (!colId.startsWith('text-col-')) return;
+            const textLine = e.target;
+            if (!textLine.classList.contains('text-line')) return;
             
             isDraggingText = true;
-            currentDraggedText = e.target;
+            currentDraggedText = textLine;
             currentDraggedText.classList.add('dragging');
             
             dragStartX = e.clientX;
             dragStartY = e.clientY;
-            textStartX = parseInt(currentDraggedText.style.left);
-            textStartY = parseInt(currentDraggedText.style.top);
+            textStartX = parseInt(textLine.style.left);
+            textStartY = parseInt(textLine.style.top);
             
-            document.addEventListener('mousemove', dragColumn);
-            document.addEventListener('mouseup', stopColumnDrag);
+            document.addEventListener('mousemove', dragTextLine);
+            document.addEventListener('mouseup', stopTextLineDrag);
         }
 
-        function startColumnDragTouch(e) {
+        function startTextLineDragTouch(e) {
             e.preventDefault();
             e.stopPropagation();
             
-            const colId = e.target.id;
-            if (!colId.startsWith('text-col-')) return;
+            const textLine = e.target;
+            if (!textLine.classList.contains('text-line')) return;
             
             isDraggingText = true;
-            currentDraggedText = e.target;
+            currentDraggedText = textLine;
             currentDraggedText.classList.add('dragging');
             
             const touch = e.touches[0];
             dragStartX = touch.clientX;
             dragStartY = touch.clientY;
-            textStartX = parseInt(currentDraggedText.style.left);
-            textStartY = parseInt(currentDraggedText.style.top);
+            textStartX = parseInt(textLine.style.left);
+            textStartY = parseInt(textLine.style.top);
             
-            document.addEventListener('touchmove', dragColumnTouch);
-            document.addEventListener('touchend', stopColumnDrag);
+            document.addEventListener('touchmove', dragTextLineTouch);
+            document.addEventListener('touchend', stopTextLineDrag);
         }
 
-        function dragColumn(e) {
+        function dragTextLine(e) {
             if (!isDraggingText || !currentDraggedText) return;
             
             e.preventDefault();
@@ -775,7 +734,7 @@
             currentDraggedText.style.top = newY + 'px';
         }
 
-        function dragColumnTouch(e) {
+        function dragTextLineTouch(e) {
             if (!isDraggingText || !currentDraggedText) return;
             
             e.preventDefault();
@@ -791,28 +750,28 @@
             currentDraggedText.style.top = newY + 'px';
         }
 
-        function stopColumnDrag() {
+        function stopTextLineDrag() {
             if (!isDraggingText || !currentDraggedText) return;
             
             isDraggingText = false;
             currentDraggedText.classList.remove('dragging');
             
-            // Сохраняем новую позицию столбца
-            const colId = currentDraggedText.id.replace('text-col-', '');
+            // Сохраняем новую позицию текста
+            const text = currentDraggedText.innerText;
             const newX = parseInt(currentDraggedText.style.left);
             const newY = parseInt(currentDraggedText.style.top);
             
-            textColumnPositions['col' + colId] = {x: newX, y: newY};
+            textPositions[text] = {x: newX, y: newY};
             
             // Показываем текущие координаты в консоли
-            console.log(`Столбец ${colId}: x=${newX}, y=${newY}`);
+            console.log(`Текст "${text}": x=${newX}, y=${newY}`);
             
             currentDraggedText = null;
             
-            document.removeEventListener('mousemove', dragColumn);
-            document.removeEventListener('touchmove', dragColumnTouch);
-            document.removeEventListener('mouseup', stopColumnDrag);
-            document.removeEventListener('touchend', stopColumnDrag);
+            document.removeEventListener('mousemove', dragTextLine);
+            document.removeEventListener('touchmove', dragTextLineTouch);
+            document.removeEventListener('mouseup', stopTextLineDrag);
+            document.removeEventListener('touchend', stopTextLineDrag);
         }
 
         // Функции для перетаскивания текста иконок (старые функции)
@@ -899,10 +858,10 @@
             const newX = parseInt(currentDraggedText.style.left);
             const newY = parseInt(currentDraggedText.style.top);
             
-            textPositions[labelId] = {x: newX, y: newY};
+            iconTextPositions[labelId] = {x: newX, y: newY};
             
             // Показываем текущие координаты в консоли
-            console.log(`Текст "${iconNames[labelId] || labelId}": x=${newX}, y=${newY}`);
+            console.log(`Текст иконки "${iconNames[labelId] || labelId}": x=${newX}, y=${newY}`);
             
             currentDraggedText = null;
             
@@ -933,44 +892,64 @@
 
         // Функции для редактирования текста
         function openTextEditPanel() {
-            // Заполняем поля текущими значениями текстовых столбцов
-            document.getElementById('edit-col1-x').value = textColumnPositions.col1.x;
-            document.getElementById('edit-col1-y').value = textColumnPositions.col1.y;
-            document.getElementById('edit-col2-x').value = textColumnPositions.col2.x;
-            document.getElementById('edit-col2-y').value = textColumnPositions.col2.y;
+            const inputsContainer = document.getElementById('text-coord-inputs');
+            inputsContainer.innerHTML = '';
+            
+            // Создаем поля для каждой текстовой строки текущей страницы
+            const texts = pageTexts[currentPage];
+            texts.forEach(text => {
+                const pos = textPositions[text] || {x: 50, y: 100};
+                
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'text-coord-input';
+                inputGroup.innerHTML = `
+                    <label>${text} - X координата:</label>
+                    <input type="number" id="edit-${text.replace(/\s+/g, '-')}-x" value="${pos.x}">
+                    <label>${text} - Y координата:</label>
+                    <input type="number" id="edit-${text.replace(/\s+/g, '-')}-y" value="${pos.y}">
+                `;
+                inputsContainer.appendChild(inputGroup);
+            });
             
             // Показываем панель редактирования
             document.getElementById('edit-text-panel').style.display = 'flex';
         }
 
         function saveTextEdit() {
-            // Получаем новые значения из полей ввода
-            const col1X = parseInt(document.getElementById('edit-col1-x').value);
-            const col1Y = parseInt(document.getElementById('edit-col1-y').value);
-            const col2X = parseInt(document.getElementById('edit-col2-x').value);
-            const col2Y = parseInt(document.getElementById('edit-col2-y').value);
+            const texts = pageTexts[currentPage];
             
-            // Обновляем позиции столбцов
-            textColumnPositions.col1.x = col1X;
-            textColumnPositions.col1.y = col1Y;
-            textColumnPositions.col2.x = col2X;
-            textColumnPositions.col2.y = col2Y;
-            
-            // Обновляем позиции на экране
-            updateTextColumns();
+            // Сохраняем позиции для каждой текстовой строки
+            texts.forEach(text => {
+                const textId = text.replace(/\s+/g, '-');
+                const xInput = document.getElementById(`edit-${textId}-x`);
+                const yInput = document.getElementById(`edit-${textId}-y`);
+                
+                if (xInput && yInput) {
+                    const newX = parseInt(xInput.value);
+                    const newY = parseInt(yInput.value);
+                    
+                    textPositions[text] = {x: newX, y: newY};
+                    
+                    // Обновляем позицию на экране
+                    const textElement = document.getElementById(`text-${textId}`);
+                    if (textElement) {
+                        textElement.style.left = newX + 'px';
+                        textElement.style.top = newY + 'px';
+                    }
+                }
+            });
             
             // Закрываем панель редактирования
             document.getElementById('edit-text-panel').style.display = 'none';
             
             // Показываем новые координаты в консоли и alert
-            console.log('Новые координаты текстовых столбцов:');
-            console.log('Столбец 1: x=' + col1X + ', y=' + col1Y);
-            console.log('Столбец 2: x=' + col2X + ', y=' + col2Y);
+            console.log('Новые координаты текстовых строк:');
+            texts.forEach(text => {
+                const pos = textPositions[text];
+                console.log(`${text}: x=${pos.x}, y=${pos.y}`);
+            });
             
-            alert('Координаты текстовых столбцов сохранены!\n\n' +
-                  'Столбец 1: x=' + col1X + ', y=' + col1Y + '\n' +
-                  'Столбец 2: x=' + col2X + ', y=' + col2Y + '\n\n' +
-                  'Координаты также выведены в консоль (F12)');
+            alert('Координаты текстовых строк сохранены!\n\nКоординаты выведены в консоль (F12)');
         }
 
         function cancelTextEdit() {
