@@ -144,36 +144,13 @@
             font-family: 'Segoe UI', Tahoma, sans-serif;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
             background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 215, 0, 0.4);
+            border: 1px solid rgba(0, 212, 255, 0.4);
             border-radius: 6px;
             padding: 4px 8px;
             backdrop-filter: blur(4px);
             white-space: nowrap;
             min-width: 80px;
             transform: translateX(-50%);
-        }
-
-        /* Класс для редактируемых текстов */
-        .icon-label.editable {
-            cursor: move;
-            border: 2px solid var(--gold);
-            background: rgba(0, 0, 0, 0.85);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            z-index: 100;
-        }
-
-        .icon-label.editable.dragging {
-            opacity: 0.9;
-            z-index: 1000;
-            cursor: grabbing;
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-        }
-
-        /* Класс для фиксированных текстов */
-        .icon-label.fixed {
-            cursor: default;
-            border: 1px solid rgba(0, 212, 255, 0.4);
         }
 
         .icon-label.hidden { 
@@ -229,91 +206,6 @@
         /* --- МОДАЛКА НАВЫКОВ --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
-
-        /* Панель редактирования текста */
-        #edit-text-panel {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            border: 2px solid var(--gold);
-            border-radius: 15px;
-            padding: 20px;
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            gap: 15px;
-            min-width: 300px;
-            color: white;
-        }
-
-        #edit-text-panel h3 {
-            margin: 0;
-            text-align: center;
-            color: var(--gold);
-        }
-
-        .text-coord-input {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .text-coord-input label {
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-
-        .text-coord-input input {
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--gold);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 1rem;
-        }
-
-        .text-edit-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .text-edit-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #save-text-btn {
-            background: linear-gradient(180deg, var(--gold), #b8860b);
-            color: black;
-        }
-
-        #cancel-text-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid #666;
-        }
-
-        /* Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ */
-        #edit-text-btn {
-            position: absolute;
-            top: env(safe-area-inset-top, 20px);
-            right: 130px; /* Сдвигаем левее, чтобы не пересекаться с ресурсами */
-            background: var(--blue);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-            border: 1px solid var(--blue);
-            font-size: 0.8rem;
-        }
     </style>
 </head>
 <body>
@@ -367,9 +259,6 @@
                 <div class="resource-panel blue"><img src="icon_crystal.png"><span id="crys-val" class="value">50</span></div>
             </div>
 
-            <!-- Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ -->
-            <div id="edit-text-btn">Редактировать текст</div>
-
             <div id="ui-dynamic-layer"></div>
 
         </div>
@@ -402,20 +291,6 @@
             <h3 id="modal-name" style="color:var(--gold); margin:5px 0;"></h3>
             <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
             <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
-        </div>
-</div>
-
-    <!-- Панель редактирования текста -->
-    <div id="edit-text-panel">
-        <h3>Редактировать позиции текста</h3>
-        
-        <div id="text-coord-inputs">
-            <!-- Поля будут добавлены динамически только для редактируемых текстов -->
-        </div>
-        
-        <div class="text-edit-buttons">
-            <button class="text-edit-btn" id="save-text-btn">СОХРАНИТЬ</button>
-            <button class="text-edit-btn" id="cancel-text-btn">ОТМЕНА</button>
         </div>
     </div>
 
@@ -485,27 +360,25 @@
             benchmark: "Эталон"
         };
 
-        // Редактируемые тексты (можно перетаскивать)
-        const editableTexts = ["quests", "profile", "mail"];
-        
-        // Позиции текста для иконок (X, Y) - ПОД ИКОНКАМИ ВПЛОТНУЮ
-        // Исправляем координаты для видимости на экране
-        let textPositions = {
-            // Редактируемые тексты - ставим в центр экрана чтобы были видны
-            quests: {x: 56, y: 986}, // Задания - X:56, Y:986
-            profile: {x: 45, y: 986}, // Профиль - X:45, Y:986
-            mail: {x: 179, y: 984}, // Письмо - X:179, Y:984
+        // ФИКСИРОВАННЫЕ координаты текста для иконок (X, Y)
+        const textPositions = {
+            // Поменяли местами "Задания" и "Бой"
+            quests: {x: 59, y: 985},      // БЫЛО: Задания X:183 Y:985 → СТАЛО: X:59 Y:985
+            battle: {x: 183, y: 985},     // БЫЛО: Бой X:59 Y:985 → СТАЛО: X:183 Y:985
             
-            // Фиксированные тексты (координаты из данных)
-            community: {x: 64, y: 234}, // Сообщество
-            calendar: {x: 70, y: 583}, // Календарь
-            alliance: {x: 312, y: 988}, // Союз
-            shop: {x: 438, y: 987}, // Магазин
-            inventory: {x: 565, y: 986}, // Инвентарь
-            rating: {x: 313, y: 987}, // Рейтинг
-            lotto: {x: 430, y: 987}, // Лотерея
-            benchmark: {x: 565, y: 986}, // Эталон
-            battle: {x: 59, y: 985} // Бой - X:59, Y:985
+            // Остальные как есть
+            profile: {x: 179, y: 986},    // Профиль X:179 Y:986
+            mail: {x: 41, y: 988},        // Письмо X:41 Y:988
+            
+            // Фиксированные тексты
+            community: {x: 64, y: 234},   // Сообщество
+            calendar: {x: 70, y: 583},    // Календарь
+            alliance: {x: 312, y: 988},   // Союз
+            shop: {x: 438, y: 987},       // Магазин
+            inventory: {x: 565, y: 986},  // Инвентарь
+            rating: {x: 313, y: 987},     // Рейтинг
+            lotto: {x: 430, y: 987},      // Лотерея
+            benchmark: {x: 565, y: 986},  // Эталон
         };
 
         const config = isTablet ? {
@@ -525,14 +398,6 @@
                 lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:-47, y:250, s:190, static: true}
             }
         };
-
-        // Переменные для перетаскивания текста
-        let isDraggingText = false;
-        let currentDraggedText = null;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let textStartX = 0;
-        let textStartY = 0;
 
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
@@ -570,12 +435,9 @@
                 const label = document.createElement('div');
                 label.id = 'label-' + id;
                 label.innerText = iconNames[id] || id;
+                label.className = 'icon-label';
                 
-                // Определяем, редактируемый ли это текст
-                const isEditable = editableTexts.includes(id);
-                label.className = isEditable ? 'icon-label editable' : 'icon-label fixed';
-                
-                // Используем сохраненные позиции текста
+                // Используем фиксированные позиции текста
                 const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
                 Object.assign(label.style, {
@@ -584,121 +446,10 @@
                     transform: 'translateX(-50%)'
                 });
                 
-                // Добавляем обработчики для перетаскивания только редактируемых текстов
-                if (isEditable) {
-                    label.addEventListener('mousedown', startTextDrag);
-                    label.addEventListener('touchstart', startTextDragTouch);
-                }
-                
                 layer.appendChild(label);
             });
             
             updateIconVisibility();
-        }
-
-        // Функции для перетаскивания текста (только для редактируемых)
-        function startTextDrag(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const labelId = e.target.id;
-            if (!labelId.startsWith('label-')) return;
-            
-            // Проверяем, можно ли редактировать этот текст
-            const id = labelId.replace('label-', '');
-            if (!editableTexts.includes(id)) return;
-            
-            isDraggingText = true;
-            currentDraggedText = e.target;
-            currentDraggedText.classList.add('dragging');
-            
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            textStartX = parseInt(currentDraggedText.style.left);
-            textStartY = parseInt(currentDraggedText.style.top);
-            
-            document.addEventListener('mousemove', dragText);
-            document.addEventListener('mouseup', stopTextDrag);
-        }
-
-        function startTextDragTouch(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const labelId = e.target.id;
-            if (!labelId.startsWith('label-')) return;
-            
-            // Проверяем, можно ли редактировать этот текст
-            const id = labelId.replace('label-', '');
-            if (!editableTexts.includes(id)) return;
-            
-            isDraggingText = true;
-            currentDraggedText = e.target;
-            currentDraggedText.classList.add('dragging');
-            
-            const touch = e.touches[0];
-            dragStartX = touch.clientX;
-            dragStartY = touch.clientY;
-            textStartX = parseInt(currentDraggedText.style.left);
-            textStartY = parseInt(currentDraggedText.style.top);
-            
-            document.addEventListener('touchmove', dragTextTouch);
-            document.addEventListener('touchend', stopTextDrag);
-        }
-
-        function dragText(e) {
-            if (!isDraggingText || !currentDraggedText) return;
-            
-            e.preventDefault();
-            
-            const deltaX = e.clientX - dragStartX;
-            const deltaY = e.clientY - dragStartY;
-            
-            const newX = textStartX + deltaX;
-            const newY = textStartY + deltaY;
-            
-            currentDraggedText.style.left = newX + 'px';
-            currentDraggedText.style.top = newY + 'px';
-        }
-
-        function dragTextTouch(e) {
-            if (!isDraggingText || !currentDraggedText) return;
-            
-            e.preventDefault();
-            
-            const touch = e.touches[0];
-            const deltaX = touch.clientX - dragStartX;
-            const deltaY = touch.clientY - dragStartY;
-            
-            const newX = textStartX + deltaX;
-            const newY = textStartY + deltaY;
-            
-            currentDraggedText.style.left = newX + 'px';
-            currentDraggedText.style.top = newY + 'px';
-        }
-
-        function stopTextDrag() {
-            if (!isDraggingText || !currentDraggedText) return;
-            
-            isDraggingText = false;
-            currentDraggedText.classList.remove('dragging');
-            
-            // Сохраняем новую позицию текста
-            const labelId = currentDraggedText.id.replace('label-', '');
-            const newX = parseInt(currentDraggedText.style.left);
-            const newY = parseInt(currentDraggedText.style.top);
-            
-            textPositions[labelId] = {x: newX, y: newY};
-            
-            // Показываем текущие координаты в консоли
-            console.log(`Текст "${iconNames[labelId] || labelId}": x=${newX}, y=${newY}`);
-            
-            currentDraggedText = null;
-            
-            document.removeEventListener('mousemove', dragText);
-            document.removeEventListener('touchmove', dragTextTouch);
-            document.removeEventListener('mouseup', stopTextDrag);
-            document.removeEventListener('touchend', stopTextDrag);
         }
 
         function updateIconVisibility() {
@@ -718,68 +469,6 @@
                     if (label) label.classList.toggle('hidden', !isVisible);
                 }
             });
-        }
-
-        // Функции для редактирования текста
-        function openTextEditPanel() {
-            const inputsContainer = document.getElementById('text-coord-inputs');
-            inputsContainer.innerHTML = '';
-            
-            // Создаем поля только для редактируемых текстов
-            editableTexts.forEach(id => {
-                const pos = textPositions[id] || {x: 0, y: 0};
-                
-                const inputGroup = document.createElement('div');
-                inputGroup.className = 'text-coord-input';
-                inputGroup.innerHTML = `
-                    <label>${iconNames[id]} - X координата:</label>
-                    <input type="number" id="edit-${id}-x" value="${pos.x}">
-                    <label>${iconNames[id]} - Y координата:</label>
-                    <input type="number" id="edit-${id}-y" value="${pos.y}">
-                `;
-                inputsContainer.appendChild(inputGroup);
-            });
-            
-            // Показываем панель редактирования
-            document.getElementById('edit-text-panel').style.display = 'flex';
-        }
-
-        function saveTextEdit() {
-            // Сохраняем позиции только для редактируемых текстов
-            editableTexts.forEach(id => {
-                const xInput = document.getElementById(`edit-${id}-x`);
-                const yInput = document.getElementById(`edit-${id}-y`);
-                
-                if (xInput && yInput) {
-                    const newX = parseInt(xInput.value);
-                    const newY = parseInt(yInput.value);
-                    
-                    textPositions[id] = {x: newX, y: newY};
-                    
-                    // Обновляем позицию на экране
-                    const textElement = document.getElementById(`label-${id}`);
-                    if (textElement) {
-                        textElement.style.left = newX + 'px';
-                        textElement.style.top = newY + 'px';
-                    }
-                }
-            });
-            
-            // Закрываем панель редактирования
-            document.getElementById('edit-text-panel').style.display = 'none';
-            
-            // Показываем новые координаты в консоли и alert
-            console.log('Новые координаты редактируемых текстов:');
-            editableTexts.forEach(id => {
-                const pos = textPositions[id];
-                console.log(`${iconNames[id]}: x=${pos.x}, y=${pos.y}`);
-            });
-            
-            alert('Координаты текстов сохранены!\n\nТолько редактируемые тексты обновлены.\n\nКоординаты выведены в консоль (F12)');
-        }
-
-        function cancelTextEdit() {
-            document.getElementById('edit-text-panel').style.display = 'none';
         }
 
         function selectHero(key) {
@@ -819,7 +508,6 @@
             const h = heroesData[currentHeroKey];
             document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
             document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
-            // Обновляем значения ресурсов из данных
             document.getElementById('gold-val').innerText = "1500";
             document.getElementById('crys-val').innerText = "50";
             buildDynamicUI();
@@ -836,11 +524,6 @@
             inv.style.opacity = '0'; 
             setTimeout(() => inv.style.display = 'none', 400); 
         }
-
-        // Инициализация событий для редактирования текста
-        document.getElementById('edit-text-btn').onclick = openTextEditPanel;
-        document.getElementById('save-text-btn').onclick = saveTextEdit;
-        document.getElementById('cancel-text-btn').onclick = cancelTextEdit;
 
         window.onload = () => {
             console.log("Game loading started");
