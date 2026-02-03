@@ -28,16 +28,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Эффект нажатия для всех активных элементов */
-        .game-icon, .icon-btn, .confirm-btn, .gender-btn, .skill-item, .inv-slot, .player-header, .nav-arrow-custom, .equipment-edit-btn {
-            transition: transform 0.1s ease;
-            cursor: pointer;
-        }
-
-        .game-icon:active, .icon-btn:active, .confirm-btn:active, .gender-btn:active, .skill-item:active, .inv-slot:active, .player-header:active, .nav-arrow-custom:active, .equipment-edit-btn:active {
-            transform: scale(0.92) !important;
-        }
-
         .screen {
             display: none; width: 100%; height: 100%;
             background-size: cover; background-position: center;
@@ -210,6 +200,7 @@
             flex-direction: column; 
             pointer-events: none;
             position: relative;
+            width: 45%;
         }
         
         /* Слоты экипировки */
@@ -223,11 +214,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
         }
         
         .inv-slot img { 
-            width: 100%; 
-            height: 100%; 
+            width: 80%; 
+            height: 80%; 
             object-fit: contain; 
             pointer-events: none;
             user-select: none;
@@ -245,26 +239,6 @@
             bottom: 0;
         }
 
-        @media screen and (max-width: 599px) {
-            .hero-preview-box { top: 55%; left: 54%; }
-            #inv-hero-img { width: 241px; height: auto; }
-            
-            .close-inv {
-                top: 20px;
-                left: 20px;
-                font-size: 2.5rem;
-            }
-        }
-        
-        @media screen and (min-width: 600px) {
-            .hero-preview-box { top: 54%; left: 50%; }
-            #inv-hero-img { width: 376px; height: auto; }
-        }
-
-        /* --- МОДАЛКА НАВЫКОВ --- */
-        #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
-        
         /* Панель сохранения */
         #save-panel {
             position: fixed;
@@ -329,12 +303,14 @@
             border: 1px solid #666;
         }
         
-        /* Адаптивные размеры шрифта для планшета и телефона */
         @media screen and (max-width: 599px) {
-            .icon-label {
-                font-size: 11px;
-                padding: 3px 6px;
-                border-radius: 4px;
+            .hero-preview-box { top: 55%; left: 54%; }
+            #inv-hero-img { width: 241px; height: auto; }
+            
+            .close-inv {
+                top: 20px;
+                left: 20px;
+                font-size: 2.5rem;
             }
             
             #save-panel {
@@ -347,13 +323,34 @@
                 height: 120px;
                 font-size: 0.7rem;
             }
+            
+            .icon-label {
+                font-size: 11px;
+                padding: 3px 6px;
+                border-radius: 4px;
+            }
+            
+            /* Размеры иконок для телефонов */
+            .inv-slot {
+                width: 144px !important;
+                height: 144px !important;
+            }
         }
         
-        @media screen and (min-width: 600px) and (max-width: 1024px) {
+        @media screen and (min-width: 600px) {
+            .hero-preview-box { top: 54%; left: 50%; }
+            #inv-hero-img { width: 376px; height: auto; }
+            
             .icon-label {
                 font-size: 12px;
                 padding: 4px 8px;
                 border-radius: 5px;
+            }
+            
+            /* Размеры иконок для планшетов */
+            .inv-slot {
+                width: 235px !important;
+                height: 235px !important;
             }
         }
         
@@ -364,6 +361,10 @@
                 border-radius: 6px;
             }
         }
+
+        /* --- МОДАЛКА НАВЫКОВ --- */
+        #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -432,33 +433,34 @@
             <div id="vertical-line-right" class="vertical-line" style="left: 75%;"></div>
             
             <div class="equipment-grid">
+                <!-- ЛЕВАЯ КОЛОНКА (как было ДО редактирования) -->
                 <div class="inv-column" id="left-column">
-                    <!-- Левая колонка иконок -->
-                    <div class="inv-slot" id="left-helmet" style="left: 15%; top: 10%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="left-helmet" style="left: 0%; top: 0%;">
                         <img src="helmet.png" alt="Шлем">
                     </div>
-                    <div class="inv-slot" id="left-chestplate" style="left: 15%; top: 35%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="left-chestplate" style="left: 0%; top: 25%;">
                         <img src="chestplate.png" alt="Нагрудник">
                     </div>
-                    <div class="inv-slot" id="left-hammer" style="left: 15%; top: 60%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="left-hammer" style="left: 0%; top: 50%;">
                         <img src="hammer.png" alt="Молот">
                     </div>
-                    <div class="inv-slot" id="left-ring" style="left: 15%; top: 85%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="left-ring" style="left: 0%; top: 75%;">
                         <img src="ring.png" alt="Кольцо">
                     </div>
                 </div>
+                
+                <!-- ПРАВАЯ КОЛОНКА (как было ДО редактирования) -->
                 <div class="inv-column" id="right-column">
-                    <!-- Правая колонка иконок -->
-                    <div class="inv-slot" id="right-bracers" style="left: 15%; top: 10%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="right-bracers" style="left: 0%; top: 0%;">
                         <img src="bracers.png" alt="Наручи">
                     </div>
-                    <div class="inv-slot" id="right-boots" style="left: 15%; top: 35%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="right-boots" style="left: 0%; top: 25%;">
                         <img src="boots.png" alt="Ботинки">
                     </div>
-                    <div class="inv-slot" id="right-hammer2" style="left: 15%; top: 60%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="right-hammer2" style="left: 0%; top: 50%;">
                         <img src="hammer.png" alt="Молот 2">
                     </div>
-                    <div class="inv-slot" id="right-ring2" style="left: 15%; top: 85%; width: 144px; height: 144px;">
+                    <div class="inv-slot" id="right-ring2" style="left: 0%; top: 75%;">
                         <img src="ring.png" alt="Кольцо 2">
                     </div>
                 </div>
@@ -493,19 +495,19 @@
         let currentHeroKey = 'warrior';
         let currentGender = 'male';
         
-        // Координаты экипировки
+        // Координаты экипировки как было ДО редактирования
         let equipmentPositions = {
-            // Левая колонка
-            'left-helmet': { x: 15, y: 10, width: 144, height: 144 },
-            'left-chestplate': { x: 15, y: 35, width: 144, height: 144 },
-            'left-hammer': { x: 15, y: 60, width: 144, height: 144 },
-            'left-ring': { x: 15, y: 85, width: 144, height: 144 },
+            // Левая колонка - позиции как в оригинальном коде
+            'left-helmet': { x: 0, y: 0, width: 235, height: 235 },
+            'left-chestplate': { x: 0, y: 25, width: 235, height: 235 },
+            'left-hammer': { x: 0, y: 50, width: 235, height: 235 },
+            'left-ring': { x: 0, y: 75, width: 235, height: 235 },
             
-            // Правая колонка
-            'right-bracers': { x: 15, y: 10, width: 144, height: 144 },
-            'right-boots': { x: 15, y: 35, width: 144, height: 144 },
-            'right-hammer2': { x: 15, y: 60, width: 144, height: 144 },
-            'right-ring2': { x: 15, y: 85, width: 144, height: 144 }
+            // Правая колонка - позиции как в оригинальном коде
+            'right-bracers': { x: 0, y: 0, width: 235, height: 235 },
+            'right-boots': { x: 0, y: 25, width: 235, height: 235 },
+            'right-hammer2': { x: 0, y: 50, width: 235, height: 235 },
+            'right-ring2': { x: 0, y: 75, width: 235, height: 235 }
         };
         
         // Вертикальные линии
@@ -617,7 +619,7 @@
         // Включение режима редактирования при загрузке инвентаря
         function initInventory() {
             // Автоматически включаем режим редактирования
-            enableEditMode();
+            setTimeout(enableEditMode, 100);
             
             // Добавляем обработчики для кнопок сохранения
             document.getElementById('copy-json-btn').onclick = function() {
@@ -632,6 +634,30 @@
             document.getElementById('close-save-btn').onclick = function() {
                 document.getElementById('save-panel').style.display = 'none';
             };
+            
+            // Устанавливаем правильные размеры для слотов
+            updateSlotSizes();
+        }
+
+        // Обновление размеров слотов в зависимости от устройства
+        function updateSlotSizes() {
+            const slots = document.querySelectorAll('.inv-slot');
+            const isMobile = window.innerWidth <= 599;
+            
+            slots.forEach(slot => {
+                const width = isMobile ? 144 : 235;
+                const height = isMobile ? 144 : 235;
+                
+                slot.style.width = width + 'px';
+                slot.style.height = height + 'px';
+                
+                // Обновляем размеры в equipmentPositions
+                const id = slot.id;
+                if (equipmentPositions[id]) {
+                    equipmentPositions[id].width = width;
+                    equipmentPositions[id].height = height;
+                }
+            });
         }
 
         // Включение режима редактирования
@@ -639,6 +665,10 @@
             // Добавляем обработчики для всех слотов
             const slots = document.querySelectorAll('.inv-slot');
             slots.forEach(slot => {
+                slot.style.border = '2px solid var(--gold)';
+                slot.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.7)';
+                slot.style.background = 'rgba(255, 215, 0, 0.1)';
+                
                 slot.addEventListener('mousedown', startDrag);
                 slot.addEventListener('touchstart', startDragTouch, { passive: false });
             });
@@ -646,14 +676,19 @@
             // Добавляем обработчики для вертикальных линий
             const lines = document.querySelectorAll('.vertical-line');
             lines.forEach(line => {
+                line.style.backgroundColor = 'var(--gold)';
+                line.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.7)';
+                line.style.width = '4px';
+                line.style.cursor = 'col-resize';
+                
                 line.addEventListener('mousedown', startLineDrag);
                 line.addEventListener('touchstart', startLineDragTouch, { passive: false });
             });
             
             // Показываем инструкцию
             setTimeout(() => {
-                alert('РЕЖИМ РЕДАКТИРОВАНИЯ ВКЛЮЧЕН!\n\n1. Таскайте иконки пальцем\n2. Меняйте размер щипком двумя пальцами\n3. Перетаскивайте вертикальные линии\n4. После настройки нажмите "×" в левом верхнем углу чтобы выйти и получить JSON');
-            }, 500);
+                alert('РЕЖИМ РЕДАКТИРОВАНИЯ ВКЛЮЧЕН!\n\n1. Таскайте иконки пальцем\n2. Меняйте размер щипком двумя пальцами\n3. Перетаскивайте вертикальные линии\n\nОБЕ КОЛОНКИ ВИДНЫ И РЕДАКТИРУЕМЫ!');
+            }, 300);
         }
 
         // Начало перетаскивания элемента
@@ -1104,9 +1139,6 @@
         function closeInventory() { 
             // Показываем панель с JSON
             showSavePanel();
-            
-            // Ждем пока пользователь скопирует JSON или закроет панель
-            // Инвентарь не закрываем сразу
         }
 
         window.onload = () => {
