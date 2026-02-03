@@ -195,28 +195,18 @@
             z-index: 2;
         }
         
-        .inv-column { 
-            display: flex; 
-            flex-direction: column; 
-            pointer-events: none;
-            position: relative;
-            width: 45%;
-        }
-        
-        /* Слоты экипировки - УБРАНЫ ФОНЫ, оставлены только иконки */
+        /* Слоты экипировки - чистые иконки без фона */
         .inv-slot {
             position: absolute;
             pointer-events: auto;
             z-index: 10;
-            touch-action: none;
-            transform-origin: center center;
             box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid transparent;
-            border-radius: 8px;
+            border: none;
             background: transparent;
+            cursor: pointer;
         }
         
         .inv-slot img { 
@@ -225,20 +215,9 @@
             object-fit: contain; 
             pointer-events: none;
             user-select: none;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
         }
         
-        /* Вертикальные линии для разделения */
-        .vertical-line {
-            position: absolute;
-            width: 2px;
-            background-color: rgba(255, 215, 0, 0.5);
-            z-index: 5;
-            pointer-events: auto;
-            transition: all 0.3s;
-            top: 0;
-            bottom: 0;
-        }
-
         /* Панель сохранения */
         #save-panel {
             position: fixed;
@@ -329,12 +308,6 @@
                 padding: 3px 6px;
                 border-radius: 4px;
             }
-            
-            /* Размеры иконок для телефонов */
-            .inv-slot {
-                width: 144px !important;
-                height: 144px !important;
-            }
         }
         
         @media screen and (min-width: 600px) {
@@ -345,12 +318,6 @@
                 font-size: 12px;
                 padding: 4px 8px;
                 border-radius: 5px;
-            }
-            
-            /* Размеры иконок для планшетов */
-            .inv-slot {
-                width: 235px !important;
-                height: 235px !important;
             }
         }
         
@@ -428,36 +395,32 @@
         <div class="inv-container">
             <div class="hero-preview-box"><img id="inv-hero-img" src=""></div>
             
-            <!-- Вертикальные линии -->
-            <div id="vertical-line-left" class="vertical-line" style="left: 25%;"></div>
-            <div id="vertical-line-right" class="vertical-line" style="left: 75%;"></div>
-            
-            <!-- Убраны колонки, иконки теперь размещаются свободно -->
+            <!-- Вертикальные линии УБРАНЫ -->
             <div class="equipment-grid">
-                <!-- СЛОТЫ ЭКИПИРОВКИ БЕЗ ПРИВЯЗКИ К КОЛОНКАМ -->
-                <div class="inv-slot" id="helmet-slot" style="left: 15%; top: 10%; width: 235px; height: 235px;">
+                <!-- СЛОТЫ ЭКИПИРОВКИ ДЛЯ ПЛАНШЕТОВ -->
+                <div class="inv-slot" id="helmet-slot">
                     <img src="helmet.png" alt="Шлем">
                 </div>
-                <div class="inv-slot" id="chestplate-slot" style="left: 15%; top: 35%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="chestplate-slot">
                     <img src="chestplate.png" alt="Нагрудник">
                 </div>
-                <div class="inv-slot" id="hammer-slot" style="left: 15%; top: 60%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="hammer-slot">
                     <img src="hammer.png" alt="Молот">
                 </div>
-                <div class="inv-slot" id="ring-slot" style="left: 15%; top: 85%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="ring-slot">
                     <img src="ring.png" alt="Кольцо">
                 </div>
                 
-                <div class="inv-slot" id="bracers-slot" style="left: 65%; top: 10%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="bracers-slot">
                     <img src="bracers.png" alt="Наручи">
                 </div>
-                <div class="inv-slot" id="boots-slot" style="left: 65%; top: 35%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="boots-slot">
                     <img src="boots.png" alt="Ботинки">
                 </div>
-                <div class="inv-slot" id="hammer2-slot" style="left: 65%; top: 60%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="hammer2-slot">
                     <img src="hammer.png" alt="Молот 2">
                 </div>
-                <div class="inv-slot" id="ring2-slot" style="left: 65%; top: 85%; width: 235px; height: 235px;">
+                <div class="inv-slot" id="ring2-slot">
                     <img src="ring.png" alt="Кольцо 2">
                 </div>
             </div>
@@ -491,20 +454,29 @@
         let currentHeroKey = 'warrior';
         let currentGender = 'male';
         
-        // Координаты экипировки - теперь абсолютные позиции
-        let equipmentPositions = {
-            'helmet-slot': { x: 15, y: 10, width: 235, height: 235 },
-            'chestplate-slot': { x: 15, y: 35, width: 235, height: 235 },
-            'hammer-slot': { x: 15, y: 60, width: 235, height: 235 },
-            'ring-slot': { x: 15, y: 85, width: 235, height: 235 },
-            'bracers-slot': { x: 65, y: 10, width: 235, height: 235 },
-            'boots-slot': { x: 65, y: 35, width: 235, height: 235 },
-            'hammer2-slot': { x: 65, y: 60, width: 235, height: 235 },
-            'ring2-slot': { x: 65, y: 85, width: 235, height: 235 }
+        // Координаты для планшетов (из предоставленного JSON)
+        const tabletPositions = {
+            'helmet-slot': { x: 14.21, y: 26.51, width: 235, height: 235 },
+            'chestplate-slot': { x: 13.98, y: 37.87, width: 235, height: 235 },
+            'hammer-slot': { x: 15.24, y: 47.98, width: 235, height: 235 },
+            'ring-slot': { x: 15.68, y: 57.19, width: 235, height: 235 },
+            'bracers-slot': { x: 55.51, y: 26.39, width: 235, height: 235 },
+            'boots-slot': { x: 55.28, y: 36.96, width: 235, height: 235 },
+            'hammer2-slot': { x: 55.78, y: 47.74, width: 235, height: 235 },
+            'ring2-slot': { x: 55.96, y: 57.14, width: 235, height: 235 }
         };
         
-        // Вертикальные линии
-        let verticalLines = { left: 25, right: 75 };
+        // Координаты для телефонов (из предоставленного JSON)
+        const phonePositions = {
+            'helmet-slot': { x: 5.23, y: 28.63, width: 144, height: 144 },
+            'chestplate-slot': { x: 5.55, y: 40.42, width: 144, height: 144 },
+            'hammer-slot': { x: 6.80, y: 50.75, width: 144, height: 144 },
+            'ring-slot': { x: 7.22, y: 59.82, width: 144, height: 144 },
+            'bracers-slot': { x: 60.00, y: 27.90, width: 144, height: 144 },
+            'boots-slot': { x: 59.86, y: 39.20, width: 144, height: 144 },
+            'hammer2-slot': { x: 60.00, y: 50.64, width: 144, height: 144 },
+            'ring2-slot': { x: 60.00, y: 59.33, width: 144, height: 144 }
+        };
 
         const heroesData = {
             warrior: {
@@ -598,23 +570,35 @@
             }
         };
 
-        // Переменные для перетаскивания и изменения размера
-        let activeElement = null;
-        let isDragging = false;
-        let isResizing = false;
-        let startX = 0;
-        let startY = 0;
-        let startWidth = 0;
-        let startHeight = 0;
-        let startLeft = 0;
-        let startTop = 0;
-
-        // Включение режима редактирования при загрузке инвентаря
+        // Инициализация инвентаря - установка позиций
         function initInventory() {
-            // Автоматически включаем режим редактирования
-            setTimeout(enableEditMode, 100);
+            // Определяем, телефон это или планшет
+            const isMobile = window.innerWidth <= 599;
+            const positions = isMobile ? phonePositions : tabletPositions;
             
-            // Добавляем обработчики для кнопок сохранения
+            // Устанавливаем позиции для всех слотов
+            Object.keys(positions).forEach(slotId => {
+                const slot = document.getElementById(slotId);
+                if (slot) {
+                    const pos = positions[slotId];
+                    
+                    // Устанавливаем позицию в процентах
+                    slot.style.left = pos.x + '%';
+                    slot.style.top = pos.y + '%';
+                    
+                    // Устанавливаем размеры (все иконки одинакового размера как молот)
+                    slot.style.width = pos.width + 'px';
+                    slot.style.height = pos.height + 'px';
+                }
+            });
+            
+            // Убираем вертикальные линии (если они есть в DOM)
+            const lineLeft = document.getElementById('vertical-line-left');
+            const lineRight = document.getElementById('vertical-line-right');
+            if (lineLeft) lineLeft.style.display = 'none';
+            if (lineRight) lineRight.style.display = 'none';
+            
+            // Добавляем обработчики для кнопок сохранения (если нужны для будущего)
             document.getElementById('copy-json-btn').onclick = function() {
                 const jsonTextarea = document.getElementById('save-json');
                 if (jsonTextarea) {
@@ -627,397 +611,22 @@
             document.getElementById('close-save-btn').onclick = function() {
                 document.getElementById('save-panel').style.display = 'none';
             };
-            
-            // Устанавливаем правильные размеры для слотов
-            updateSlotSizes();
         }
 
-        // Обновление размеров слотов в зависимости от устройства
-        function updateSlotSizes() {
-            const slots = document.querySelectorAll('.inv-slot');
-            const isMobile = window.innerWidth <= 599;
-            
-            slots.forEach(slot => {
-                const width = isMobile ? 144 : 235;
-                const height = isMobile ? 144 : 235;
-                
-                slot.style.width = width + 'px';
-                slot.style.height = height + 'px';
-                
-                // Обновляем размеры в equipmentPositions
-                const id = slot.id;
-                if (equipmentPositions[id]) {
-                    equipmentPositions[id].width = width;
-                    equipmentPositions[id].height = height;
-                }
-            });
-        }
-
-        // Включение режима редактирования
-        function enableEditMode() {
-            // Добавляем обработчики для всех слотов
-            const slots = document.querySelectorAll('.inv-slot');
-            slots.forEach(slot => {
-                // Убираем все рамки и фоны, оставляем только прозрачную область для перетаскивания
-                slot.style.border = '2px solid transparent';
-                slot.style.boxShadow = 'none';
-                slot.style.background = 'transparent';
-                slot.style.cursor = 'move';
-                
-                slot.addEventListener('mousedown', startDrag);
-                slot.addEventListener('touchstart', startDragTouch, { passive: false });
-            });
-            
-            // Добавляем обработчики для вертикальных линий
-            const lines = document.querySelectorAll('.vertical-line');
-            lines.forEach(line => {
-                line.style.backgroundColor = 'var(--gold)';
-                line.style.boxShadow = '0 0 10px rgba(255, 215, 0, 0.7)';
-                line.style.width = '4px';
-                line.style.cursor = 'col-resize';
-                
-                line.addEventListener('mousedown', startLineDrag);
-                line.addEventListener('touchstart', startLineDragTouch, { passive: false });
-            });
-            
-            // Показываем инструкцию
-            setTimeout(() => {
-                alert('РЕЖИМ РЕДАКТИРОВАНИЯ ВКЛЮЧЕН!\n\n1. Таскайте иконки пальцем по всему экрану\n2. Меняйте размер щипком двумя пальцами\n3. Перетаскивайте вертикальные линии\n\nИКОНКИ ТЕПЕРЬ МОЖНО ПЕРЕТАСКИВАТЬ ПО ВСЕМУ ЭКРАНУ!');
-            }, 300);
-        }
-
-        // Начало перетаскивания элемента
-        function startDrag(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            activeElement = e.target.closest('.inv-slot');
-            if (!activeElement) return;
-            
-            isDragging = true;
-            isResizing = false;
-            
-            startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            
-            // Получаем текущие позиции в пикселях относительно экрана
-            const rect = activeElement.getBoundingClientRect();
-            startLeft = rect.left;
-            startTop = rect.top;
-            
-            // Делаем элемент поверх всех остальных
-            activeElement.style.zIndex = '1000';
-            
-            document.addEventListener('mousemove', doDrag);
-            document.addEventListener('touchmove', doDragTouch, { passive: false });
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchend', stopDrag);
-        }
-
-        // Начало перетаскивания для касаний
-        function startDragTouch(e) {
-            if (e.touches.length === 1) {
-                startDrag(e);
-            } else if (e.touches.length === 2) {
-                startResize(e);
-            }
-        }
-
-        // Начало изменения размера (щипок)
-        function startResize(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            activeElement = e.target.closest('.inv-slot');
-            if (!activeElement) return;
-            
-            isResizing = true;
-            isDragging = false;
-            
-            startWidth = activeElement.offsetWidth;
-            startHeight = activeElement.offsetHeight;
-            
-            // Для щипка используем среднюю точку между двумя касаниями
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            startX = (touch1.clientX + touch2.clientX) / 2;
-            startY = (touch1.clientY + touch2.clientY) / 2;
-            
-            document.addEventListener('touchmove', doResizeTouch, { passive: false });
-            document.addEventListener('touchend', stopResize);
-        }
-
-        // Перетаскивание элемента - теперь по всему экрану
-        function doDrag(e) {
-            if (!isDragging || !activeElement) return;
-            
-            e.preventDefault();
-            
-            const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const currentY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            
-            const deltaX = currentX - startX;
-            const deltaY = currentY - startY;
-            
-            // Вычисляем новые позиции в пикселях
-            let newLeft = startLeft + deltaX;
-            let newTop = startTop + deltaY;
-            
-            // Ограничиваем границы экрана
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
-            const elementWidth = activeElement.offsetWidth;
-            const elementHeight = activeElement.offsetHeight;
-            
-            newLeft = Math.max(0, Math.min(newLeft, screenWidth - elementWidth));
-            newTop = Math.max(0, Math.min(newTop, screenHeight - elementHeight));
-            
-            // Устанавливаем новые позиции в пикселях
-            activeElement.style.position = 'fixed';
-            activeElement.style.left = newLeft + 'px';
-            activeElement.style.top = newTop + 'px';
-            
-            // Обновляем стартовые позиции для плавного движения
-            startX = currentX;
-            startY = currentY;
-            startLeft = newLeft;
-            startTop = newTop;
-        }
-
-        // Перетаскивание для касаний
-        function doDragTouch(e) {
-            if (e.touches.length === 1) {
-                doDrag(e);
-            }
-        }
-
-        // Изменение размера (щипок)
-        function doResizeTouch(e) {
-            if (!isResizing || !activeElement || e.touches.length !== 2) return;
-            
-            e.preventDefault();
-            
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            
-            // Вычисляем изменение расстояния между пальцами
-            const currentDistance = Math.hypot(
-                touch1.clientX - touch2.clientX,
-                touch1.clientY - touch2.clientY
-            );
-            
-            const startDistance = Math.hypot(
-                e.touches[0].clientX - e.touches[1].clientX,
-                e.touches[0].clientY - e.touches[1].clientY
-            ) || 100;
-            
-            const scale = currentDistance / startDistance;
-            
-            // Применяем масштабирование
-            const newWidth = startWidth * scale;
-            const newHeight = startHeight * scale;
-            
-            // Ограничиваем минимальный и максимальный размер
-            const minSize = 50;
-            const maxSize = 400;
-            
-            const finalWidth = Math.max(minSize, Math.min(newWidth, maxSize));
-            const finalHeight = Math.max(minSize, Math.min(newHeight, maxSize));
-            
-            activeElement.style.width = finalWidth + 'px';
-            activeElement.style.height = finalHeight + 'px';
-            
-            // Обновляем стартовые размеры
-            startWidth = finalWidth;
-            startHeight = finalHeight;
-        }
-
-        // Остановка перетаскивания
-        function stopDrag() {
-            if (!isDragging) return;
-            
-            isDragging = false;
-            
-            // Сохраняем позицию элемента
-            if (activeElement) {
-                const id = activeElement.id;
-                const rect = activeElement.getBoundingClientRect();
-                
-                // Конвертируем пиксели в проценты для сохранения
-                const screenWidth = window.innerWidth;
-                const screenHeight = window.innerHeight;
-                const xPercent = (rect.left / screenWidth) * 100;
-                const yPercent = (rect.top / screenHeight) * 100;
-                const width = activeElement.offsetWidth;
-                const height = activeElement.offsetHeight;
-                
-                equipmentPositions[id] = {
-                    x: xPercent,
-                    y: yPercent,
-                    width: width,
-                    height: height
-                };
-                
-                // Возвращаем нормальный z-index
-                activeElement.style.zIndex = '10';
-            }
-            
-            activeElement = null;
-            
-            document.removeEventListener('mousemove', doDrag);
-            document.removeEventListener('touchmove', doDragTouch);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchend', stopDrag);
-        }
-
-        // Остановка изменения размера
-        function stopResize() {
-            if (!isResizing) return;
-            
-            isResizing = false;
-            
-            if (activeElement) {
-                // Сохраняем размер элемента
-                const id = activeElement.id;
-                const rect = activeElement.getBoundingClientRect();
-                const screenWidth = window.innerWidth;
-                const screenHeight = window.innerHeight;
-                const xPercent = (rect.left / screenWidth) * 100;
-                const yPercent = (rect.top / screenHeight) * 100;
-                const width = activeElement.offsetWidth;
-                const height = activeElement.offsetHeight;
-                
-                equipmentPositions[id] = {
-                    x: xPercent,
-                    y: yPercent,
-                    width: width,
-                    height: height
-                };
-            }
-            
-            activeElement = null;
-            
-            document.removeEventListener('touchmove', doResizeTouch);
-            document.removeEventListener('touchend', stopResize);
-        }
-
-        // Начало перетаскивания вертикальной линии
-        function startLineDrag(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            activeElement = e.target.closest('.vertical-line');
-            if (!activeElement) return;
-            
-            startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            
-            document.addEventListener('mousemove', doLineDrag);
-            document.addEventListener('touchmove', doLineDragTouch, { passive: false });
-            document.addEventListener('mouseup', stopLineDrag);
-            document.addEventListener('touchend', stopLineDrag);
-        }
-
-        // Начало перетаскивания линии для касаний
-        function startLineDragTouch(e) {
-            if (e.touches.length === 1) {
-                startLineDrag(e);
-            }
-        }
-
-        // Перетаскивание вертикальной линии
-        function doLineDrag(e) {
-            if (!activeElement) return;
-            
-            e.preventDefault();
-            
-            const currentX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const deltaX = currentX - startX;
-            
-            // Вычисляем новую позицию в процентах
-            const screenWidth = window.innerWidth;
-            const deltaPercent = (deltaX / screenWidth) * 100;
-            
-            let currentLeft = parseFloat(activeElement.style.left) || 0;
-            let newLeft = currentLeft + deltaPercent;
-            
-            // Ограничиваем границы и предотвращаем пересечение линий
-            const minDistance = 10; // Минимальное расстояние между линиями
-            
-            if (activeElement.id === 'vertical-line-left') {
-                newLeft = Math.max(5, Math.min(newLeft, verticalLines.right - minDistance));
-                verticalLines.left = newLeft;
-            } else if (activeElement.id === 'vertical-line-right') {
-                newLeft = Math.max(verticalLines.left + minDistance, Math.min(newLeft, 95));
-                verticalLines.right = newLeft;
-            }
-            
-            activeElement.style.left = newLeft + '%';
-            startX = currentX;
-        }
-
-        // Перетаскивание линии для касаний
-        function doLineDragTouch(e) {
-            if (e.touches.length === 1) {
-                doLineDrag(e);
-            }
-        }
-
-        // Остановка перетаскивания линии
-        function stopLineDrag() {
-            if (!activeElement) return;
-            
-            activeElement = null;
-            
-            document.removeEventListener('mousemove', doLineDrag);
-            document.removeEventListener('touchmove', doLineDragTouch);
-            document.removeEventListener('mouseup', stopLineDrag);
-            document.removeEventListener('touchend', stopLineDrag);
-        }
-
-        // Генерация JSON с текущими координатами
+        // Генерация JSON с текущими координатами (для возможного использования)
         function generateEquipmentJSON() {
-            // Собираем актуальные данные
-            const slots = document.querySelectorAll('.inv-slot');
-            slots.forEach(slot => {
-                const id = slot.id;
-                const rect = slot.getBoundingClientRect();
-                const screenWidth = window.innerWidth;
-                const screenHeight = window.innerHeight;
-                
-                // Конвертируем пиксели в проценты
-                const xPercent = (rect.left / screenWidth) * 100;
-                const yPercent = (rect.top / screenHeight) * 100;
-                const width = slot.offsetWidth;
-                const height = slot.offsetHeight;
-                
-                equipmentPositions[id] = {
-                    x: xPercent,
-                    y: yPercent,
-                    width: width,
-                    height: height
-                };
-            });
-            
-            // Получаем актуальные позиции линий
-            const lineLeft = document.getElementById('vertical-line-left');
-            const lineRight = document.getElementById('vertical-line-right');
-            
-            if (lineLeft) {
-                verticalLines.left = parseFloat(lineLeft.style.left) || 25;
-            }
-            if (lineRight) {
-                verticalLines.right = parseFloat(lineRight.style.left) || 75;
-            }
+            const isMobile = window.innerWidth <= 599;
+            const positions = isMobile ? phonePositions : tabletPositions;
             
             const data = {
-                equipmentPositions: equipmentPositions,
-                verticalLines: verticalLines
+                equipmentPositions: positions,
+                verticalLines: { left: 25, right: 75 } // Линии убраны, но оставляем для структуры
             };
             
             return JSON.stringify(data, null, 2);
         }
 
-        // Показать панель с JSON при закрытии инвентаря
+        // Показать панель с JSON (если понадобится)
         function showSavePanel() {
             const savePanel = document.getElementById('save-panel');
             const jsonTextarea = document.getElementById('save-json');
@@ -1152,8 +761,12 @@
         }
         
         function closeInventory() { 
-            // Показываем панель с JSON
-            showSavePanel();
+            // Скрываем инвентарь без показа панели сохранения
+            const inv = document.getElementById('inventory-screen');
+            inv.style.opacity = '0';
+            setTimeout(() => {
+                inv.style.display = 'none';
+            }, 400);
         }
 
         window.onload = () => {
