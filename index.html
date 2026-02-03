@@ -77,10 +77,10 @@
         .skill-item { display: flex; align-items: center; margin-bottom: 6px; background: rgba(255, 255, 255, 0.05); padding: 6px 10px; border-radius: 8px; }
         .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 12px; }
         .skill-name { font-size: 0.85rem; font-weight: bold; color: #fff; }
-        .confirm-btn { margin-top: 8px; width: 100%; padding: 12px; background: linear-gradient(180deg, var(--gold), #b8860b); color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+        .confirm-btn { margin-top: 8px; width: 100%; padding: 12px; background: linear-gradient(180deg, var(--gold), #b8860b); color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; }
 
         .class-selector { width: 100%; display: flex; justify-content: center; gap: 15px; padding: 10px 0 20px 0; flex-shrink: 0; }
-        .icon-btn { filter: grayscale(1); transition: 0.3s; transform: scale(0.9); }
+        .icon-btn { filter: grayscale(1); transition: 0.3s; transform: scale(0.9); cursor: pointer; }
         .icon-btn img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid transparent; }
         .icon-btn.active { filter: grayscale(0); transform: scale(1.1); }
         .icon-btn.active img { border-color: var(--gold); }
@@ -96,12 +96,12 @@
         .resource-panel img { width: 22px; height: 22px; margin-right: 8px; }
         .resource-panel .value { font-size: 1rem; font-weight: bold; }
 
-        .player-header { position: absolute; top: env(safe-area-inset-top, 20px); left: 15px; display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 8px; border-radius: 14px; border: 1px solid var(--blue); backdrop-filter: blur(10px); z-index: 20; }
+        .player-header { position: absolute; top: env(safe-area-inset-top, 20px); left: 15px; display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 8px; border-radius: 14px; border: 1px solid var(--blue); backdrop-filter: blur(10px); z-index: 20; cursor: pointer; }
         .player-avatar { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 12px; }
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1rem; }
         .player-info p { margin: 0; font-size: 0.8rem; color: #ccc; }
 
-        .vip-button { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 80px; height: 80px; z-index: 20; filter: grayscale(1); transition: 0.3s; }
+        .vip-button { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 80px; height: 80px; z-index: 20; filter: grayscale(1); transition: 0.3s; cursor: pointer; }
         .vip-button.active { filter: grayscale(0); }
         .vip-button img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -119,7 +119,7 @@
             position: absolute; left: 50%; top: -60px; transform: translateX(-50%);
             width: 55px; height: 55px; background: rgba(15,5,0,0.95); border: 3px solid var(--gold);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            pointer-events: auto; z-index: 30; transition: 0.4s;
+            pointer-events: auto; z-index: 30; transition: 0.4s; cursor: pointer;
         }
         .nav-arrow-custom::after { content: ''; width: 12px; height: 12px; border-top: 4px solid var(--gold); border-right: 4px solid var(--gold); transform: rotate(45deg); margin-right: 4px; }
         .nav-arrow-custom.flip { transform: translateX(-50%) rotate(180deg); border-color: var(--blue); }
@@ -128,6 +128,7 @@
         .game-icon {
             position: absolute; pointer-events: auto; z-index: 25;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            cursor: pointer;
         }
         .game-icon.hidden { opacity: 0; transform: translateY(100px) scale(0.5); pointer-events: none; }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; }
@@ -472,7 +473,7 @@
             profile: {x: -27, y: 653},
             lotto: {x: 143, y: 653},
             calendar: {x: 218, y: 468},
-            mail: {x: -47, y: 445} // Начальная позиция текста "Письмо"
+            mail: {x: -47, y: 445}
         };
 
         const config = isTablet ? {
@@ -728,21 +729,41 @@
         function openSkill(idx) { const s = heroesData[currentHeroKey].skills[idx]; document.getElementById('modal-img').src = s.i; document.getElementById('modal-name').innerText = s.n; document.getElementById('modal-text').innerText = s.d; document.getElementById('skill-modal').style.display = 'flex'; }
         
         async function confirmSelection() {
-            try { await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { method: 'POST' }); showMenu(); } 
-            catch (e) { showMenu(); }
+            try { 
+                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }); 
+                showMenu(); 
+            } catch (e) { 
+                showMenu(); 
+            }
         }
 
         function showMenu() {
             document.getElementById('selection-screen').style.display = 'none';
-            const m = document.getElementById('menu-screen'); m.style.display = 'block'; setTimeout(() => m.style.opacity = '1', 50);
+            const m = document.getElementById('menu-screen'); 
+            m.style.display = 'block'; 
+            setTimeout(() => m.style.opacity = '1', 50);
             const h = heroesData[currentHeroKey];
             document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
             document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
             buildDynamicUI();
         }
 
-        function openInventory() { const inv = document.getElementById('inventory-screen'); inv.style.display = 'block'; setTimeout(() => inv.style.opacity = '1', 50); }
-        function closeInventory() { const inv = document.getElementById('inventory-screen'); inv.style.opacity = '0'; setTimeout(() => inv.style.display = 'none', 400); }
+        function openInventory() { 
+            const inv = document.getElementById('inventory-screen'); 
+            inv.style.display = 'block'; 
+            setTimeout(() => inv.style.opacity = '1', 50); 
+        }
+        
+        function closeInventory() { 
+            const inv = document.getElementById('inventory-screen'); 
+            inv.style.opacity = '0'; 
+            setTimeout(() => inv.style.display = 'none', 400); 
+        }
 
         // Инициализация событий для редактирования текста
         document.getElementById('edit-text-btn').onclick = openTextEditPanel;
@@ -750,10 +771,24 @@
         document.getElementById('cancel-text-btn').onclick = cancelTextEdit;
 
         window.onload = () => {
-            if(tg) { tg.expand(); tg.ready(); }
-            let p = 0; const loadingInterval = setInterval(() => {
-                p += 5; document.getElementById('progress-fill').style.width = p + '%'; document.getElementById('loading-pct').innerText = p + '%';
-                if(p >= 100) { clearInterval(loadingInterval); document.getElementById('loading-screen').style.display = 'none'; document.getElementById('selection-screen').style.display = 'block'; setTimeout(() => document.getElementById('selection-screen').style.opacity = '1', 50); selectHero('warrior'); }
+            if(tg) { 
+                tg.expand(); 
+                tg.ready(); 
+            }
+            let p = 0; 
+            const loadingInterval = setInterval(() => {
+                p += 5; 
+                document.getElementById('progress-fill').style.width = p + '%'; 
+                document.getElementById('loading-pct').innerText = p + '%';
+                if(p >= 100) { 
+                    clearInterval(loadingInterval); 
+                    document.getElementById('loading-screen').style.display = 'none'; 
+                    document.getElementById('selection-screen').style.display = 'block'; 
+                    setTimeout(() => {
+                        document.getElementById('selection-screen').style.opacity = '1';
+                    }, 50); 
+                    selectHero('warrior'); 
+                }
             }, 30);
         };
     </script>
