@@ -25,7 +25,6 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
-            /* Убираем синий/белый квадрат при нажатии на мобильных устройствах */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -159,20 +158,94 @@
             cursor: grabbing;
         }
 
+        /* Заголовки страниц */
+        .page-title {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .page-title.page1 { color: var(--gold); }
+        .page-title.page2 { color: var(--blue); }
+
+        .text-columns {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            z-index: 20;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .text-column {
+            display: inline-block;
+            vertical-align: top;
+            text-align: center;
+            margin: 0 20px;
+        }
+
+        .text-item {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 12px 0;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
+            padding: 5px 10px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .text-item.page1 { color: #fff; }
+        .text-item.page2 { color: #fff; }
+
         /* Адаптивные размеры шрифта для планшета и телефона */
         @media screen and (max-width: 599px) {
             .icon-label {
                 font-size: 11px;
+            }
+            .page-title {
+                font-size: 1.6rem;
+                top: 25%;
+            }
+            .text-item {
+                font-size: 0.9rem;
+                margin: 8px 0;
             }
         }
         @media screen and (min-width: 600px) and (max-width: 1024px) {
             .icon-label {
                 font-size: 12px;
             }
+            .page-title {
+                font-size: 1.8rem;
+            }
+            .text-item {
+                font-size: 1rem;
+            }
         }
         @media screen and (min-width: 1025px) {
             .icon-label {
                 font-size: 13px;
+            }
+            .page-title {
+                font-size: 2.2rem;
+            }
+            .text-item {
+                font-size: 1.1rem;
             }
         }
 
@@ -339,6 +412,40 @@
 
             <div id="ui-dynamic-layer"></div>
 
+            <!-- Заголовок страницы 1 -->
+            <div id="page1-title" class="page-title page1" style="display: none;">ГЛАВНОЕ МЕНЮ</div>
+            
+            <!-- Колонки с текстом для страницы 1 -->
+            <div id="page1-text" class="text-columns" style="display: none;">
+                <div class="text-column">
+                    <div class="text-item page1">Сообщество</div>
+                    <div class="text-item page1">Календарь</div>
+                    <div class="text-item page1">Задание</div>
+                </div>
+                <div class="text-column">
+                    <div class="text-item page1">Бой</div>
+                    <div class="text-item page1">Союз</div>
+                    <div class="text-item page1">Магазин</div>
+                    <div class="text-item page1">Инвентарь</div>
+                </div>
+            </div>
+
+            <!-- Заголовок страницы 2 -->
+            <div id="page2-title" class="page-title page2" style="display: none;">ДОПОЛНИТЕЛЬНО</div>
+            
+            <!-- Колонки с текстом для страницы 2 -->
+            <div id="page2-text" class="text-columns" style="display: none;">
+                <div class="text-column">
+                    <div class="text-item page2">Письмо</div>
+                    <div class="text-item page2">Профиль</div>
+                    <div class="text-item page2">Рейтинг</div>
+                </div>
+                <div class="text-column">
+                    <div class="text-item page2">Лото</div>
+                    <div class="text-item page2">Эталон</div>
+                </div>
+            </div>
+
             <!-- Кнопка редактирования текста -->
             <div id="edit-text-btn">Редактировать текст</div>
         </div>
@@ -502,6 +609,26 @@
         let textStartX = 0;
         let textStartY = 0;
 
+        // Функция для обновления видимости текстовых заголовков
+        function updatePageTitles() {
+            const page1Title = document.getElementById('page1-title');
+            const page1Text = document.getElementById('page1-text');
+            const page2Title = document.getElementById('page2-title');
+            const page2Text = document.getElementById('page2-text');
+            
+            if (currentPage === 1) {
+                page1Title.style.display = 'block';
+                page1Text.style.display = 'block';
+                page2Title.style.display = 'none';
+                page2Text.style.display = 'none';
+            } else {
+                page1Title.style.display = 'none';
+                page1Text.style.display = 'none';
+                page2Title.style.display = 'block';
+                page2Text.style.display = 'block';
+            }
+        }
+
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
             layer.innerHTML = '';
@@ -516,7 +643,8 @@
                 currentPage = (currentPage === 1) ? 2 : 1; 
                 bg.classList.toggle('page2', currentPage === 2); 
                 arrow.classList.toggle('flip', currentPage === 2); 
-                updateIconVisibility(); 
+                updateIconVisibility();
+                updatePageTitles();
             };
             bg.appendChild(arrow);
             layer.appendChild(bg);
@@ -555,6 +683,7 @@
                 layer.appendChild(label);
             });
             updateIconVisibility();
+            updatePageTitles();
         }
 
         // Функции для перетаскивания текста
