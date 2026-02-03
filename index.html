@@ -182,16 +182,49 @@
             pointer-events: none; 
         }
 
+        /* Адаптивные размеры шрифта для планшета и телефона */
+        @media screen and (max-width: 599px) {
+            .icon-label {
+                font-size: 11px;
+                padding: 3px 6px;
+                border-radius: 4px;
+            }
+        }
+        @media screen and (min-width: 600px) and (max-width: 1024px) {
+            .icon-label {
+                font-size: 12px;
+                padding: 4px 8px;
+                border-radius: 5px;
+            }
+        }
+        @media screen and (min-width: 1025px) {
+            .icon-label {
+                font-size: 13px;
+                padding: 5px 10px;
+                border-radius: 6px;
+            }
+        }
+
         /* --- ИНВЕНТАРЬ --- */
         #inventory-screen { background: url('character_preview.png') no-repeat center center/cover; z-index: 500; }
         .close-inv { position: absolute; top: 30px; left: 30px; font-size: 3rem; color: white; cursor: pointer; z-index: 600; text-shadow: 0 0 10px #000; }
         .inv-container { width: 100%; height: 100%; position: relative; display: flex; justify-content: center; align-items: center; }
         
         .hero-preview-box { position: absolute; transform: translate(-50%, -50%); }
-        .inv-slot img { width: 100%; height: 100%; object-fit: contain; }
+        @media screen and (max-width: 599px) {
+            .hero-preview-box { top: 55%; left: 54%; }
+            #inv-hero-img { width: 241px; height: auto; }
+            .inv-slot { width: 144px; height: 144px; margin-bottom: -77px; }
+        }
+        @media screen and (min-width: 600px) {
+            .hero-preview-box { top: 54%; left: 50%; }
+            #inv-hero-img { width: 376px; height: auto; }
+            .inv-slot { width: 235px; height: 235px; margin-bottom: -96px; }
+        }
 
         .equipment-grid { position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: center; pointer-events: none; padding: 0 5%; box-sizing: border-box; }
         .inv-column { display: flex; flex-direction: column; pointer-events: auto; }
+        .inv-slot img { width: 100%; height: 100%; object-fit: contain; }
 
         /* --- МОДАЛКА НАВЫКОВ --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
@@ -266,11 +299,11 @@
             border: 1px solid #666;
         }
 
-        /* Кнопка редактирования текста */
+        /* Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ */
         #edit-text-btn {
             position: absolute;
             top: env(safe-area-inset-top, 20px);
-            right: 130px;
+            right: 130px; /* Сдвигаем левее, чтобы не пересекаться с ресурсами */
             background: var(--blue);
             color: white;
             padding: 8px 12px;
@@ -280,147 +313,6 @@
             z-index: 1000;
             border: 1px solid var(--blue);
             font-size: 0.8rem;
-        }
-
-        /* Адаптивные стили для телефонов */
-        /* Телефоны (ширина до 599px) */
-        @media (max-width: 599px) {
-            .icon-label {
-                font-size: 9px;
-                padding: 2px 4px;
-                border-radius: 3px;
-                min-width: 60px;
-            }
-            
-            .player-header {
-                padding: 4px 6px;
-                max-width: 130px;
-            }
-            
-            .player-avatar {
-                width: 32px;
-                height: 32px;
-                margin-right: 6px;
-            }
-            
-            .player-info h3 {
-                font-size: 0.75rem;
-            }
-            
-            .player-info p {
-                font-size: 0.65rem;
-            }
-            
-            .resource-panel {
-                padding: 3px 6px;
-                min-width: 60px;
-            }
-            
-            .resource-panel img {
-                width: 16px;
-                height: 16px;
-                margin-right: 4px;
-            }
-            
-            .resource-panel .value {
-                font-size: 0.75rem;
-            }
-            
-            .vip-button {
-                width: 50px;
-                height: 50px;
-                top: env(safe-area-inset-top, 15px);
-            }
-            
-            #edit-text-btn {
-                top: env(safe-area-inset-top, 15px);
-                right: 90px;
-                padding: 4px 6px;
-                font-size: 0.65rem;
-            }
-            
-            /* Инвентарь для телефонов */
-            .hero-preview-box { 
-                top: 55%; 
-                left: 50%; 
-            }
-            #inv-hero-img { 
-                width: 180px; 
-                height: auto; 
-            }
-            .inv-slot { 
-                width: 80px; 
-                height: 80px; 
-                margin-bottom: -30px; 
-            }
-            
-            /* Загрузочный экран для телефонов */
-            .logo-main { 
-                width: 150px; 
-                margin-bottom: 15px; 
-            }
-            #loading-pct { 
-                font-size: 1rem; 
-            }
-        }
-        
-        /* Планшеты (600px - 1024px) */
-        @media (min-width: 600px) and (max-width: 1024px) {
-            .icon-label {
-                font-size: 11px;
-                padding: 3px 6px;
-                border-radius: 4px;
-                min-width: 70px;
-            }
-            
-            .player-header {
-                padding: 6px 8px;
-            }
-            
-            .player-avatar {
-                width: 40px;
-                height: 40px;
-            }
-            
-            /* Инвентарь для планшетов */
-            .hero-preview-box { 
-                top: 54%; 
-                left: 50%; 
-            }
-            #inv-hero-img { 
-                width: 300px; 
-                height: auto; 
-            }
-            .inv-slot { 
-                width: 180px; 
-                height: 180px; 
-                margin-bottom: -70px; 
-            }
-        }
-        
-        /* Десктопы/большие планшеты (более 1024px) */
-        @media (min-width: 1025px) {
-            .icon-label {
-                font-size: 13px;
-                padding: 5px 10px;
-                border-radius: 6px;
-                min-width: 90px;
-            }
-            
-            /* Инвентарь для десктопов */
-            .hero-preview-box { 
-                top: 54%; 
-                left: 50%; 
-            }
-            #inv-hero-img { 
-                width: 376px; 
-                height: auto; 
-            }
-            .inv-slot { 
-                width: 235px; 
-                height: 235px; 
-                margin-bottom: -96px; 
-            }
         }
     </style>
 </head>
@@ -475,6 +367,7 @@
                 <div class="resource-panel blue"><img src="icon_crystal.png"><span id="crys-val" class="value">50</span></div>
             </div>
 
+            <!-- Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ -->
             <div id="edit-text-btn">Редактировать текст</div>
 
             <div id="ui-dynamic-layer"></div>
@@ -510,13 +403,15 @@
             <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
             <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
         </div>
-    </div>
+</div>
 
     <!-- Панель редактирования текста -->
     <div id="edit-text-panel">
         <h3>Редактировать позиции текста</h3>
         
-        <div id="text-coord-inputs"></div>
+        <div id="text-coord-inputs">
+            <!-- Поля будут добавлены динамически только для редактируемых текстов -->
+        </div>
         
         <div class="text-edit-buttons">
             <button class="text-edit-btn" id="save-text-btn">СОХРАНИТЬ</button>
@@ -568,14 +463,6 @@
             }
         };
 
-        // Определяем тип устройства
-        function getDeviceType() {
-            const width = window.innerWidth;
-            if (width <= 599) return 'phone';
-            if (width <= 1024) return 'tablet';
-            return 'desktop';
-        }
-
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
         const pages = { 
             1: ["quests", "battle", "alliance", "shop", "inventory", "community"], 
@@ -602,9 +489,9 @@
         const editableTexts = ["quests", "profile", "mail"];
         
         // Позиции текста для иконок (X, Y) - ПОД ИКОНКАМИ ВПЛОТНУЮ
-        // Обновленные координаты для текста
+        // Исправляем координаты для видимости на экране
         let textPositions = {
-            // Редактируемые тексты с новыми координатами
+            // Редактируемые тексты - ставим в центр экрана чтобы были видны
             quests: {x: 56, y: 986}, // Задания - X:56, Y:986
             profile: {x: 45, y: 986}, // Профиль - X:45, Y:986
             mail: {x: 179, y: 984}, // Письмо - X:179, Y:984
@@ -618,12 +505,10 @@
             rating: {x: 313, y: 987}, // Рейтинг
             lotto: {x: 430, y: 987}, // Лотерея
             benchmark: {x: 565, y: 986}, // Эталон
-            battle: {x: 59, y: 985} // Бой - выровнен по остальным строкам (Y:985)
+            battle: {x: 59, y: 985} // Бой - X:59, Y:985
         };
 
-        // Конфигурации для разных устройств
         const config = isTablet ? {
-            // Для планшетов/десктопов
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
                 quests: {x:-19, y:877, s:145}, battle: {x:102, y:880, s:160}, alliance: {x:237, y:882, s:150},
@@ -632,7 +517,6 @@
                 lotto: {x:344, y:870, s:167}, calendar: {x:-69, y:414, s:256, static: true}, mail: {x:-79, y:835, s:243}
             }
         } : {
-            // Для телефонов
             panel: { x: -24, y: 551, w: 448, h: 99 },
             layout: {
                 quests: {x:-22, y:551, s:106}, battle: {x:59, y:553, s:119}, alliance: {x:154, y:554, s:110},
@@ -652,15 +536,12 @@
 
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
+            if (!layer) return;
+            
             layer.innerHTML = '';
             const bg = document.createElement('div');
             bg.id = 'bottom-panel-main'; bg.className = 'bottom-panel-bg';
-            Object.assign(bg.style, { 
-                left: config.panel.x + 'px', 
-                top: config.panel.y + 'px', 
-                width: config.panel.w + 'px', 
-                height: config.panel.h + 'px' 
-            });
+            Object.assign(bg.style, { left: config.panel.x+'px', top: config.panel.y+'px', width: config.panel.w+'px', height: config.panel.h+'px' });
             
             const arrow = document.createElement('div');
             arrow.className = 'nav-arrow-custom';
@@ -680,16 +561,9 @@
                 // Создаем иконку
                 const icon = document.createElement('div');
                 icon.id = 'icon-' + id; icon.className = 'game-icon';
-                Object.assign(icon.style, { 
-                    width: d.s + 'px', 
-                    height: d.s + 'px', 
-                    left: d.x + 'px', 
-                    top: d.y + 'px' 
-                });
+                Object.assign(icon.style, { width: d.s+'px', height: d.s+'px', left: d.x+'px', top: d.y+'px' });
                 icon.innerHTML = `<img src="icon_${id}.png" style="width:100%; height:100%;">`;
-                icon.onclick = () => { 
-                    if(id === 'inventory') openInventory(); 
-                };
+                icon.onclick = () => { if(id === 'inventory') openInventory(); };
                 layer.appendChild(icon);
                 
                 // Создаем подпись для иконки - ПОД ИКОНКОЙ ВПЛОТНУЮ
@@ -701,29 +575,12 @@
                 const isEditable = editableTexts.includes(id);
                 label.className = isEditable ? 'icon-label editable' : 'icon-label fixed';
                 
-                // Используем сохраненные позиции текста из textPositions
+                // Используем сохраненные позиции текста
                 const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
-                // Адаптивные корректировки для телефонов
-                const deviceType = getDeviceType();
-                let adjustedX = textPos.x;
-                let adjustedY = textPos.y;
-                
-                if (deviceType === 'phone') {
-                    // Для телефонов масштабируем координаты
-                    const scaleX = window.innerWidth / 600;
-                    const scaleY = window.innerHeight / 800;
-                    
-                    // Особые корректировки для нижнего ряда на телефонах
-                    if (textPos.y > 800) { // Если текст внизу экрана
-                        adjustedY = textPos.y * scaleY * 0.55;
-                        adjustedX = textPos.x * scaleX;
-                    }
-                }
-                
                 Object.assign(label.style, {
-                    top: adjustedY + 'px',
-                    left: adjustedX + 'px',
+                    top: textPos.y + 'px',
+                    left: textPos.x + 'px',
                     transform: 'translateX(-50%)'
                 });
                 
@@ -833,6 +690,7 @@
             
             textPositions[labelId] = {x: newX, y: newY};
             
+            // Показываем текущие координаты в консоли
             console.log(`Текст "${iconNames[labelId] || labelId}": x=${newX}, y=${newY}`);
             
             currentDraggedText = null;
@@ -910,6 +768,7 @@
             // Закрываем панель редактирования
             document.getElementById('edit-text-panel').style.display = 'none';
             
+            // Показываем новые координаты в консоли и alert
             console.log('Новые координаты редактируемых текстов:');
             editableTexts.forEach(id => {
                 const pos = textPositions[id];
@@ -924,40 +783,19 @@
         }
 
         function selectHero(key) {
-            currentHeroKey = key; 
-            const data = heroesData[key];
+            currentHeroKey = key; const data = heroesData[key];
             document.getElementById('selection-screen').style.backgroundImage = `url('${data.bg}')`;
             document.getElementById('class-title').innerText = data.title;
-            const list = document.getElementById('skills-list'); 
-            list.innerHTML = '';
-            data.skills.forEach((s, idx) => { 
-                list.innerHTML += `<div class="skill-item" onclick="openSkill(${idx})"><img src="${s.i}" class="skill-img"><div class="skill-name">${s.n}</div></div>`; 
-            });
+            const list = document.getElementById('skills-list'); list.innerHTML = '';
+            data.skills.forEach((s, idx) => { list.innerHTML += `<div class="skill-item" onclick="openSkill(${idx})"><img src="${s.i}" class="skill-img"><div class="skill-name">${s.n}</div></div>`; });
             document.querySelectorAll('.class-selector .icon-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + key).classList.add('active');
             updateHeroImage();
         }
 
-        function setGender(g) { 
-            currentGender = g; 
-            document.getElementById('gender-m').classList.toggle('active', g === 'male'); 
-            document.getElementById('gender-f').classList.toggle('active', g === 'female'); 
-            updateHeroImage(); 
-        }
-        
-        function updateHeroImage() { 
-            const src = heroesData[currentHeroKey][currentGender]; 
-            document.getElementById('hero-img').src = src; 
-            document.getElementById('inv-hero-img').src = src; 
-        }
-        
-        function openSkill(idx) { 
-            const s = heroesData[currentHeroKey].skills[idx]; 
-            document.getElementById('modal-img').src = s.i; 
-            document.getElementById('modal-name').innerText = s.n; 
-            document.getElementById('modal-text').innerText = s.d; 
-            document.getElementById('skill-modal').style.display = 'flex'; 
-        }
+        function setGender(g) { currentGender = g; document.getElementById('gender-m').classList.toggle('active', g === 'male'); document.getElementById('gender-f').classList.toggle('active', g === 'female'); updateHeroImage(); }
+        function updateHeroImage() { const src = heroesData[currentHeroKey][currentGender]; document.getElementById('hero-img').src = src; document.getElementById('inv-hero-img').src = src; }
+        function openSkill(idx) { const s = heroesData[currentHeroKey].skills[idx]; document.getElementById('modal-img').src = s.i; document.getElementById('modal-name').innerText = s.n; document.getElementById('modal-text').innerText = s.d; document.getElementById('skill-modal').style.display = 'flex'; }
         
         async function confirmSelection() {
             try { 
@@ -969,7 +807,6 @@
                 }); 
                 showMenu(); 
             } catch (e) { 
-                console.error('Error confirming selection:', e);
                 showMenu(); 
             }
         }
@@ -982,6 +819,7 @@
             const h = heroesData[currentHeroKey];
             document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
             document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
+            // Обновляем значения ресурсов из данных
             document.getElementById('gold-val').innerText = "1500";
             document.getElementById('crys-val').innerText = "50";
             buildDynamicUI();
@@ -1004,34 +842,32 @@
         document.getElementById('save-text-btn').onclick = saveTextEdit;
         document.getElementById('cancel-text-btn').onclick = cancelTextEdit;
 
-        // Обработчик изменения размера окна для адаптивности
-        window.addEventListener('resize', function() {
-            if (document.getElementById('menu-screen').style.display === 'block') {
-                buildDynamicUI();
-            }
-        });
-
         window.onload = () => {
-            console.log('Game loading...');
+            console.log("Game loading started");
             if(tg) { 
                 tg.expand(); 
                 tg.ready(); 
-                console.log('Telegram WebApp initialized');
+                console.log("Telegram WebApp initialized");
             }
             
             let p = 0; 
             const loadingInterval = setInterval(() => {
                 p += 5; 
+                
                 const progressFill = document.getElementById('progress-fill');
                 const loadingPct = document.getElementById('loading-pct');
                 
-                if (progressFill && loadingPct) {
+                if (progressFill) {
                     progressFill.style.width = p + '%'; 
+                }
+                
+                if (loadingPct) {
                     loadingPct.innerText = p + '%';
                 }
                 
                 if(p >= 100) { 
                     clearInterval(loadingInterval); 
+                    
                     const loadingScreen = document.getElementById('loading-screen');
                     const selectionScreen = document.getElementById('selection-screen');
                     
@@ -1047,7 +883,7 @@
                         selectHero('warrior'); 
                     }
                     
-                    console.log('Loading complete, showing selection screen');
+                    console.log("Loading complete");
                 }
             }, 30);
         };
