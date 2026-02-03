@@ -132,6 +132,35 @@
         .game-icon.hidden { opacity: 0; transform: translateY(100px) scale(0.5); pointer-events: none; }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; }
 
+        /* Стили для подписей иконок */
+        .icon-label {
+            position: absolute;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            z-index: 26;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        /* Адаптивные размеры шрифта для планшета и телефона */
+        @media screen and (max-width: 599px) {
+            .icon-label {
+                font-size: 11px;
+            }
+        }
+        @media screen and (min-width: 600px) and (max-width: 1024px) {
+            .icon-label {
+                font-size: 12px;
+            }
+        }
+        @media screen and (min-width: 1025px) {
+            .icon-label {
+                font-size: 13px;
+            }
+        }
+
         /* --- ИНВЕНТАРЬ --- */
         #inventory-screen { background: url('character_preview.png') no-repeat center center/cover; z-index: 500; }
         .close-inv { position: absolute; top: 30px; left: 30px; font-size: 3rem; color: white; cursor: pointer; z-index: 600; text-shadow: 0 0 10px #000; }
@@ -290,6 +319,22 @@
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
         const pages = { 1: ["quests", "battle", "alliance", "shop", "inventory", "community"], 2: ["benchmark", "rating", "profile", "lotto", "calendar", "mail"] };
 
+        // Словарь названий для иконок
+        const iconNames = {
+            quests: "Задания",
+            battle: "Бой",
+            community: "Сообщество",
+            mail: "Письмо",
+            calendar: "Календарь",
+            alliance: "Союз",
+            shop: "Магазин",
+            inventory: "Инвентарь",
+            profile: "Профиль",
+            rating: "Рейтинг",
+            lotto: "Лотерея",
+            benchmark: "Эталон"
+        };
+
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
@@ -329,12 +374,33 @@
 
             Object.keys(config.layout).forEach(id => {
                 const d = config.layout[id];
+                
+                // Создаем иконку
                 const icon = document.createElement('div');
                 icon.id = 'icon-' + id; icon.className = 'game-icon';
                 Object.assign(icon.style, { width: d.s+'px', height: d.s+'px', left: d.x+'px', top: d.y+'px' });
                 icon.innerHTML = `<img src="icon_${id}.png" style="width:100%; height:100%;">`;
                 icon.onclick = () => { if(id === 'inventory') openInventory(); };
                 layer.appendChild(icon);
+                
+                // Создаем подпись для иконки
+                const label = document.createElement('div');
+                label.className = 'icon-label';
+                label.id = 'label-' + id;
+                label.innerText = iconNames[id] || id;
+                
+                // Позиционируем подпись под иконкой
+                const labelTop = d.y + d.s + 5; // 5px отступа от иконки
+                const labelLeft = d.x + (d.s / 2); // Центрируем по горизонтали
+                
+                Object.assign(label.style, {
+                    top: labelTop + 'px',
+                    left: labelLeft + 'px',
+                    transform: 'translateX(-50%)',
+                    width: d.s + 'px'
+                });
+                
+                layer.appendChild(label);
             });
             updateIconVisibility();
         }
@@ -342,14 +408,18 @@
         function updateIconVisibility() {
             Object.keys(config.layout).forEach(id => {
                 const el = document.getElementById('icon-' + id);
+                const label = document.getElementById('label-' + id);
                 const data = config.layout[id];
                 
-                // Если иконка статическая, всегда показываем её
+                // Если иконка статическая, всегда показываем её и её подпись
                 if (data.static) {
                     el.classList.remove('hidden');
+                    if (label) label.classList.remove('hidden');
                 } else {
                     // Иначе показываем только если она принадлежит текущей странице
-                    el.classList.toggle('hidden', !pages[currentPage].includes(id));
+                    const isVisible = pages[currentPage].includes(id);
+                    el.classList.toggle('hidden', !isVisible);
+                    if (label) label.classList.toggle('hidden', !isVisible);
                 }
             });
         }
