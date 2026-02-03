@@ -203,7 +203,7 @@
             width: 45%;
         }
         
-        /* Слоты экипировки */
+        /* Слоты экипировки - УБРАНЫ ФОНЫ, оставлены только иконки */
         .inv-slot {
             position: absolute;
             pointer-events: auto;
@@ -214,14 +214,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid rgba(255, 215, 0, 0.3);
+            border: 2px solid transparent;
             border-radius: 8px;
-            background: rgba(0, 0, 0, 0.3);
+            background: transparent;
         }
         
         .inv-slot img { 
-            width: 80%; 
-            height: 80%; 
+            width: 100%; 
+            height: 100%; 
             object-fit: contain; 
             pointer-events: none;
             user-select: none;
@@ -432,37 +432,33 @@
             <div id="vertical-line-left" class="vertical-line" style="left: 25%;"></div>
             <div id="vertical-line-right" class="vertical-line" style="left: 75%;"></div>
             
+            <!-- Убраны колонки, иконки теперь размещаются свободно -->
             <div class="equipment-grid">
-                <!-- ЛЕВАЯ КОЛОНКА (как было ДО редактирования) -->
-                <div class="inv-column" id="left-column">
-                    <div class="inv-slot" id="left-helmet" style="left: 0%; top: 0%;">
-                        <img src="helmet.png" alt="Шлем">
-                    </div>
-                    <div class="inv-slot" id="left-chestplate" style="left: 0%; top: 25%;">
-                        <img src="chestplate.png" alt="Нагрудник">
-                    </div>
-                    <div class="inv-slot" id="left-hammer" style="left: 0%; top: 50%;">
-                        <img src="hammer.png" alt="Молот">
-                    </div>
-                    <div class="inv-slot" id="left-ring" style="left: 0%; top: 75%;">
-                        <img src="ring.png" alt="Кольцо">
-                    </div>
+                <!-- СЛОТЫ ЭКИПИРОВКИ БЕЗ ПРИВЯЗКИ К КОЛОНКАМ -->
+                <div class="inv-slot" id="helmet-slot" style="left: 15%; top: 10%; width: 235px; height: 235px;">
+                    <img src="helmet.png" alt="Шлем">
+                </div>
+                <div class="inv-slot" id="chestplate-slot" style="left: 15%; top: 35%; width: 235px; height: 235px;">
+                    <img src="chestplate.png" alt="Нагрудник">
+                </div>
+                <div class="inv-slot" id="hammer-slot" style="left: 15%; top: 60%; width: 235px; height: 235px;">
+                    <img src="hammer.png" alt="Молот">
+                </div>
+                <div class="inv-slot" id="ring-slot" style="left: 15%; top: 85%; width: 235px; height: 235px;">
+                    <img src="ring.png" alt="Кольцо">
                 </div>
                 
-                <!-- ПРАВАЯ КОЛОНКА (как было ДО редактирования) -->
-                <div class="inv-column" id="right-column">
-                    <div class="inv-slot" id="right-bracers" style="left: 0%; top: 0%;">
-                        <img src="bracers.png" alt="Наручи">
-                    </div>
-                    <div class="inv-slot" id="right-boots" style="left: 0%; top: 25%;">
-                        <img src="boots.png" alt="Ботинки">
-                    </div>
-                    <div class="inv-slot" id="right-hammer2" style="left: 0%; top: 50%;">
-                        <img src="hammer.png" alt="Молот 2">
-                    </div>
-                    <div class="inv-slot" id="right-ring2" style="left: 0%; top: 75%;">
-                        <img src="ring.png" alt="Кольцо 2">
-                    </div>
+                <div class="inv-slot" id="bracers-slot" style="left: 65%; top: 10%; width: 235px; height: 235px;">
+                    <img src="bracers.png" alt="Наручи">
+                </div>
+                <div class="inv-slot" id="boots-slot" style="left: 65%; top: 35%; width: 235px; height: 235px;">
+                    <img src="boots.png" alt="Ботинки">
+                </div>
+                <div class="inv-slot" id="hammer2-slot" style="left: 65%; top: 60%; width: 235px; height: 235px;">
+                    <img src="hammer.png" alt="Молот 2">
+                </div>
+                <div class="inv-slot" id="ring2-slot" style="left: 65%; top: 85%; width: 235px; height: 235px;">
+                    <img src="ring.png" alt="Кольцо 2">
                 </div>
             </div>
         </div>
@@ -495,19 +491,16 @@
         let currentHeroKey = 'warrior';
         let currentGender = 'male';
         
-        // Координаты экипировки как было ДО редактирования
+        // Координаты экипировки - теперь абсолютные позиции
         let equipmentPositions = {
-            // Левая колонка - позиции как в оригинальном коде
-            'left-helmet': { x: 0, y: 0, width: 235, height: 235 },
-            'left-chestplate': { x: 0, y: 25, width: 235, height: 235 },
-            'left-hammer': { x: 0, y: 50, width: 235, height: 235 },
-            'left-ring': { x: 0, y: 75, width: 235, height: 235 },
-            
-            // Правая колонка - позиции как в оригинальном коде
-            'right-bracers': { x: 0, y: 0, width: 235, height: 235 },
-            'right-boots': { x: 0, y: 25, width: 235, height: 235 },
-            'right-hammer2': { x: 0, y: 50, width: 235, height: 235 },
-            'right-ring2': { x: 0, y: 75, width: 235, height: 235 }
+            'helmet-slot': { x: 15, y: 10, width: 235, height: 235 },
+            'chestplate-slot': { x: 15, y: 35, width: 235, height: 235 },
+            'hammer-slot': { x: 15, y: 60, width: 235, height: 235 },
+            'ring-slot': { x: 15, y: 85, width: 235, height: 235 },
+            'bracers-slot': { x: 65, y: 10, width: 235, height: 235 },
+            'boots-slot': { x: 65, y: 35, width: 235, height: 235 },
+            'hammer2-slot': { x: 65, y: 60, width: 235, height: 235 },
+            'ring2-slot': { x: 65, y: 85, width: 235, height: 235 }
         };
         
         // Вертикальные линии
@@ -665,9 +658,11 @@
             // Добавляем обработчики для всех слотов
             const slots = document.querySelectorAll('.inv-slot');
             slots.forEach(slot => {
-                slot.style.border = '2px solid var(--gold)';
-                slot.style.boxShadow = '0 0 15px rgba(255, 215, 0, 0.7)';
-                slot.style.background = 'rgba(255, 215, 0, 0.1)';
+                // Убираем все рамки и фоны, оставляем только прозрачную область для перетаскивания
+                slot.style.border = '2px solid transparent';
+                slot.style.boxShadow = 'none';
+                slot.style.background = 'transparent';
+                slot.style.cursor = 'move';
                 
                 slot.addEventListener('mousedown', startDrag);
                 slot.addEventListener('touchstart', startDragTouch, { passive: false });
@@ -687,7 +682,7 @@
             
             // Показываем инструкцию
             setTimeout(() => {
-                alert('РЕЖИМ РЕДАКТИРОВАНИЯ ВКЛЮЧЕН!\n\n1. Таскайте иконки пальцем\n2. Меняйте размер щипком двумя пальцами\n3. Перетаскивайте вертикальные линии\n\nОБЕ КОЛОНКИ ВИДНЫ И РЕДАКТИРУЕМЫ!');
+                alert('РЕЖИМ РЕДАКТИРОВАНИЯ ВКЛЮЧЕН!\n\n1. Таскайте иконки пальцем по всему экрану\n2. Меняйте размер щипком двумя пальцами\n3. Перетаскивайте вертикальные линии\n\nИКОНКИ ТЕПЕРЬ МОЖНО ПЕРЕТАСКИВАТЬ ПО ВСЕМУ ЭКРАНУ!');
             }, 300);
         }
 
@@ -705,10 +700,13 @@
             startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
             startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
             
-            // Получаем текущие позиции в процентах
-            const style = window.getComputedStyle(activeElement);
-            startLeft = parseFloat(style.left);
-            startTop = parseFloat(style.top);
+            // Получаем текущие позиции в пикселях относительно экрана
+            const rect = activeElement.getBoundingClientRect();
+            startLeft = rect.left;
+            startTop = rect.top;
+            
+            // Делаем элемент поверх всех остальных
+            activeElement.style.zIndex = '1000';
             
             document.addEventListener('mousemove', doDrag);
             document.addEventListener('touchmove', doDragTouch, { passive: false });
@@ -749,7 +747,7 @@
             document.addEventListener('touchend', stopResize);
         }
 
-        // Перетаскивание элемента
+        // Перетаскивание элемента - теперь по всему экрану
         function doDrag(e) {
             if (!isDragging || !activeElement) return;
             
@@ -761,22 +759,23 @@
             const deltaX = currentX - startX;
             const deltaY = currentY - startY;
             
-            // Вычисляем новые позиции в процентах
-            const parentWidth = activeElement.parentElement.offsetWidth;
-            const parentHeight = activeElement.parentElement.offsetHeight;
+            // Вычисляем новые позиции в пикселях
+            let newLeft = startLeft + deltaX;
+            let newTop = startTop + deltaY;
             
-            const deltaXPercent = (deltaX / parentWidth) * 100;
-            const deltaYPercent = (deltaY / parentHeight) * 100;
+            // Ограничиваем границы экрана
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const elementWidth = activeElement.offsetWidth;
+            const elementHeight = activeElement.offsetHeight;
             
-            let newLeft = startLeft + deltaXPercent;
-            let newTop = startTop + deltaYPercent;
+            newLeft = Math.max(0, Math.min(newLeft, screenWidth - elementWidth));
+            newTop = Math.max(0, Math.min(newTop, screenHeight - elementHeight));
             
-            // Ограничиваем границы
-            newLeft = Math.max(0, Math.min(newLeft, 100));
-            newTop = Math.max(0, Math.min(newTop, 100));
-            
-            activeElement.style.left = newLeft + '%';
-            activeElement.style.top = newTop + '%';
+            // Устанавливаем новые позиции в пикселях
+            activeElement.style.position = 'fixed';
+            activeElement.style.left = newLeft + 'px';
+            activeElement.style.top = newTop + 'px';
             
             // Обновляем стартовые позиции для плавного движения
             startX = currentX;
@@ -820,7 +819,7 @@
             
             // Ограничиваем минимальный и максимальный размер
             const minSize = 50;
-            const maxSize = 300;
+            const maxSize = 400;
             
             const finalWidth = Math.max(minSize, Math.min(newWidth, maxSize));
             const finalHeight = Math.max(minSize, Math.min(newHeight, maxSize));
@@ -842,17 +841,25 @@
             // Сохраняем позицию элемента
             if (activeElement) {
                 const id = activeElement.id;
-                const left = parseFloat(activeElement.style.left) || 0;
-                const top = parseFloat(activeElement.style.top) || 0;
+                const rect = activeElement.getBoundingClientRect();
+                
+                // Конвертируем пиксели в проценты для сохранения
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                const xPercent = (rect.left / screenWidth) * 100;
+                const yPercent = (rect.top / screenHeight) * 100;
                 const width = activeElement.offsetWidth;
                 const height = activeElement.offsetHeight;
                 
                 equipmentPositions[id] = {
-                    x: left,
-                    y: top,
+                    x: xPercent,
+                    y: yPercent,
                     width: width,
                     height: height
                 };
+                
+                // Возвращаем нормальный z-index
+                activeElement.style.zIndex = '10';
             }
             
             activeElement = null;
@@ -872,14 +879,17 @@
             if (activeElement) {
                 // Сохраняем размер элемента
                 const id = activeElement.id;
-                const left = parseFloat(activeElement.style.left) || 0;
-                const top = parseFloat(activeElement.style.top) || 0;
+                const rect = activeElement.getBoundingClientRect();
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                const xPercent = (rect.left / screenWidth) * 100;
+                const yPercent = (rect.top / screenHeight) * 100;
                 const width = activeElement.offsetWidth;
                 const height = activeElement.offsetHeight;
                 
                 equipmentPositions[id] = {
-                    x: left,
-                    y: top,
+                    x: xPercent,
+                    y: yPercent,
                     width: width,
                     height: height
                 };
@@ -970,14 +980,19 @@
             const slots = document.querySelectorAll('.inv-slot');
             slots.forEach(slot => {
                 const id = slot.id;
-                const left = parseFloat(slot.style.left) || 0;
-                const top = parseFloat(slot.style.top) || 0;
+                const rect = slot.getBoundingClientRect();
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                
+                // Конвертируем пиксели в проценты
+                const xPercent = (rect.left / screenWidth) * 100;
+                const yPercent = (rect.top / screenHeight) * 100;
                 const width = slot.offsetWidth;
                 const height = slot.offsetHeight;
                 
                 equipmentPositions[id] = {
-                    x: left,
-                    y: top,
+                    x: xPercent,
+                    y: yPercent,
                     width: width,
                     height: height
                 };
