@@ -150,6 +150,7 @@
             backdrop-filter: blur(4px);
             white-space: nowrap;
             min-width: 80px;
+            transform: translateX(-50%);
         }
 
         /* Класс для редактируемых текстов */
@@ -177,30 +178,91 @@
 
         .icon-label.hidden { 
             opacity: 0; 
-            transform: translateY(100px) scale(0.5); 
+            transform: translateY(100px) scale(0.5) translateX(-50%); 
             pointer-events: none; 
         }
 
-        /* Адаптивные размеры шрифта для планшета и телефона */
+        /* Адаптивные размеры шрифта и позиции для разных устройств */
         @media screen and (max-width: 599px) {
+            /* Смартфоны */
             .icon-label {
-                font-size: 11px;
-                padding: 3px 6px;
+                font-size: 10px;
+                padding: 2px 5px;
                 border-radius: 4px;
+                min-width: 60px;
+            }
+            
+            /* Верхняя панель для телефонов */
+            .player-header {
+                padding: 5px;
+                border-radius: 10px;
+                max-width: 140px;
+            }
+            
+            .player-avatar {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .player-info h3 {
+                font-size: 0.8rem;
+            }
+            
+            .player-info p {
+                font-size: 0.7rem;
+            }
+            
+            .resource-panel {
+                padding: 3px 8px;
+                min-width: 70px;
+            }
+            
+            .resource-panel img {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .resource-panel .value {
+                font-size: 0.8rem;
+            }
+            
+            .vip-button {
+                width: 60px;
+                height: 60px;
+                top: env(safe-area-inset-top, 15px);
+            }
+            
+            /* Кнопка редактирования текста для телефонов */
+            #edit-text-btn {
+                top: env(safe-area-inset-top, 15px);
+                right: 100px;
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+            
+            /* Размеры иконок для телефонов */
+            .game-icon {
+                transform-origin: center;
             }
         }
+        
         @media screen and (min-width: 600px) and (max-width: 1024px) {
+            /* Планшеты */
             .icon-label {
                 font-size: 12px;
                 padding: 4px 8px;
                 border-radius: 5px;
+                min-width: 80px;
             }
         }
+        
         @media screen and (min-width: 1025px) {
+            /* Десктопы/большие планшеты */
             .icon-label {
                 font-size: 13px;
                 padding: 5px 10px;
                 border-radius: 6px;
+                min-width: 90px;
             }
         }
 
@@ -302,7 +364,7 @@
         #edit-text-btn {
             position: absolute;
             top: env(safe-area-inset-top, 20px);
-            right: 130px; /* Сдвигаем левее, чтобы не пересекаться с ресурсами */
+            right: 130px;
             background: var(--blue);
             color: white;
             padding: 8px 12px;
@@ -366,7 +428,7 @@
                 <div class="resource-panel blue"><img src="icon_crystal.png"><span id="crys-val" class="value">50</span></div>
             </div>
 
-            <!-- Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ -->
+            <!-- Кнопка редактирования текста -->
             <div id="edit-text-btn">Редактировать текст</div>
 
             <div id="ui-dynamic-layer"></div>
@@ -402,7 +464,7 @@
             <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
             <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
         </div>
-</div>
+    </div>
 
     <!-- Панель редактирования текста -->
     <div id="edit-text-panel">
@@ -488,12 +550,12 @@
         const editableTexts = ["quests", "profile", "mail"];
         
         // Позиции текста для иконок (X, Y) - ПОД ИКОНКАМИ ВПЛОТНУЮ
-        // Исправляем координаты для видимости на экране
+        // Обновленные координаты для текста
         let textPositions = {
-            // Редактируемые тексты - ставим в центр экрана чтобы были видны
-            quests: {x: 50, y: 200}, // Задания - в центре
-            profile: {x: 50, y: 250}, // Профиль - ниже
-            mail: {x: 50, y: 300}, // Письмо - еще ниже
+            // Редактируемые тексты с новыми координатами
+            quests: {x: 56, y: 986}, // Задания - X:56, Y:986
+            profile: {x: 45, y: 986}, // Профиль - X:45, Y:986
+            mail: {x: 179, y: 984}, // Письмо - X:179, Y:984
             
             // Фиксированные тексты (координаты из данных)
             community: {x: 64, y: 234}, // Сообщество
@@ -504,9 +566,10 @@
             rating: {x: 313, y: 987}, // Рейтинг
             lotto: {x: 430, y: 987}, // Лотерея
             benchmark: {x: 565, y: 986}, // Эталон
-            battle: {x: 59, y: 582} // Бой
+            battle: {x: 59, y: 985} // Бой - выровнен по остальным строкам (Y:985)
         };
 
+        // Конфигурации для разных устройств
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
@@ -516,6 +579,7 @@
                 lotto: {x:344, y:870, s:167}, calendar: {x:-69, y:414, s:256, static: true}, mail: {x:-79, y:835, s:243}
             }
         } : {
+            // Конфигурация для телефонов
             panel: { x: -24, y: 551, w: 448, h: 99 },
             layout: {
                 quests: {x:-22, y:551, s:106}, battle: {x:59, y:553, s:119}, alliance: {x:154, y:554, s:110},
@@ -572,7 +636,7 @@
                 const isEditable = editableTexts.includes(id);
                 label.className = isEditable ? 'icon-label editable' : 'icon-label fixed';
                 
-                // Используем сохраненные позиции текста
+                // Используем сохраненные позиции текста из textPositions
                 const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
                 Object.assign(label.style, {
@@ -580,6 +644,17 @@
                     left: textPos.x + 'px',
                     transform: 'translateX(-50%)'
                 });
+                
+                // Адаптивные корректировки для телефонов
+                if (window.innerWidth <= 599px) {
+                    // Для телефонов немного уменьшаем шрифт и корректируем позиции
+                    const scaleFactor = 0.8;
+                    const adjustedPos = adjustPositionForMobile(id, textPos.x, textPos.y);
+                    label.style.left = adjustedPos.x + 'px';
+                    label.style.top = adjustedPos.y + 'px';
+                    label.style.fontSize = (10 * scaleFactor) + 'px';
+                    label.style.padding = (2 * scaleFactor) + 'px ' + (5 * scaleFactor) + 'px';
+                }
                 
                 // Добавляем обработчики для перетаскивания только редактируемых текстов
                 if (isEditable) {
@@ -591,6 +666,33 @@
             });
             
             updateIconVisibility();
+        }
+
+        // Функция для корректировки позиций текста на телефонах
+        function adjustPositionForMobile(id, x, y) {
+            // Масштабируем координаты для мобильных устройств
+            const scaleX = window.innerWidth / 600; // Предполагаем базовую ширину 600px
+            const scaleY = window.innerHeight / 800; // Предполагаем базовую высоту 800px
+            
+            let adjustedX = x * scaleX;
+            let adjustedY = y * scaleY;
+            
+            // Специальные корректировки для некоторых элементов на телефонах
+            if (id === 'quests') {
+                adjustedX = 56 * scaleX;
+                adjustedY = 986 * scaleY * 0.55; // Учитываем панель навигации
+            } else if (id === 'mail') {
+                adjustedX = 179 * scaleX;
+                adjustedY = 984 * scaleY * 0.55;
+            } else if (id === 'profile') {
+                adjustedX = 45 * scaleX;
+                adjustedY = 986 * scaleY * 0.55;
+            } else if (id === 'battle') {
+                adjustedX = 59 * scaleX;
+                adjustedY = 985 * scaleY * 0.55;
+            }
+            
+            return {x: adjustedX, y: adjustedY};
         }
 
         // Функции для перетаскивания текста (только для редактируемых)
@@ -758,6 +860,13 @@
                     if (textElement) {
                         textElement.style.left = newX + 'px';
                         textElement.style.top = newY + 'px';
+                        
+                        // Адаптивная корректировка для телефонов
+                        if (window.innerWidth <= 599px) {
+                            const adjustedPos = adjustPositionForMobile(id, newX, newY);
+                            textElement.style.left = adjustedPos.x + 'px';
+                            textElement.style.top = adjustedPos.y + 'px';
+                        }
                     }
                 }
             });
@@ -816,7 +925,6 @@
             const h = heroesData[currentHeroKey];
             document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
             document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
-            // Обновляем значения ресурсов из данных
             document.getElementById('gold-val').innerText = "1500";
             document.getElementById('crys-val').innerText = "50";
             buildDynamicUI();
@@ -838,6 +946,13 @@
         document.getElementById('edit-text-btn').onclick = openTextEditPanel;
         document.getElementById('save-text-btn').onclick = saveTextEdit;
         document.getElementById('cancel-text-btn').onclick = cancelTextEdit;
+
+        // Обработчик изменения размера окна для адаптивности
+        window.addEventListener('resize', function() {
+            if (document.getElementById('menu-screen').style.display === 'block') {
+                buildDynamicUI();
+            }
+        });
 
         window.onload = () => {
             if(tg) { 
