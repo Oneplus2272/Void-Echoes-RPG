@@ -143,7 +143,6 @@
             z-index: 26;
             font-family: 'Segoe UI', Tahoma, sans-serif;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
-            cursor: move;
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid rgba(255, 215, 0, 0.4);
             border-radius: 6px;
@@ -152,18 +151,30 @@
             white-space: nowrap;
         }
 
-        .icon-label.hidden { 
-            opacity: 0; 
-            transform: translateY(100px) scale(0.5); 
-            pointer-events: none; 
+        /* Класс для редактируемых текстов */
+        .icon-label.editable {
+            cursor: move;
+            border: 1px solid var(--gold);
         }
 
-        .icon-label.dragging {
+        .icon-label.editable.dragging {
             opacity: 0.9;
             z-index: 1000;
             cursor: grabbing;
             border: 1px solid var(--gold);
             box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Класс для фиксированных текстов */
+        .icon-label.fixed {
+            cursor: default;
+            border: 1px solid rgba(0, 212, 255, 0.4);
+        }
+
+        .icon-label.hidden { 
+            opacity: 0; 
+            transform: translateY(100px) scale(0.5); 
+            pointer-events: none; 
         }
 
         /* Адаптивные размеры шрифта для планшета и телефона */
@@ -387,14 +398,14 @@
             <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
             <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
         </div>
-    </div>
+</div>
 
     <!-- Панель редактирования текста -->
     <div id="edit-text-panel">
         <h3>Редактировать позиции текста</h3>
         
         <div id="text-coord-inputs">
-            <!-- Поля будут добавлены динамически -->
+            <!-- Поля будут добавлены динамически только для редактируемых текстов -->
         </div>
         
         <div class="text-edit-buttons">
@@ -469,24 +480,33 @@
             benchmark: "Эталон"
         };
 
+        // Редактируемые тексты (можно перетаскивать)
+        const editableTexts = ["quests", "profile", "mail"];
+        
         // Позиции текста для иконок (X, Y) - ПОД ИКОНКАМИ ВПЛОТНУЮ
+        // Используем координаты из предоставленных данных
         let textPositions = {
-            // Страница 1 - под иконками вплотную
-            quests: {x: -22, y: 580},
-            battle: {x: 59, y: 582},
-            alliance: {x: 154, y: 583},
-            shop: {x: 246, y: 133},
-            inventory: {x: 248, y: 576},
-            community: {x: -10, y: 189},
+            // Редактируемые тексты (начальные позиции)
+            quests: {x: -22, y: 580}, // Задания
+            profile: {x: -27, y: 572}, // Профиль
+            mail: {x: -47, y: 279}, // Письмо
             
-            // Страница 2 - под иконками вплотную
-            benchmark: {x: 238, y: 571},
-            rating: {x: 57, y: 573},
-            profile: {x: -27, y: 572},
-            lotto: {x: 143, y: 572},
-            calendar: {x: 218, y: 387},
-            mail: {x: -47, y: 279}
+            // Фиксированные тексты (координаты из данных)
+            community: {x: 64, y: 234}, // Сообщество
+            calendar: {x: 70, y: 583}, // Календарь
+            alliance: {x: 312, y: 988}, // Союз
+            shop: {x: 438, y: 987}, // Магазин
+            inventory: {x: 565, y: 986}, // Инвентарь
+            rating: {x: 313, y: 987}, // Рейтинг
+            lotto: {x: 430, y: 987}, // Лотерея (Y координата из данных не указана, ставим как у других)
+            benchmark: {x: 565, y: 986}, // Эталон (позиция как у инвентаря на странице 2)
+            battle: {x: 59, y: 582} // Бой
         };
+
+        // Для лотереи добавляем Y координату (не указана в данных, ставим как у других)
+        if (!textPositions.lotto.y) {
+            textPositions.lotto.y = 987;
+        }
 
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
@@ -546,11 +566,14 @@
                 
                 // Создаем подпись для иконки - ПОД ИКОНКОЙ ВПЛОТНУЮ
                 const label = document.createElement('div');
-                label.className = 'icon-label';
                 label.id = 'label-' + id;
                 label.innerText = iconNames[id] || id;
                 
-                // Используем сохраненные позиции текста или вычисляем по умолчанию (под иконкой)
+                // Определяем, редактируемый ли это текст
+                const isEditable = editableTexts.includes(id);
+                label.className = isEditable ? 'icon-label editable' : 'icon-label fixed';
+                
+                // Используем сохраненные позиции текста
                 const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
                 Object.assign(label.style, {
@@ -559,9 +582,11 @@
                     transform: 'translateX(-50%)'
                 });
                 
-                // Добавляем обработчики для перетаскивания текста
-                label.addEventListener('mousedown', startTextDrag);
-                label.addEventListener('touchstart', startTextDragTouch);
+                // Добавляем обработчики для перетаскивания только редактируемых текстов
+                if (isEditable) {
+                    label.addEventListener('mousedown', startTextDrag);
+                    label.addEventListener('touchstart', startTextDragTouch);
+                }
                 
                 layer.appendChild(label);
             });
@@ -569,13 +594,17 @@
             updateIconVisibility();
         }
 
-        // Функции для перетаскивания текста
+        // Функции для перетаскивания текста (только для редактируемых)
         function startTextDrag(e) {
             e.preventDefault();
             e.stopPropagation();
             
             const labelId = e.target.id;
             if (!labelId.startsWith('label-')) return;
+            
+            // Проверяем, можно ли редактировать этот текст
+            const id = labelId.replace('label-', '');
+            if (!editableTexts.includes(id)) return;
             
             isDraggingText = true;
             currentDraggedText = e.target;
@@ -596,6 +625,10 @@
             
             const labelId = e.target.id;
             if (!labelId.startsWith('label-')) return;
+            
+            // Проверяем, можно ли редактировать этот текст
+            const id = labelId.replace('label-', '');
+            if (!editableTexts.includes(id)) return;
             
             isDraggingText = true;
             currentDraggedText = e.target;
@@ -690,8 +723,8 @@
             const inputsContainer = document.getElementById('text-coord-inputs');
             inputsContainer.innerHTML = '';
             
-            // Создаем поля для всех текстов (и страницы 1 и страницы 2)
-            Object.keys(iconNames).forEach(id => {
+            // Создаем поля только для редактируемых текстов
+            editableTexts.forEach(id => {
                 const pos = textPositions[id] || {x: 0, y: 0};
                 
                 const inputGroup = document.createElement('div');
@@ -710,8 +743,8 @@
         }
 
         function saveTextEdit() {
-            // Сохраняем позиции для всех текстов
-            Object.keys(iconNames).forEach(id => {
+            // Сохраняем позиции только для редактируемых текстов
+            editableTexts.forEach(id => {
                 const xInput = document.getElementById(`edit-${id}-x`);
                 const yInput = document.getElementById(`edit-${id}-y`);
                 
@@ -734,13 +767,13 @@
             document.getElementById('edit-text-panel').style.display = 'none';
             
             // Показываем новые координаты в консоли и alert
-            console.log('Новые координаты текстов:');
-            Object.keys(iconNames).forEach(id => {
+            console.log('Новые координаты редактируемых текстов:');
+            editableTexts.forEach(id => {
                 const pos = textPositions[id];
                 console.log(`${iconNames[id]}: x=${pos.x}, y=${pos.y}`);
             });
             
-            alert('Координаты текстов сохранены!\n\nКоординаты выведены в консоль (F12)');
+            alert('Координаты текстов сохранены!\n\nТолько редактируемые тексты обновлены.\n\nКоординаты выведены в консоль (F12)');
         }
 
         function cancelTextEdit() {
@@ -784,6 +817,9 @@
             const h = heroesData[currentHeroKey];
             document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
             document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
+            // Обновляем значения ресурсов из данных
+            document.getElementById('gold-val').innerText = "1500";
+            document.getElementById('crys-val').innerText = "50";
             buildDynamicUI();
         }
 
