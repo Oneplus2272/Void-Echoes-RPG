@@ -158,94 +158,77 @@
             cursor: grabbing;
         }
 
-        /* Заголовки страниц */
-        .page-title {
-            position: absolute;
-            top: 30%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 20;
-            pointer-events: none;
-            color: var(--gold);
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-            font-size: 2.2rem;
-            font-weight: bold;
-            letter-spacing: 3px;
-        }
-
-        .page-title.page1 { color: var(--gold); }
-        .page-title.page2 { color: var(--blue); }
-
-        .text-columns {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 600px;
-            z-index: 20;
-            pointer-events: none;
-            text-align: center;
-        }
-
+        /* Текстовые колонки */
         .text-column {
-            display: inline-block;
-            vertical-align: top;
+            position: absolute;
             text-align: center;
-            margin: 0 20px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+            pointer-events: auto;
+            z-index: 26;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            cursor: move;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .text-column.hidden { 
+            opacity: 0; 
+            transform: translateY(100px) scale(0.5); 
+            pointer-events: none; 
+        }
+
+        .text-column.dragging {
+            opacity: 0.9;
+            z-index: 1000;
+            cursor: grabbing;
         }
 
         .text-item {
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin: 12px 0;
-            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9);
+            margin: 8px 0;
             padding: 5px 10px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
         }
-
-        .text-item.page1 { color: #fff; }
-        .text-item.page2 { color: #fff; }
 
         /* Адаптивные размеры шрифта для планшета и телефона */
         @media screen and (max-width: 599px) {
             .icon-label {
                 font-size: 11px;
             }
-            .page-title {
-                font-size: 1.6rem;
-                top: 25%;
-            }
             .text-item {
-                font-size: 0.9rem;
-                margin: 8px 0;
+                font-size: 0.8rem;
+            }
+            .text-column {
+                width: 140px;
             }
         }
         @media screen and (min-width: 600px) and (max-width: 1024px) {
             .icon-label {
                 font-size: 12px;
             }
-            .page-title {
-                font-size: 1.8rem;
-            }
             .text-item {
-                font-size: 1rem;
+                font-size: 0.9rem;
+            }
+            .text-column {
+                width: 160px;
             }
         }
         @media screen and (min-width: 1025px) {
             .icon-label {
                 font-size: 13px;
             }
-            .page-title {
-                font-size: 2.2rem;
-            }
             .text-item {
-                font-size: 1.1rem;
+                font-size: 1rem;
+            }
+            .text-column {
+                width: 180px;
             }
         }
 
@@ -343,19 +326,20 @@
             border: 1px solid #666;
         }
 
-        /* Кнопка редактирования текста */
+        /* Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ */
         #edit-text-btn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            top: env(safe-area-inset-top, 20px);
+            right: 130px; /* Сдвигаем левее, чтобы не пересекаться с ресурсами */
             background: var(--blue);
             color: white;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
             z-index: 1000;
             border: 1px solid var(--blue);
+            font-size: 0.8rem;
         }
     </style>
 </head>
@@ -410,44 +394,11 @@
                 <div class="resource-panel blue"><img src="icon_crystal.png"><span id="crys-val" class="value">50</span></div>
             </div>
 
+            <!-- Кнопка редактирования текста - ПЕРЕМЕЩЕНА ВВЕРХ В ПРАВЫЙ КРАЙ -->
+            <div id="edit-text-btn">Редактировать текст</div>
+
             <div id="ui-dynamic-layer"></div>
 
-            <!-- Заголовок страницы 1 -->
-            <div id="page1-title" class="page-title page1" style="display: none;">ГЛАВНОЕ МЕНЮ</div>
-            
-            <!-- Колонки с текстом для страницы 1 -->
-            <div id="page1-text" class="text-columns" style="display: none;">
-                <div class="text-column">
-                    <div class="text-item page1">Сообщество</div>
-                    <div class="text-item page1">Календарь</div>
-                    <div class="text-item page1">Задание</div>
-                </div>
-                <div class="text-column">
-                    <div class="text-item page1">Бой</div>
-                    <div class="text-item page1">Союз</div>
-                    <div class="text-item page1">Магазин</div>
-                    <div class="text-item page1">Инвентарь</div>
-                </div>
-            </div>
-
-            <!-- Заголовок страницы 2 -->
-            <div id="page2-title" class="page-title page2" style="display: none;">ДОПОЛНИТЕЛЬНО</div>
-            
-            <!-- Колонки с текстом для страницы 2 -->
-            <div id="page2-text" class="text-columns" style="display: none;">
-                <div class="text-column">
-                    <div class="text-item page2">Письмо</div>
-                    <div class="text-item page2">Профиль</div>
-                    <div class="text-item page2">Рейтинг</div>
-                </div>
-                <div class="text-column">
-                    <div class="text-item page2">Лото</div>
-                    <div class="text-item page2">Эталон</div>
-                </div>
-            </div>
-
-            <!-- Кнопка редактирования текста -->
-            <div id="edit-text-btn">Редактировать текст</div>
         </div>
     </div>
 
@@ -486,13 +437,23 @@
         <h3>Редактировать позиции текста</h3>
         
         <div class="text-coord-input">
-            <label>Письмо - X координата текста:</label>
-            <input type="number" id="edit-mail-text-x" value="-47">
+            <label>Текстовый столбец 1 - X координата:</label>
+            <input type="number" id="edit-col1-x" value="50">
         </div>
         
         <div class="text-coord-input">
-            <label>Письмо - Y координата текста:</label>
-            <input type="number" id="edit-mail-text-y" value="445">
+            <label>Текстовый столбец 1 - Y координата:</label>
+            <input type="number" id="edit-col1-y" value="150">
+        </div>
+        
+        <div class="text-coord-input">
+            <label>Текстовый столбец 2 - X координата:</label>
+            <input type="number" id="edit-col2-x" value="250">
+        </div>
+        
+        <div class="text-coord-input">
+            <label>Текстовый столбец 2 - Y координата:</label>
+            <input type="number" id="edit-col2-y" value="150">
         </div>
         
         <div class="text-edit-buttons">
@@ -567,6 +528,24 @@
             benchmark: "Эталон"
         };
 
+        // Текстовые столбцы для страниц
+        const pageTexts = {
+            1: {
+                column1: ["Сообщество", "Календарь", "Задание"],
+                column2: ["Бой", "Союз", "Магазин", "Инвентарь"]
+            },
+            2: {
+                column1: ["Письмо", "Профиль", "Рейтинг"],
+                column2: ["Лото", "Эталон"]
+            }
+        };
+
+        // Позиции текстовых столбцов
+        let textColumnPositions = {
+            col1: {x: 50, y: 150},
+            col2: {x: 250, y: 150}
+        };
+
         // Позиции текста для иконок (X, Y)
         let textPositions = {
             quests: {x: -22, y: 661},
@@ -609,26 +588,6 @@
         let textStartX = 0;
         let textStartY = 0;
 
-        // Функция для обновления видимости текстовых заголовков
-        function updatePageTitles() {
-            const page1Title = document.getElementById('page1-title');
-            const page1Text = document.getElementById('page1-text');
-            const page2Title = document.getElementById('page2-title');
-            const page2Text = document.getElementById('page2-text');
-            
-            if (currentPage === 1) {
-                page1Title.style.display = 'block';
-                page1Text.style.display = 'block';
-                page2Title.style.display = 'none';
-                page2Text.style.display = 'none';
-            } else {
-                page1Title.style.display = 'none';
-                page1Text.style.display = 'none';
-                page2Title.style.display = 'block';
-                page2Text.style.display = 'block';
-            }
-        }
-
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
             layer.innerHTML = '';
@@ -643,8 +602,8 @@
                 currentPage = (currentPage === 1) ? 2 : 1; 
                 bg.classList.toggle('page2', currentPage === 2); 
                 arrow.classList.toggle('flip', currentPage === 2); 
-                updateIconVisibility();
-                updatePageTitles();
+                updateIconVisibility(); 
+                updateTextColumns();
             };
             bg.appendChild(arrow);
             layer.appendChild(bg);
@@ -682,11 +641,181 @@
                 
                 layer.appendChild(label);
             });
+            
+            // Создаем текстовые столбцы
+            createTextColumns();
+            
             updateIconVisibility();
-            updatePageTitles();
+            updateTextColumns();
         }
 
-        // Функции для перетаскивания текста
+        function createTextColumns() {
+            const layer = document.getElementById('ui-dynamic-layer');
+            
+            // Столбец 1
+            const col1 = document.createElement('div');
+            col1.id = 'text-col-1';
+            col1.className = 'text-column';
+            Object.assign(col1.style, {
+                left: textColumnPositions.col1.x + 'px',
+                top: textColumnPositions.col1.y + 'px'
+            });
+            
+            // Столбец 2
+            const col2 = document.createElement('div');
+            col2.id = 'text-col-2';
+            col2.className = 'text-column';
+            Object.assign(col2.style, {
+                left: textColumnPositions.col2.x + 'px',
+                top: textColumnPositions.col2.y + 'px'
+            });
+            
+            // Добавляем обработчики для перетаскивания столбцов
+            col1.addEventListener('mousedown', startColumnDrag);
+            col1.addEventListener('touchstart', startColumnDragTouch);
+            col2.addEventListener('mousedown', startColumnDrag);
+            col2.addEventListener('touchstart', startColumnDragTouch);
+            
+            layer.appendChild(col1);
+            layer.appendChild(col2);
+            
+            updateTextColumns();
+        }
+
+        function updateTextColumns() {
+            const col1 = document.getElementById('text-col-1');
+            const col2 = document.getElementById('text-col-2');
+            
+            if (!col1 || !col2) return;
+            
+            // Обновляем позиции
+            col1.style.left = textColumnPositions.col1.x + 'px';
+            col1.style.top = textColumnPositions.col1.y + 'px';
+            col2.style.left = textColumnPositions.col2.x + 'px';
+            col2.style.top = textColumnPositions.col2.y + 'px';
+            
+            // Обновляем содержимое в зависимости от страницы
+            const texts = pageTexts[currentPage];
+            col1.innerHTML = '';
+            col2.innerHTML = '';
+            
+            texts.column1.forEach(text => {
+                const item = document.createElement('div');
+                item.className = 'text-item';
+                item.innerText = text;
+                col1.appendChild(item);
+            });
+            
+            texts.column2.forEach(text => {
+                const item = document.createElement('div');
+                item.className = 'text-item';
+                item.innerText = text;
+                col2.appendChild(item);
+            });
+            
+            // Показываем/скрываем в зависимости от страницы
+            col1.classList.toggle('hidden', false);
+            col2.classList.toggle('hidden', false);
+        }
+
+        // Функции для перетаскивания столбцов
+        function startColumnDrag(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const colId = e.target.id;
+            if (!colId.startsWith('text-col-')) return;
+            
+            isDraggingText = true;
+            currentDraggedText = e.target;
+            currentDraggedText.classList.add('dragging');
+            
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            textStartX = parseInt(currentDraggedText.style.left);
+            textStartY = parseInt(currentDraggedText.style.top);
+            
+            document.addEventListener('mousemove', dragColumn);
+            document.addEventListener('mouseup', stopColumnDrag);
+        }
+
+        function startColumnDragTouch(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const colId = e.target.id;
+            if (!colId.startsWith('text-col-')) return;
+            
+            isDraggingText = true;
+            currentDraggedText = e.target;
+            currentDraggedText.classList.add('dragging');
+            
+            const touch = e.touches[0];
+            dragStartX = touch.clientX;
+            dragStartY = touch.clientY;
+            textStartX = parseInt(currentDraggedText.style.left);
+            textStartY = parseInt(currentDraggedText.style.top);
+            
+            document.addEventListener('touchmove', dragColumnTouch);
+            document.addEventListener('touchend', stopColumnDrag);
+        }
+
+        function dragColumn(e) {
+            if (!isDraggingText || !currentDraggedText) return;
+            
+            e.preventDefault();
+            
+            const deltaX = e.clientX - dragStartX;
+            const deltaY = e.clientY - dragStartY;
+            
+            const newX = textStartX + deltaX;
+            const newY = textStartY + deltaY;
+            
+            currentDraggedText.style.left = newX + 'px';
+            currentDraggedText.style.top = newY + 'px';
+        }
+
+        function dragColumnTouch(e) {
+            if (!isDraggingText || !currentDraggedText) return;
+            
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - dragStartX;
+            const deltaY = touch.clientY - dragStartY;
+            
+            const newX = textStartX + deltaX;
+            const newY = textStartY + deltaY;
+            
+            currentDraggedText.style.left = newX + 'px';
+            currentDraggedText.style.top = newY + 'px';
+        }
+
+        function stopColumnDrag() {
+            if (!isDraggingText || !currentDraggedText) return;
+            
+            isDraggingText = false;
+            currentDraggedText.classList.remove('dragging');
+            
+            // Сохраняем новую позицию столбца
+            const colId = currentDraggedText.id.replace('text-col-', '');
+            const newX = parseInt(currentDraggedText.style.left);
+            const newY = parseInt(currentDraggedText.style.top);
+            
+            textColumnPositions['col' + colId] = {x: newX, y: newY};
+            
+            // Показываем текущие координаты в консоли
+            console.log(`Столбец ${colId}: x=${newX}, y=${newY}`);
+            
+            currentDraggedText = null;
+            
+            document.removeEventListener('mousemove', dragColumn);
+            document.removeEventListener('touchmove', dragColumnTouch);
+            document.removeEventListener('mouseup', stopColumnDrag);
+            document.removeEventListener('touchend', stopColumnDrag);
+        }
+
+        // Функции для перетаскивания текста иконок (старые функции)
         function startTextDrag(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -804,9 +933,11 @@
 
         // Функции для редактирования текста
         function openTextEditPanel() {
-            // Заполняем поля текущими значениями текста "Письмо"
-            document.getElementById('edit-mail-text-x').value = textPositions.mail.x;
-            document.getElementById('edit-mail-text-y').value = textPositions.mail.y;
+            // Заполняем поля текущими значениями текстовых столбцов
+            document.getElementById('edit-col1-x').value = textColumnPositions.col1.x;
+            document.getElementById('edit-col1-y').value = textColumnPositions.col1.y;
+            document.getElementById('edit-col2-x').value = textColumnPositions.col2.x;
+            document.getElementById('edit-col2-y').value = textColumnPositions.col2.y;
             
             // Показываем панель редактирования
             document.getElementById('edit-text-panel').style.display = 'flex';
@@ -814,28 +945,32 @@
 
         function saveTextEdit() {
             // Получаем новые значения из полей ввода
-            const mailTextX = parseInt(document.getElementById('edit-mail-text-x').value);
-            const mailTextY = parseInt(document.getElementById('edit-mail-text-y').value);
+            const col1X = parseInt(document.getElementById('edit-col1-x').value);
+            const col1Y = parseInt(document.getElementById('edit-col1-y').value);
+            const col2X = parseInt(document.getElementById('edit-col2-x').value);
+            const col2Y = parseInt(document.getElementById('edit-col2-y').value);
             
-            // Обновляем позиции текста
-            textPositions.mail.x = mailTextX;
-            textPositions.mail.y = mailTextY;
+            // Обновляем позиции столбцов
+            textColumnPositions.col1.x = col1X;
+            textColumnPositions.col1.y = col1Y;
+            textColumnPositions.col2.x = col2X;
+            textColumnPositions.col2.y = col2Y;
             
-            // Обновляем позицию текста на экране
-            const mailLabel = document.getElementById('label-mail');
-            if (mailLabel) {
-                mailLabel.style.left = mailTextX + 'px';
-                mailLabel.style.top = mailTextY + 'px';
-            }
+            // Обновляем позиции на экране
+            updateTextColumns();
             
             // Закрываем панель редактирования
             document.getElementById('edit-text-panel').style.display = 'none';
             
             // Показываем новые координаты в консоли и alert
-            console.log('Новые координаты текста "Письмо":');
-            console.log('x=' + mailTextX + ', y=' + mailTextY);
+            console.log('Новые координаты текстовых столбцов:');
+            console.log('Столбец 1: x=' + col1X + ', y=' + col1Y);
+            console.log('Столбец 2: x=' + col2X + ', y=' + col2Y);
             
-            alert('Координаты текста сохранены!\n\nПисьмо: x=' + mailTextX + ', y=' + mailTextY + '\n\nКоординаты также выведены в консоль (F12)');
+            alert('Координаты текстовых столбцов сохранены!\n\n' +
+                  'Столбец 1: x=' + col1X + ', y=' + col1Y + '\n' +
+                  'Столбец 2: x=' + col2X + ', y=' + col2Y + '\n\n' +
+                  'Координаты также выведены в консоль (F12)');
         }
 
         function cancelTextEdit() {
