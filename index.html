@@ -149,20 +149,24 @@
             padding: 4px 8px;
             backdrop-filter: blur(4px);
             white-space: nowrap;
+            min-width: 80px;
         }
 
         /* Класс для редактируемых текстов */
         .icon-label.editable {
             cursor: move;
-            border: 1px solid var(--gold);
+            border: 2px solid var(--gold);
+            background: rgba(0, 0, 0, 0.85);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            z-index: 100;
         }
 
         .icon-label.editable.dragging {
             opacity: 0.9;
             z-index: 1000;
             cursor: grabbing;
-            border: 1px solid var(--gold);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
         }
 
         /* Класс для фиксированных текстов */
@@ -484,12 +488,12 @@
         const editableTexts = ["quests", "profile", "mail"];
         
         // Позиции текста для иконок (X, Y) - ПОД ИКОНКАМИ ВПЛОТНУЮ
-        // Используем координаты из предоставленных данных
+        // Исправляем координаты для видимости на экране
         let textPositions = {
-            // Редактируемые тексты (начальные позиции)
-            quests: {x: -22, y: 580}, // Задания
-            profile: {x: -27, y: 572}, // Профиль
-            mail: {x: -47, y: 279}, // Письмо
+            // Редактируемые тексты - ставим в центр экрана чтобы были видны
+            quests: {x: 50, y: 200}, // Задания - в центре
+            profile: {x: 50, y: 250}, // Профиль - ниже
+            mail: {x: 50, y: 300}, // Письмо - еще ниже
             
             // Фиксированные тексты (координаты из данных)
             community: {x: 64, y: 234}, // Сообщество
@@ -498,15 +502,10 @@
             shop: {x: 438, y: 987}, // Магазин
             inventory: {x: 565, y: 986}, // Инвентарь
             rating: {x: 313, y: 987}, // Рейтинг
-            lotto: {x: 430, y: 987}, // Лотерея (Y координата из данных не указана, ставим как у других)
-            benchmark: {x: 565, y: 986}, // Эталон (позиция как у инвентаря на странице 2)
+            lotto: {x: 430, y: 987}, // Лотерея
+            benchmark: {x: 565, y: 986}, // Эталон
             battle: {x: 59, y: 582} // Бой
         };
-
-        // Для лотереи добавляем Y координату (не указана в данных, ставим как у других)
-        if (!textPositions.lotto.y) {
-            textPositions.lotto.y = 987;
-        }
 
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
