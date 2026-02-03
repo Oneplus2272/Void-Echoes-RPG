@@ -139,16 +139,23 @@
             color: white;
             font-weight: bold;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-            pointer-events: none;
+            pointer-events: auto;
             z-index: 26;
             font-family: 'Segoe UI', Tahoma, sans-serif;
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+            cursor: move;
         }
 
         .icon-label.hidden { 
             opacity: 0; 
             transform: translateY(100px) scale(0.5); 
             pointer-events: none; 
+        }
+
+        .icon-label.dragging {
+            opacity: 0.8;
+            z-index: 1000;
+            cursor: grabbing;
         }
 
         /* Адаптивные размеры шрифта для планшета и телефона */
@@ -192,6 +199,90 @@
         /* --- МОДАЛКА НАВЫКОВ --- */
         #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
+
+        /* Панель редактирования текста */
+        #edit-text-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 300px;
+            color: white;
+        }
+
+        #edit-text-panel h3 {
+            margin: 0;
+            text-align: center;
+            color: var(--gold);
+        }
+
+        .text-coord-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .text-coord-input label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .text-coord-input input {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--gold);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .text-edit-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .text-edit-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #save-text-btn {
+            background: linear-gradient(180deg, var(--gold), #b8860b);
+            color: black;
+        }
+
+        #cancel-text-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid #666;
+        }
+
+        /* Кнопка редактирования текста */
+        #edit-text-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--blue);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            border: 1px solid var(--blue);
+        }
     </style>
 </head>
 <body>
@@ -246,6 +337,9 @@
             </div>
 
             <div id="ui-dynamic-layer"></div>
+
+            <!-- Кнопка редактирования текста -->
+            <div id="edit-text-btn">Редактировать текст</div>
         </div>
     </div>
 
@@ -276,6 +370,26 @@
             <h3 id="modal-name" style="color:var(--gold); margin:5px 0;"></h3>
             <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
             <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
+        </div>
+    </div>
+
+    <!-- Панель редактирования текста -->
+    <div id="edit-text-panel">
+        <h3>Редактировать позиции текста</h3>
+        
+        <div class="text-coord-input">
+            <label>Письмо - X координата текста:</label>
+            <input type="number" id="edit-mail-text-x" value="-47">
+        </div>
+        
+        <div class="text-coord-input">
+            <label>Письмо - Y координата текста:</label>
+            <input type="number" id="edit-mail-text-y" value="445">
+        </div>
+        
+        <div class="text-edit-buttons">
+            <button class="text-edit-btn" id="save-text-btn">СОХРАНИТЬ</button>
+            <button class="text-edit-btn" id="cancel-text-btn">ОТМЕНА</button>
         </div>
     </div>
 
@@ -345,6 +459,22 @@
             benchmark: "Эталон"
         };
 
+        // Позиции текста для иконок (X, Y)
+        let textPositions = {
+            quests: {x: -22, y: 661},
+            battle: {x: 59, y: 663},
+            alliance: {x: 154, y: 664},
+            shop: {x: 246, y: 204},
+            inventory: {x: 248, y: 657},
+            community: {x: -10, y: 264},
+            benchmark: {x: 238, y: 652},
+            rating: {x: 57, y: 654},
+            profile: {x: -27, y: 653},
+            lotto: {x: 143, y: 653},
+            calendar: {x: 218, y: 468},
+            mail: {x: -47, y: 445} // Начальная позиция текста "Письмо"
+        };
+
         const config = isTablet ? {
             panel: { x: -17, y: 880, w: 854, h: 130 },
             layout: {
@@ -362,6 +492,14 @@
                 lotto: {x:143, y:543, s:131}, calendar: {x:218, y:358, s:188, static: true}, mail: {x:-47, y:250, s:190, static: true}
             }
         };
+
+        // Переменные для перетаскивания текста
+        let isDraggingText = false;
+        let currentDraggedText = null;
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let textStartX = 0;
+        let textStartY = 0;
 
         function buildDynamicUI() {
             const layer = document.getElementById('ui-dynamic-layer');
@@ -399,20 +537,120 @@
                 label.id = 'label-' + id;
                 label.innerText = iconNames[id] || id;
                 
-                // Позиционируем подпись под иконкой
-                const labelTop = d.y + d.s + 5; // 5px отступа от иконки
-                const labelLeft = d.x + (d.s / 2); // Центрируем по горизонтали
+                // Используем сохраненные позиции текста или вычисляем по умолчанию
+                const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
                 Object.assign(label.style, {
-                    top: labelTop + 'px',
-                    left: labelLeft + 'px',
+                    top: textPos.y + 'px',
+                    left: textPos.x + 'px',
                     transform: 'translateX(-50%)',
                     width: d.s + 'px'
                 });
                 
+                // Добавляем обработчики для перетаскивания текста
+                label.addEventListener('mousedown', startTextDrag);
+                label.addEventListener('touchstart', startTextDragTouch);
+                
                 layer.appendChild(label);
             });
             updateIconVisibility();
+        }
+
+        // Функции для перетаскивания текста
+        function startTextDrag(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const labelId = e.target.id;
+            if (!labelId.startsWith('label-')) return;
+            
+            isDraggingText = true;
+            currentDraggedText = e.target;
+            currentDraggedText.classList.add('dragging');
+            
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            textStartX = parseInt(currentDraggedText.style.left);
+            textStartY = parseInt(currentDraggedText.style.top);
+            
+            document.addEventListener('mousemove', dragText);
+            document.addEventListener('mouseup', stopTextDrag);
+        }
+
+        function startTextDragTouch(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const labelId = e.target.id;
+            if (!labelId.startsWith('label-')) return;
+            
+            isDraggingText = true;
+            currentDraggedText = e.target;
+            currentDraggedText.classList.add('dragging');
+            
+            const touch = e.touches[0];
+            dragStartX = touch.clientX;
+            dragStartY = touch.clientY;
+            textStartX = parseInt(currentDraggedText.style.left);
+            textStartY = parseInt(currentDraggedText.style.top);
+            
+            document.addEventListener('touchmove', dragTextTouch);
+            document.addEventListener('touchend', stopTextDrag);
+        }
+
+        function dragText(e) {
+            if (!isDraggingText || !currentDraggedText) return;
+            
+            e.preventDefault();
+            
+            const deltaX = e.clientX - dragStartX;
+            const deltaY = e.clientY - dragStartY;
+            
+            const newX = textStartX + deltaX;
+            const newY = textStartY + deltaY;
+            
+            currentDraggedText.style.left = newX + 'px';
+            currentDraggedText.style.top = newY + 'px';
+        }
+
+        function dragTextTouch(e) {
+            if (!isDraggingText || !currentDraggedText) return;
+            
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            const deltaX = touch.clientX - dragStartX;
+            const deltaY = touch.clientY - dragStartY;
+            
+            const newX = textStartX + deltaX;
+            const newY = textStartY + deltaY;
+            
+            currentDraggedText.style.left = newX + 'px';
+            currentDraggedText.style.top = newY + 'px';
+        }
+
+        function stopTextDrag() {
+            if (!isDraggingText || !currentDraggedText) return;
+            
+            isDraggingText = false;
+            currentDraggedText.classList.remove('dragging');
+            
+            // Сохраняем новую позицию текста
+            const labelId = currentDraggedText.id.replace('label-', '');
+            const newX = parseInt(currentDraggedText.style.left);
+            const newY = parseInt(currentDraggedText.style.top);
+            
+            textPositions[labelId] = {x: newX, y: newY};
+            
+            // Показываем текущие координаты в консоли
+            console.log(`Текст "${iconNames[labelId] || labelId}": x=${newX}, y=${newY}`);
+            
+            currentDraggedText = null;
+            
+            document.removeEventListener('mousemove', dragText);
+            document.removeEventListener('touchmove', dragTextTouch);
+            document.removeEventListener('mouseup', stopTextDrag);
+            document.removeEventListener('touchend', stopTextDrag);
         }
 
         function updateIconVisibility() {
@@ -432,6 +670,46 @@
                     if (label) label.classList.toggle('hidden', !isVisible);
                 }
             });
+        }
+
+        // Функции для редактирования текста
+        function openTextEditPanel() {
+            // Заполняем поля текущими значениями текста "Письмо"
+            document.getElementById('edit-mail-text-x').value = textPositions.mail.x;
+            document.getElementById('edit-mail-text-y').value = textPositions.mail.y;
+            
+            // Показываем панель редактирования
+            document.getElementById('edit-text-panel').style.display = 'flex';
+        }
+
+        function saveTextEdit() {
+            // Получаем новые значения из полей ввода
+            const mailTextX = parseInt(document.getElementById('edit-mail-text-x').value);
+            const mailTextY = parseInt(document.getElementById('edit-mail-text-y').value);
+            
+            // Обновляем позиции текста
+            textPositions.mail.x = mailTextX;
+            textPositions.mail.y = mailTextY;
+            
+            // Обновляем позицию текста на экране
+            const mailLabel = document.getElementById('label-mail');
+            if (mailLabel) {
+                mailLabel.style.left = mailTextX + 'px';
+                mailLabel.style.top = mailTextY + 'px';
+            }
+            
+            // Закрываем панель редактирования
+            document.getElementById('edit-text-panel').style.display = 'none';
+            
+            // Показываем новые координаты в консоли и alert
+            console.log('Новые координаты текста "Письмо":');
+            console.log('x=' + mailTextX + ', y=' + mailTextY);
+            
+            alert('Координаты текста сохранены!\n\nПисьмо: x=' + mailTextX + ', y=' + mailTextY + '\n\nКоординаты также выведены в консоль (F12)');
+        }
+
+        function cancelTextEdit() {
+            document.getElementById('edit-text-panel').style.display = 'none';
         }
 
         function selectHero(key) {
@@ -465,6 +743,11 @@
 
         function openInventory() { const inv = document.getElementById('inventory-screen'); inv.style.display = 'block'; setTimeout(() => inv.style.opacity = '1', 50); }
         function closeInventory() { const inv = document.getElementById('inventory-screen'); inv.style.opacity = '0'; setTimeout(() => inv.style.display = 'none', 400); }
+
+        // Инициализация событий для редактирования текста
+        document.getElementById('edit-text-btn').onclick = openTextEditPanel;
+        document.getElementById('save-text-btn').onclick = saveTextEdit;
+        document.getElementById('cancel-text-btn').onclick = cancelTextEdit;
 
         window.onload = () => {
             if(tg) { tg.expand(); tg.ready(); }
