@@ -1,58 +1,54 @@
 /**
- * Бронебойный загрузчик v3.0
- * Работает в изоляции от других скриптов
+ * Бронебойный загрузчик v4.0 - Полная изоляция
  */
 (function() {
-    console.log("Loading engine started");
+    console.log("Loading system: STANDALONE MODE");
 
-    function runProgressBar() {
+    function startLoading() {
         const fill = document.getElementById('progress-fill');
         const pct = document.getElementById('loading-pct');
         const loadScreen = document.getElementById('loading-screen');
         const selectScreen = document.getElementById('selection-screen');
 
-        // Если HTML еще не прогрузился, ждем 50мс и пробуем снова
         if (!fill || !pct) {
-            setTimeout(runProgressBar, 50);
+            // Если элементы еще не созданы, пробуем снова через 50мс
+            setTimeout(startLoading, 50);
             return;
         }
 
-        let progress = 0;
+        let p = 0;
         const timer = setInterval(() => {
-            progress += 2;
+            p += 2;
             
-            // Прямое управление стилями без посредников
-            fill.style.width = progress + '%';
-            pct.innerHTML = progress + '%';
+            // Прямое управление через style, чтобы никакие CSS-ошибки не мешали
+            fill.style.setProperty('width', p + '%', 'important');
+            pct.innerHTML = p + '%';
 
-            if (progress >= 100) {
+            if (p >= 100) {
                 clearInterval(timer);
-                console.log("Load complete, switching screens...");
+                console.log("100% - Switching screen");
                 
                 if (loadScreen) loadScreen.style.display = 'none';
                 if (selectScreen) {
                     selectScreen.style.display = 'block';
-                    // Форсируем видимость
                     selectScreen.style.opacity = '1';
                 }
             }
         }, 30);
     }
 
-    // Инициализация Telegram WebApp с защитой от вылета
+    // Инициализация Telegram с защитой
     try {
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.expand();
             window.Telegram.WebApp.ready();
         }
-    } catch (e) {
-        console.warn("TG Init failed, but moving on...");
-    }
+    } catch (e) {}
 
-    // Запуск процесса при первой возможности
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        runProgressBar();
+    // Запуск несмотря ни на что
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startLoading);
     } else {
-        window.addEventListener('load', runProgressBar);
+        startLoading();
     }
 })();
