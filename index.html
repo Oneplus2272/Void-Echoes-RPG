@@ -231,16 +231,20 @@
         .player-avatar {
             width: 60px;
             height: 60px;
-            border-radius: 8px;
+            border-radius: 50%; /* Круглая аватарка для лица */
             margin-right: 15px;
             background: #2a2a2a;
             border: 2px solid #ffd700;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .player-avatar img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Лицо заполняет весь круг */
         }
 
         .player-info h3 {
@@ -293,6 +297,41 @@
             height: 100%;
         }
 
+        /* Кнопки меню */
+        .menu-buttons {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .menu-button {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            border: 2px solid #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .menu-button img {
+            width: 50px;
+            height: 50px;
+        }
+
         /* Инвентарь */
         #inventory-screen {
             background: #000;
@@ -312,13 +351,12 @@
             width: 100%;
             height: 100%;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #inv-hero-img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             max-width: 300px;
             max-height: 500px;
         }
@@ -337,6 +375,21 @@
             .hero-image {
                 width: 150px;
                 height: 150px;
+            }
+            
+            .menu-buttons {
+                gap: 10px;
+                padding: 0 10px;
+            }
+            
+            .menu-button {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .menu-button img {
+                width: 40px;
+                height: 40px;
             }
         }
     </style>
@@ -401,7 +454,7 @@
         <div class="menu-container">
             <div class="player-header">
                 <div class="player-avatar">
-                    <img id="menu-avatar" src="" alt="Аватар">
+                    <img id="menu-avatar" src="face_1.png" alt="Аватар">
                 </div>
                 <div class="player-info">
                     <h3 id="p-name-display">Игрок</h3>
@@ -424,8 +477,21 @@
                 </div>
             </div>
 
-            <!-- Динамическая панель будет здесь -->
-            <div id="ui-dynamic-layer"></div>
+            <!-- Простые кнопки меню -->
+            <div class="menu-buttons">
+                <div class="menu-button" onclick="openInventory()">
+                    <img src="icon_inventory.png" alt="Инвентарь">
+                </div>
+                <div class="menu-button" onclick="alert('Задания')">
+                    <img src="icon_quests.png" alt="Задания">
+                </div>
+                <div class="menu-button" onclick="alert('Бой')">
+                    <img src="icon_battle.png" alt="Бой">
+                </div>
+                <div class="menu-button" onclick="alert('Магазин')">
+                    <img src="icon_shop.png" alt="Магазин">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -434,7 +500,6 @@
         <div class="close-inv" onclick="closeInventory()">×</div>
         <div class="inv-container">
             <img id="inv-hero-img" src="" alt="Герой">
-            <!-- Здесь будут слоты экипировки -->
         </div>
     </div>
 
@@ -443,21 +508,24 @@
         let currentHero = null;
         let isLoading = false;
 
-        // Данные героев
+        // Данные героев с ОТДЕЛЬНЫМИ ЛИЦАМИ для аватарки
         const heroes = {
             tsar: {
                 name: "Царь",
-                image: "hero_tsar.png",
+                image: "hero_tsar.png",       // Полное изображение героя
+                face: "face_1.png",           // Лицо для аватарки
                 description: "Могущественный правитель с железной волей"
             },
             sultan: {
                 name: "Султан", 
-                image: "hero_sultan.png",
+                image: "hero_sultan.png",     // Полное изображение героя
+                face: "face_2.png",           // Лицо для аватарки
                 description: "Мудрый восточный владыка"
             },
             king: {
                 name: "Король",
-                image: "hero_king.png", 
+                image: "hero_king.png",       // Полное изображение героя
+                face: "face_3.png",           // Лицо для аватарки
                 description: "Благородный западный монарх"
             }
         };
@@ -491,6 +559,7 @@
             const invHeroImg = document.getElementById('inv-hero-img');
             if (invHeroImg && heroes[heroId]) {
                 invHeroImg.src = heroes[heroId].image;
+                console.log('Установлено изображение для инвентаря:', heroes[heroId].image);
             }
         }
 
@@ -519,9 +588,9 @@
             }, 500);
         }
 
-        // 3. Показать главное меню
+        // 3. Показать главное меню с ЛИЦОМ героя в аватарке
         function showMenuScreen() {
-            console.log('Показываем главное меню');
+            console.log('Показываем главное меню для героя:', currentHero);
             
             // Скрываем экран выбора
             const selectionScreen = document.getElementById('selection-screen');
@@ -535,11 +604,13 @@
             // Показываем главное меню
             const menuScreen = document.getElementById('menu-screen');
             if (menuScreen) {
-                // Устанавливаем аватарку выбранного героя
+                // Устанавливаем ЛИЦО выбранного героя в аватарку
                 if (currentHero && heroes[currentHero]) {
                     const avatarImg = document.getElementById('menu-avatar');
                     if (avatarImg) {
-                        avatarImg.src = heroes[currentHero].image;
+                        // Используем лицо (face), а не полное изображение
+                        avatarImg.src = heroes[currentHero].face;
+                        console.log('Установлено лицо в аватарку:', heroes[currentHero].face);
                     }
                     
                     const nameDisplay = document.getElementById('p-name-display');
