@@ -1,28 +1,58 @@
-const config = {
-    SERVER_URL: 'https://void-echoes-rpg.onrender.com',
-    panel: { x: 20, y: 550, w: 350, h: 100 },
-    layout: {
-        profile: { x: 50, y: 570, s: 50, static: true },
-        inventory: { x: 120, y: 570, s: 50, static: true },
-        quests: { x: 190, y: 570, s: 50, static: false },
-        shop: { x: 260, y: 570, s: 50, static: false },
-        battle: { x: 190, y: 570, s: 50, static: false },
-        rating: { x: 260, y: 570, s: 50, static: false }
+/**
+ * Файл работы с Python API
+ */
+class GameAPI {
+    constructor() {
+        // Убедись, что этот URL ведет на твой Render Python сервер
+        this.baseURL = 'https://void-echoes-rpg.onrender.com'; 
+        this.userId = null;
+        this.init();
     }
-};
 
-const iconNames = {
-    profile: "Профиль",
-    inventory: "Рюкзак",
-    quests: "Задания",
-    shop: "Лавка",
-    battle: "Битва",
-    rating: "Рейтинг"
-};
+    init() {
+        const tg = window.Telegram?.WebApp;
+        // Получаем реальный ID пользователя из Telegram
+        this.userId = tg?.initDataUnsafe?.user?.id || 'test_user';
+        console.log('API инициализировано для ID:', this.userId);
+    }
 
-const pages = {
-    1: ['quests', 'shop'],
-    2: ['battle', 'rating']
-};
+    async saveHero(heroId) {
+        try {
+            const response = await fetch(`${this.baseURL}/set_hero`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: this.userId,
+                    hero_id: heroId
+                })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Ошибка сохранения:', error);
+            return { success: false };
+        }
+    }
 
-const textPositions = {}; // Авто-расчет в main.js
+    async getPlayer() {
+        try {
+            const response = await fetch(`${this.baseURL}/get_player/${this.userId}`);
+            if (!response.ok) throw new Error('New player');
+            return await response.json();
+        } catch (error) {
+            console.log('Данные не найдены, создаем дефолтные');
+            return this.getDefaultPlayer();
+        }
+    }
+
+    getDefaultPlayer() {
+        return {
+            hero: null,
+            level: 1,
+            gold: 1500,
+            crystals: 50,
+            equipment: {}
+        };
+    }
+}
+
+const gameAPI = new GameAPI();
