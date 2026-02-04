@@ -6,6 +6,7 @@
     --bg-modal: rgba(5, 5, 10, 0.95);
 }
 
+/* Глобальные настройки отображения */
 body, html {
     margin: 0; padding: 0;
     width: 100%; height: 100%;
@@ -26,15 +27,55 @@ body, html {
     position: absolute; top: 0; left: 0;
 }
 
-/* ЗАГРУЗОЧНЫЙ ЭКРАН */
+/* --- ЗАГРУЗОЧНЫЙ ЭКРАН --- */
 #loading-screen {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 2000; background: url('Loading_screen_war_of_kings.png') no-repeat center center/cover;
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    z-index: 2000; 
+    background: #000 url('Loading_screen_war_of_kings.png') no-repeat center center/cover;
     opacity: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
-.logo-main { width: 220px; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--blue)); }
-.loader-container { width: 70%; max-width: 300px; text-align: center; }
-#loading-pct { margin-bottom: 8px; font-weight: bold; color: var(--blue); font-size: 1.2rem; text-shadow: 0 0 10px var(--blue); }
-.progress-bar { height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
-.progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width 0.3s; }
+
+.logo-main { 
+    width: 220px; 
+    margin-bottom: 20px; 
+    filter: drop-shadow(0 0 15px var(--blue)); 
+}
+
+.loader-container { 
+    width: 70%; 
+    max-width: 300px; 
+    text-align: center; 
+    z-index: 2001;
+}
+
+#loading-pct { 
+    margin-bottom: 8px; 
+    font-weight: bold; 
+    color: var(--blue); 
+    font-size: 1.2rem; 
+    text-shadow: 0 0 10px var(--blue); 
+}
+
+.progress-bar { 
+    height: 12px; 
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7); 
+    border: 1px solid var(--blue); 
+    border-radius: 6px; 
+    overflow: hidden; 
+    position: relative;
+}
+
+.progress-fill { 
+    width: 0%; 
+    height: 100%; 
+    background: var(--blue); 
+    transition: width 0.3s ease; 
+    display: block;
+}
