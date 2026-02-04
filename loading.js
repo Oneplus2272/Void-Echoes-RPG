@@ -1,64 +1,49 @@
-let currentHeroId = null;
-
-function selectHero(name, heroId) {
-    console.log('Выбран герой:', name, heroId);
+window.onload = () => {
+    console.log("Game loading started");
     
-    // Снимаем выделение со всех карточек
-    document.querySelectorAll('.hero-card').forEach(card => {
-        card.classList.remove('active');
-    });
-    
-    // Выделяем выбранную карточку
-    const selectedCard = document.getElementById('c-' + heroId);
-    if (selectedCard) {
-        selectedCard.classList.add('active');
-    }
-    
-    // Сохраняем выбор
-    currentHeroId = heroId;
-    
-    // Активируем кнопку подтверждения
-    const confirmBtn = document.getElementById('final-confirm-btn');
-    if (confirmBtn) {
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = `ПОДТВЕРДИТЬ: ${name}`;
-    }
-    
-    // Показываем выбранного героя в инвентаре
-    const invHeroImg = document.getElementById('inv-hero-img');
-    if (invHeroImg && heroesData[heroId]) {
-        invHeroImg.src = heroesData[heroId].image;
-    }
-}
-
-async function confirmHeroSelection() {
-    if (!currentHeroId) {
-        alert('Пожалуйста, выберите героя!');
-        return;
-    }
-    
+    // Инициализация Telegram WebApp
     const tg = window.Telegram?.WebApp;
-    const userId = tg?.initDataUnsafe?.user?.id || 12345;
-    const SERVER_URL = 'https://void-echoes-rpg.onrender.com';
-    
-    const confirmBtn = document.getElementById('final-confirm-btn');
-    if (confirmBtn) {
-        confirmBtn.textContent = 'ЗАГРУЗКА...';
-        confirmBtn.disabled = true;
+    if(tg) { 
+        tg.expand(); 
+        tg.ready(); 
+        console.log("Telegram WebApp initialized");
     }
     
-    try { 
-        // Отправка данных на твой сервер Render
-        await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroId}`, { 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+    let p = 0; 
+    const progressFill = document.getElementById('progress-fill');
+    const loadingPct = document.getElementById('loading-pct');
+    const loadingScreen = document.getElementById('loading-screen');
+    const selectionScreen = document.getElementById('selection-screen');
+
+    const loadingInterval = setInterval(() => {
+        p += 5; 
+        
+        // Обновляем ширину полоски
+        if (progressFill) {
+            progressFill.style.width = p + '%'; 
+        }
+        
+        // Обновляем текст процентов
+        if (loadingPct) {
+            loadingPct.textContent = p + '%';
+        }
+        
+        if(p >= 100) { 
+            clearInterval(loadingInterval); 
+            console.log("Loading complete");
+            
+            // Скрываем загрузку
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none'; 
             }
-        }); 
-        showMenu(); 
-    } catch (e) { 
-        console.error('Ошибка сохранения героя на сервере:', e);
-        // Даже если сервер недоступен, пускаем в игру для теста фронтенда
-        showMenu(); 
-    }
-}
+            
+            // Показываем экран выбора героя
+            if (selectionScreen) {
+                selectionScreen.style.display = 'block'; 
+                setTimeout(() => {
+                    selectionScreen.style.opacity = '1';
+                }, 50); 
+            }
+        }
+    }, 30);
+};
