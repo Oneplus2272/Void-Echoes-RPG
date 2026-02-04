@@ -5,61 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>War of Kings: Legacy of Empires</title>
     <style>
-        /* Твои стили */
-        body { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Cinzel', serif; overflow: hidden; }
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
-        .progress-container { width: 80%; height: 10px; background: #222; border: 1px solid #ffd700; border-radius: 5px; margin-top: 20px; }
-        #progress-fill { width: 0%; height: 100%; background: gold; transition: width 0.1s; }
-        #selection-screen { display: none; opacity: 0; transition: opacity 1s; padding: 20px; text-align: center; }
+        body { margin: 0; padding: 0; background: #000; color: #ffd700; font-family: 'serif'; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        #loading-screen { text-align: center; width: 100%; }
+        .bar-container { width: 80%; height: 12px; background: #222; border: 1px solid #ffd700; margin: 20px auto; border-radius: 6px; }
+        #bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ffd700, #b8860b); border-radius: 5px; transition: width 0.1s; }
+        #selection-screen { display: none; text-align: center; }
+        .hero-btn { background: #1a1a1a; border: 1px solid #ffd700; color: #ffd700; padding: 15px; margin: 10px; border-radius: 8px; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <h1 style="color: gold; text-align: center;">War of Kings:<br>Legacy of Empires</h1>
-        <div class="progress-container">
-            <div id="progress-fill"></div>
+        <h1>War of Kings:<br>Legacy of Empires</h1>
+        <div class="bar-container">
+            <div id="bar-fill"></div>
         </div>
-        <p id="loading-pct" style="color: gold;">0%</p>
+        <p id="pct-text">Подготовка... 0%</p>
     </div>
 
     <div id="selection-screen">
-        <h2 style="color: gold;">Выберите своего правителя</h2>
-        <button onclick="alert('Герой выбран!')">Начать путь</button>
+        <h2>Выберите своего правителя</h2>
+        <button class="hero-btn" onclick="selectHero('Воин')">Воин Тьмы</button>
+        <button class="hero-btn" onclick="selectHero('Маг')">Маг Империи</button>
     </div>
 
     <script>
-    // Весь код загрузки теперь здесь, он точно сработает
-    (function() {
-        function start() {
-            const fill = document.getElementById('progress-fill');
-            const pct = document.getElementById('loading-pct');
-            
-            if (!fill || !pct) return;
-
+        // Функция запускается СРАЗУ, никого не дожидаясь
+        (function() {
+            const fill = document.getElementById('bar-fill');
+            const txt = document.getElementById('pct-text');
             let p = 0;
-            const inv = setInterval(() => {
-                p += 2; // Плавная загрузка
+
+            console.log("Скрипт загрузки запущен");
+
+            const timer = setInterval(() => {
+                p += 2;
                 if (p > 100) p = 100;
                 
-                fill.style.width = p + '%';
-                pct.textContent = p + '%';
+                if(fill) fill.style.width = p + '%';
+                if(txt) txt.textContent = 'Загрузка империи... ' + p + '%';
 
                 if (p >= 100) {
-                    clearInterval(inv);
+                    clearInterval(timer);
                     document.getElementById('loading-screen').style.display = 'none';
-                    const next = document.getElementById('selection-screen');
-                    next.style.display = 'block';
-                    setTimeout(() => next.style.opacity = '1', 50);
+                    document.getElementById('selection-screen').style.display = 'block';
                 }
-            }, 50);
+            }, 40);
 
-            // Просто пингуем твой сервер в фоне (даже если будет ошибка Mixed Content, игра не встанет)
-            fetch('http://45.128.204.64/api/status').catch(e => console.log("Сервер ждет HTTPS"));
+            // Пытаемся связаться с сервером просто для логов в фоне
+            fetch('http://45.128.204.64/api/status').catch(e => console.log("Фоновая проверка IP"));
+        })();
+
+        function selectHero(name) {
+            alert('Вы выбрали: ' + name + '. Скоро начнется великая война!');
+            // Здесь мы потом добавим fetch запрос на твой сервер для сохранения
         }
-
-        window.onload = start;
-    })();
     </script>
 </body>
 </html>
