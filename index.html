@@ -6,96 +6,25 @@
     <title>Void Echoes RPG</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="selection.css">
-    <link rel="stylesheet" href="menu.css">
-    <link rel="stylesheet" href="inventory.css">
     <link rel="stylesheet" href="loading.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-    <div id="loading-screen" class="screen" style="display: flex; opacity: 1;">
-        <img src="icon_logo_void_echoes.png" class="logo-main">
-        <div class="loader-container">
-            <div id="loading-pct">0%</div>
-            <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
+    <div id="loading-screen" class="screen" style="display: flex; opacity: 1; background: #000; position: fixed; width: 100%; height: 100%; z-index: 9999;">
+        <div class="loader-container" style="margin: auto; text-align: center;">
+            <div id="loading-pct" style="color: #00d4ff; font-size: 24px; margin-bottom: 10px;">0%</div>
+            <div class="progress-bar" style="width: 200px; height: 10px; border: 1px solid #00d4ff; border-radius: 5px; overflow: hidden;">
+                <div id="progress-fill" style="width: 0%; height: 100%; background: #00d4ff; transition: width 0.1s;"></div>
             </div>
         </div>
     </div>
 
-    <div id="selection-screen" class="screen">
-        <div class="selection-container">
-            <div class="hero-title">ВЫБЕРИ СВОЕГО ГЕРОЯ</div>
-            <div class="cards-container">
-                <div class="hero-card" id="c-tsar">
-                    <div class="hero-image"><img id="hero-tsar-img" src="hero_tsar.png" alt="Царь"></div>
-                    <div class="hero-name">Царь</div>
-                    <div class="hero-description">Могущественный правитель с железной волей</div>
-                    <button class="select-btn" onclick="selectHero('Царь', 'tsar')">Выбрать</button>
-                </div>
-                <div class="hero-card" id="c-sultan">
-                    <div class="hero-image"><img id="hero-sultan-img" src="hero_sultan.png" alt="Султан"></div>
-                    <div class="hero-name">Султан</div>
-                    <div class="hero-description">Мудрый восточный владыка</div>
-                    <button class="select-btn" onclick="selectHero('Султан', 'sultan')">Выбрать</button>
-                </div>
-                <div class="hero-card" id="c-king">
-                    <div class="hero-image"><img id="hero-king-img" src="hero_king.png" alt="Король"></div>
-                    <div class="hero-name">Король</div>
-                    <div class="hero-description">Благородный западный монарх</div>
-                    <button class="select-btn" onclick="selectHero('Король', 'king')">Выбрать</button>
-                </div>
-            </div>
-            <div class="confirm-container">
-                <button id="final-confirm-btn" class="confirm-btn" onclick="confirmHeroSelection()" disabled>ПОДТВЕРДИТЬ ВЫБОР</button>
-            </div>
+    <div id="selection-screen" class="screen" style="display: none; opacity: 0;">
+        <h1 style="text-align: center; color: white;">ВЫБЕРИ ГЕРОЯ</h1>
         </div>
-    </div>
-
-    <div id="menu-screen" class="screen">
-        <div class="menu-container">
-            <div class="player-header" onclick="openInventory()">
-                <img id="menu-avatar" src="" class="player-avatar">
-                <div class="player-info">
-                    <h3 id="p-name-display">Загрузка...</h3>
-                    <p id="p-level-display">Уровень: 1</p>
-                </div>
-            </div>
-            <div id="vip-btn" class="vip-button" onclick="this.classList.toggle('active')">
-                <img src="icon_vip.png">
-            </div>
-            <div class="resources-column">
-                <div class="resource-panel"><img src="icon_gold.png"><span id="gold-val" class="value">1500</span></div>
-                <div class="resource-panel blue"><img src="icon_crystal.png"><span id="crys-val" class="value">50</span></div>
-            </div>
-            <div id="ui-dynamic-layer"></div>
-        </div>
-    </div>
-
-    <div id="inventory-screen" class="screen">
-        <div class="close-inv" onclick="closeInventory()">×</div>
-        <div class="inv-container">
-            <div class="hero-preview-box"><img id="inv-hero-img" src=""></div>
-            <div class="equipment-grid">
-                <div class="inv-slot" id="helmet-slot"><img src="helmet.png" alt="Шлем"></div>
-                <div class="inv-slot" id="chestplate-slot"><img src="chestplate.png" alt="Нагрудник"></div>
-                <div class="inv-slot" id="hammer-slot"><img src="hammer.png" alt="Молот"></div>
-                <div class="inv-slot" id="ring-slot"><img src="ring.png" alt="Кольцо"></div>
-                <div class="inv-slot" id="bracers-slot"><img src="bracers.png" alt="Наручи"></div>
-                <div class="inv-slot" id="boots-slot"><img src="boots.png" alt="Ботинки"></div>
-                <div class="inv-slot" id="hammer2-slot"><img src="hammer.png" alt="Молот 2"></div>
-                <div class="inv-slot" id="ring2-slot"><img src="ring.png" alt="Кольцо 2"></div>
-            </div>
-        </div>
-    </div>
 
     <script src="config.js"></script>
-    <script src="api.js"></script>
-    <script src="names.js"></script>
-    <script src="selection.js"></script>
-    <script src="inventory.js"></script>
-    <script src="game.js"></script>
-    <script src="main.js"></script>
     <script src="loading.js"></script>
 </body>
 </html>
