@@ -2,54 +2,64 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Void Echoes RPG</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="selection.css">
-    <link rel="stylesheet" href="menu.css">
-    <link rel="stylesheet" href="inventory.css">
-    <link rel="stylesheet" href="loading.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>War of Kings: Legacy of Empires</title>
+    <style>
+        /* Твои стили */
+        body { margin: 0; padding: 0; background: #000; color: #fff; font-family: 'Cinzel', serif; overflow: hidden; }
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        .progress-container { width: 80%; height: 10px; background: #222; border: 1px solid #ffd700; border-radius: 5px; margin-top: 20px; }
+        #progress-fill { width: 0%; height: 100%; background: gold; transition: width 0.1s; }
+        #selection-screen { display: none; opacity: 0; transition: opacity 1s; padding: 20px; text-align: center; }
+    </style>
 </head>
 <body>
 
-    <div id="loading-screen" class="screen" style="display: flex; opacity: 1;">
-        <img src="icon_logo_void_echoes.png" class="logo-main">
-        <div class="loader-container">
-            <div id="loading-pct">0%</div>
-            <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
-            </div>
+    <div id="loading-screen">
+        <h1 style="color: gold; text-align: center;">War of Kings:<br>Legacy of Empires</h1>
+        <div class="progress-container">
+            <div id="progress-fill"></div>
         </div>
+        <p id="loading-pct" style="color: gold;">0%</p>
     </div>
 
-    <div id="selection-screen" class="screen">
-        <div class="selection-container">
-            <div class="hero-title">ВЫБЕРИ СВОЕГО ГЕРОЯ</div>
-            <div class="cards-container">
-                <div class="hero-card" id="c-tsar">
-                    <div class="hero-image"><img id="hero-tsar-img" src="hero_tsar.png" alt="Царь"></div>
-                    <div class="hero-name">Царь</div>
-                    <div class="hero-description">Могущественный правитель с железной волей</div>
-                    <button class="select-btn" onclick="selectHero('Царь', 'tsar')">Выбрать</button>
-                </div>
-                <div class="hero-card" id="c-sultan">
-                    <div class="hero-image"><img id="hero-sultan-img" src="hero_sultan.png" alt="Султан"></div>
-                    <div class="hero-name">Султан</div>
-                    <div class="hero-description">Мудрый восточный владыка</div>
-                    <button class="select-btn" onclick="selectHero('Султан', 'sultan')">Выбрать</button>
-                </div>
-                <div class="hero-card" id="c-king">
-                    <div class="hero-image"><img id="hero-king-img" src="hero_king.png" alt="Король"></div>
-                    <div class="hero-name">Король</div>
-                    <div class="hero-description">Благородный западный монарх</div>
-                    <button class="select-btn" onclick="selectHero('Король', 'king')">Выбрать</button>
-                </div>
-            </div>
-            <div class="confirm-container">
-                <button id="final-confirm-btn" class="confirm-btn" onclick="confirmHeroSelection()" disabled>ПОДТВЕРДИТЬ ВЫБОР</button>
-            </div>
-        </div>
+    <div id="selection-screen">
+        <h2 style="color: gold;">Выберите своего правителя</h2>
+        <button onclick="alert('Герой выбран!')">Начать путь</button>
     </div>
 
-    <div id="menu-screen"
+    <script>
+    // Весь код загрузки теперь здесь, он точно сработает
+    (function() {
+        function start() {
+            const fill = document.getElementById('progress-fill');
+            const pct = document.getElementById('loading-pct');
+            
+            if (!fill || !pct) return;
+
+            let p = 0;
+            const inv = setInterval(() => {
+                p += 2; // Плавная загрузка
+                if (p > 100) p = 100;
+                
+                fill.style.width = p + '%';
+                pct.textContent = p + '%';
+
+                if (p >= 100) {
+                    clearInterval(inv);
+                    document.getElementById('loading-screen').style.display = 'none';
+                    const next = document.getElementById('selection-screen');
+                    next.style.display = 'block';
+                    setTimeout(() => next.style.opacity = '1', 50);
+                }
+            }, 50);
+
+            // Просто пингуем твой сервер в фоне (даже если будет ошибка Mixed Content, игра не встанет)
+            fetch('http://45.128.204.64/api/status').catch(e => console.log("Сервер ждет HTTPS"));
+        }
+
+        window.onload = start;
+    })();
+    </script>
+</body>
+</html>
