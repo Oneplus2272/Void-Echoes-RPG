@@ -1,48 +1,54 @@
 /**
- * Улучшенный загрузчик с защитой от ошибок
+ * Бронебойный загрузчик: запускается несмотря ни на что
  */
 (function() {
-    // Заглушки, чтобы код не падал, если конфиги не загрузились
-    if (typeof window.config === 'undefined') window.config = {};
-    if (typeof window.heroesData === 'undefined') window.heroesData = {};
+    console.log("Loading script active");
 
-    function startLoading() {
+    function startProgress() {
         const fill = document.getElementById('progress-fill');
         const pct = document.getElementById('loading-pct');
-        const screen = document.getElementById('loading-screen');
-        const next = document.getElementById('selection-screen');
+        const loadScreen = document.getElementById('loading-screen');
+        const selectScreen = document.getElementById('selection-screen');
 
         if (!fill || !pct) {
-            setTimeout(startLoading, 100);
+            console.log("Waiting for DOM elements...");
+            setTimeout(startProgress, 50);
             return;
         }
 
         let p = 0;
-        const timer = setInterval(() => {
+        const interval = setInterval(() => {
             p += 2;
             fill.style.width = p + '%';
             pct.textContent = p + '%';
 
             if (p >= 100) {
-                clearInterval(timer);
-                if (screen) screen.style.display = 'none';
-                if (next) {
-                    next.style.display = 'block';
-                    setTimeout(() => { next.style.opacity = '1'; }, 50);
+                clearInterval(interval);
+                console.log("Progress 100%");
+                
+                if (loadScreen) loadScreen.style.display = 'none';
+                if (selectScreen) {
+                    selectScreen.style.display = 'block';
+                    setTimeout(() => { selectScreen.style.opacity = '1'; }, 50);
                 }
             }
         }, 30);
     }
 
-    // Инициализация Telegram
+    // Телеграм WebApp
     if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.expand();
-        window.Telegram.WebApp.ready();
+        try {
+            window.Telegram.WebApp.expand();
+            window.Telegram.WebApp.ready();
+        } catch (e) {
+            console.error("TG init error:", e);
+        }
     }
 
-    if (document.readyState === 'complete') {
-        startLoading();
+    // Запуск шкалы
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        startProgress();
     } else {
-        window.addEventListener('load', startLoading);
+        document.addEventListener('DOMContentLoaded', startProgress);
     }
 })();
