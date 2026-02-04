@@ -1,49 +1,56 @@
-window.onload = () => {
-    console.log("Game loading started");
-    
+/**
+ * Файл управления загрузкой игры
+ */
+window.addEventListener('load', function() {
+    console.log("DOM полностью загружен");
+
     // Инициализация Telegram WebApp
     const tg = window.Telegram?.WebApp;
-    if(tg) { 
-        tg.expand(); 
-        tg.ready(); 
-        console.log("Telegram WebApp initialized");
+    if (tg) {
+        tg.expand();
+        tg.ready();
     }
-    
-    let p = 0; 
-    const progressFill = document.getElementById('progress-fill');
-    const loadingPct = document.getElementById('loading-pct');
-    const loadingScreen = document.getElementById('loading-screen');
-    const selectionScreen = document.getElementById('selection-screen');
 
-    const loadingInterval = setInterval(() => {
-        p += 5; 
-        
-        // Обновляем ширину полоски
-        if (progressFill) {
-            progressFill.style.width = p + '%'; 
+    let progress = 0;
+    const fill = document.getElementById('progress-fill');
+    const pctText = document.getElementById('loading-pct');
+    const loaderScreen = document.getElementById('loading-screen');
+    const selectScreen = document.getElementById('selection-screen');
+
+    // Интервал обновления шкалы
+    const interval = setInterval(() => {
+        progress += 2; // Уменьшил шаг для более плавной анимации
+
+        if (fill) {
+            fill.style.width = progress + '%';
         }
-        
-        // Обновляем текст процентов
-        if (loadingPct) {
-            loadingPct.textContent = p + '%';
+
+        if (pctText) {
+            pctText.textContent = progress + '%';
         }
-        
-        if(p >= 100) { 
-            clearInterval(loadingInterval); 
-            console.log("Loading complete");
-            
-            // Скрываем загрузку
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none'; 
-            }
-            
-            // Показываем экран выбора героя
-            if (selectionScreen) {
-                selectionScreen.style.display = 'block'; 
-                setTimeout(() => {
-                    selectionScreen.style.opacity = '1';
-                }, 50); 
-            }
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            finishLoading();
         }
-    }, 30);
-};
+    }, 20);
+
+    function finishLoading() {
+        console.log("Загрузка завершена");
+        
+        if (loaderScreen) {
+            loaderScreen.style.opacity = '0';
+            setTimeout(() => {
+                loaderScreen.style.display = 'none';
+                
+                if (selectScreen) {
+                    selectScreen.style.display = 'block';
+                    // Задержка для плавного появления
+                    setTimeout(() => {
+                        selectScreen.style.opacity = '1';
+                    }, 50);
+                }
+            }, 400);
+        }
+    }
+});
