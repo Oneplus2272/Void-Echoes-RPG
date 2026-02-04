@@ -54,52 +54,66 @@
             width: 100%; height: 100%; 
             padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
             box-sizing: border-box;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+        
+        .hero-title {
+            text-align: center;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.8rem;
+            margin: 20px 0 30px 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .cards-container {
             display: flex;
-            gap: 20px;
-            overflow-x: auto;
+            gap: 25px;
             padding: 20px;
             width: 100%;
+            max-width: 1200px;
             box-sizing: border-box;
-            scroll-snap-type: x mandatory;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
         }
-        .cards-container::-webkit-scrollbar { display: none; }
         
         .hero-card {
             background-color: rgba(21, 21, 21, 0.9);
             border-radius: 24px;
-            min-width: 280px;
-            padding: 20px;
+            width: 300px;
+            padding: 25px;
             border: 2px solid #252525;
             display: flex;
             flex-direction: column;
             align-items: center;
-            scroll-snap-align: center;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
         
         .hero-card.active {
             border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            transform: scale(1.02);
         }
         
         .hero-placeholder {
             width: 100%;
-            height: 200px;
+            height: 250px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .hero-card img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
         }
         
         .hero-card h3 {
@@ -107,21 +121,21 @@
             color: var(--gold);
             margin: 10px 0;
             text-transform: uppercase;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             letter-spacing: 1px;
         }
         
         .hero-description {
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #ccc;
-            margin-bottom: 15px;
-            padding: 0 10px;
+            margin-bottom: 20px;
+            padding: 0 15px;
             line-height: 1.4;
+            min-height: 40px;
         }
         
-        .confirm-btn {
-            margin-top: 8px;
+        .select-btn {
             width: 100%;
             padding: 14px;
             background: linear-gradient(180deg, var(--gold), #b8860b);
@@ -135,8 +149,42 @@
             transition: transform 0.2s;
         }
         
-        .confirm-btn:active {
+        .select-btn:active {
             transform: scale(0.98);
+        }
+        
+        .confirm-container {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .confirm-btn {
+            width: 80%;
+            padding: 16px;
+            background: linear-gradient(180deg, var(--gold), #b8860b);
+            color: black;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .confirm-btn:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .confirm-btn:not(:disabled):hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
         /* --- ГЛАВНОЕ МЕНЮ --- */
@@ -157,22 +205,22 @@
             display: flex; 
             align-items: center; 
             background: rgba(0, 0, 0, 0.75); 
-            padding: 8px; 
+            padding: 10px 15px; 
             border-radius: 14px; 
             border: 1px solid var(--blue); 
             backdrop-filter: blur(10px); 
             z-index: 20; 
         }
         .player-avatar { 
-            width: 60px; 
-            height: 60px; 
+            width: 65px; 
+            height: 65px; 
             border-radius: 12px; 
             border: 2px solid var(--gold); 
-            margin-right: 12px; 
+            margin-right: 15px; 
             object-fit: cover;
         }
-        .player-info h3 { margin: 0; color: var(--gold); font-size: 1rem; }
-        .player-info p { margin: 0; font-size: 0.8rem; color: #ccc; }
+        .player-info h3 { margin: 0; color: var(--gold); font-size: 1.1rem; }
+        .player-info p { margin: 0; font-size: 0.85rem; color: #ccc; }
 
         .vip-button { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 80px; height: 80px; z-index: 20; filter: grayscale(1); transition: 0.3s; cursor: pointer; }
         .vip-button.active { filter: grayscale(0); }
@@ -366,6 +414,33 @@
             border: 1px solid #666;
         }
         
+        /* Адаптивность */
+        @media screen and (max-width: 768px) {
+            .cards-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .hero-card {
+                width: 90%;
+                max-width: 350px;
+            }
+            
+            .hero-placeholder {
+                height: 200px;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+                margin: 15px 0 20px 0;
+            }
+            
+            .confirm-btn {
+                width: 90%;
+                padding: 14px;
+            }
+        }
+        
         @media screen and (max-width: 599px) {
             .hero-preview-box { top: 55%; left: 54%; }
             #inv-hero-img { width: 241px; height: auto; }
@@ -394,16 +469,21 @@
             }
             
             .hero-card {
-                min-width: 250px;
-                padding: 15px;
+                width: 95%;
+                padding: 20px;
             }
             
             .hero-placeholder {
                 height: 180px;
             }
+            
+            .player-avatar {
+                width: 55px;
+                height: 55px;
+            }
         }
         
-        @media screen and (min-width: 600px) {
+        @media screen and (min-width: 600px) and (max-width: 1024px) {
             .hero-preview-box { top: 54%; left: 50%; }
             #inv-hero-img { width: 376px; height: auto; }
             
@@ -411,6 +491,16 @@
                 font-size: 12px;
                 padding: 4px 8px;
                 border-radius: 5px;
+            }
+            
+            .cards-container {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-card {
+                width: 45%;
+                min-width: 280px;
             }
         }
         
@@ -422,13 +512,9 @@
             }
             
             .hero-card {
-                min-width: 320px;
+                width: 320px;
             }
         }
-
-        /* --- МОДАЛКА НАВЫКОВ --- */
-        #skill-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { width: 80%; max-width: 320px; background: var(--bg-modal); border: 2px solid var(--gold); border-radius: 15px; padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -443,31 +529,33 @@
 
     <div id="selection-screen" class="screen">
         <div class="selection-container">
-            <h2 style="text-align: center; margin: 20px 0 10px 0; color: var(--gold); text-transform: uppercase; letter-spacing: 2px;">ВЫБЕРИ СВОЕГО ГЕРОЯ</h2>
+            <div class="hero-title">ВЫБЕРИ СВОЕГО ГЕРОЯ</div>
             
             <div class="cards-container">
                 <div class="hero-card" id="c-tsar">
                     <div class="hero-placeholder"><img src="hero_tsar.png" id="hero-tsar-img"></div>
                     <h3>Царь</h3>
                     <div class="hero-description">Могущественный правитель с железной волей</div>
-                    <button class="select-btn confirm-btn" onclick="selectHero('Царь', 'tsar')">Выбрать</button>
+                    <button class="select-btn" onclick="selectHero('Царь', 'tsar')">Выбрать</button>
                 </div>
                 <div class="hero-card" id="c-sultan">
                     <div class="hero-placeholder"><img src="hero_sultan.png" id="hero-sultan-img"></div>
                     <h3>Султан</h3>
                     <div class="hero-description">Мудрый восточный владыка</div>
-                    <button class="select-btn confirm-btn" onclick="selectHero('Султан', 'sultan')">Выбрать</button>
+                    <button class="select-btn" onclick="selectHero('Султан', 'sultan')">Выбрать</button>
                 </div>
                 <div class="hero-card" id="c-king">
                     <div class="hero-placeholder"><img src="hero_king.png" id="hero-king-img"></div>
                     <h3>Король</h3>
                     <div class="hero-description">Благородный западный монарх</div>
-                    <button class="select-btn confirm-btn" onclick="selectHero('Король', 'king')">Выбрать</button>
+                    <button class="select-btn" onclick="selectHero('Король', 'king')">Выбрать</button>
                 </div>
             </div>
             
-            <div style="text-align: center; margin: 20px; color: #aaa; font-size: 0.9rem;">
-                Выберите героя, который будет представлять ваше королевство
+            <div class="confirm-container">
+                <button id="final-confirm-btn" class="confirm-btn" onclick="confirmHeroSelection()" disabled>
+                    ПОДТВЕРДИТЬ ВЫБОР ГЕРОЯ
+                </button>
             </div>
         </div>
     </div>
@@ -477,12 +565,12 @@
             <div class="player-header">
                 <img id="menu-avatar" src="" class="player-avatar">
                 <div class="player-info">
-                    <h3 id="p-name-display">Загрузка...</h3>
+                    <h3 id="p-name-display">Игрок</h3>
                     <p id="p-level-display">Уровень: 1</p>
                 </div>
             </div>
 
-            <div id="vip-btn" class="vip-button" onclick="this.classList.toggle('active')">
+            <div id="vip-btn" class="vip-button">
                 <img src="icon_vip.png">
             </div>
 
@@ -502,7 +590,6 @@
             <div class="hero-preview-box"><img id="inv-hero-img" src=""></div>
             
             <div class="equipment-grid">
-                <!-- СЛОТЫ ЭКИПИРОВКИ ДЛЯ ПЛАНШЕТОВ -->
                 <div class="inv-slot" id="helmet-slot">
                     <img src="helmet.png" alt="Шлем">
                 </div>
@@ -549,31 +636,28 @@
         let currentPage = 1;
         let currentHeroId = null;
         
-        // Данные героев (упрощенные, без навыков)
+        // Данные героев
         const heroesData = {
             tsar: {
                 title: "Царь",
                 name: "Царь",
                 description: "Могущественный правитель с железной волей",
                 image: "hero_tsar.png",
-                avatar: "hero_tsar.png", // Используем ту же картинку для аватарки
-                face: "face_1.png" // Если нужно отдельное лицо для аватарки
+                avatar: "hero_tsar.png"
             },
             sultan: {
                 title: "Султан",
                 name: "Султан",
                 description: "Мудрый восточный владыка",
                 image: "hero_sultan.png",
-                avatar: "hero_sultan.png",
-                face: "face_2.png"
+                avatar: "hero_sultan.png"
             },
             king: {
                 title: "Король",
                 name: "Король",
                 description: "Благородный западный монарх",
                 image: "hero_king.png",
-                avatar: "hero_king.png",
-                face: "face_3.png"
+                avatar: "hero_king.png"
             }
         };
         
@@ -607,7 +691,6 @@
             2: ["benchmark", "rating", "profile", "lotto", "calendar", "mail"] 
         };
 
-        // Словарь названий для иконок
         const iconNames = {
             quests: "Задания",
             battle: "Бой",
@@ -623,7 +706,6 @@
             benchmark: "Эталон"
         };
 
-        // ФИКСИРОВАННЫЕ координаты текста для иконок (X, Y)
         const textPositions = {
             quests: {x: 59, y: 985},
             battle: {x: 183, y: 985},
@@ -657,37 +739,6 @@
             }
         };
 
-        // Инициализация инвентаря - установка позиций
-        function initInventory() {
-            const isMobile = window.innerWidth <= 599;
-            const positions = isMobile ? phonePositions : tabletPositions;
-            
-            Object.keys(positions).forEach(slotId => {
-                const slot = document.getElementById(slotId);
-                if (slot) {
-                    const pos = positions[slotId];
-                    slot.style.left = pos.x + '%';
-                    slot.style.top = pos.y + '%';
-                    slot.style.width = pos.width + 'px';
-                    slot.style.height = pos.height + 'px';
-                }
-            });
-            
-            // Добавляем обработчики для кнопок сохранения
-            document.getElementById('copy-json-btn').onclick = function() {
-                const jsonTextarea = document.getElementById('save-json');
-                if (jsonTextarea) {
-                    jsonTextarea.select();
-                    document.execCommand('copy');
-                    alert('JSON скопирован в буфер обмена!');
-                }
-            };
-            
-            document.getElementById('close-save-btn').onclick = function() {
-                document.getElementById('save-panel').style.display = 'none';
-            };
-        }
-
         // Функция выбора героя
         function selectHero(name, id) {
             currentHeroId = id;
@@ -695,25 +746,19 @@
             // Снимаем выделение со всех карточек
             document.querySelectorAll('.hero-card').forEach(card => {
                 card.classList.remove('active');
-                card.style.borderColor = '#252525';
             });
             
             // Выделяем выбранную карточку
             const selectedCard = document.getElementById('c-' + id);
             if (selectedCard) {
                 selectedCard.classList.add('active');
-                selectedCard.style.borderColor = 'var(--gold)';
             }
             
-            // Обновляем изображение в инвентаре
-            updateHeroImage();
-        }
-
-        // Обновление изображения героя
-        function updateHeroImage() {
-            if (currentHeroId && heroesData[currentHeroId]) {
-                const heroData = heroesData[currentHeroId];
-                document.getElementById('inv-hero-img').src = heroData.image;
+            // Включаем кнопку подтверждения
+            const confirmBtn = document.getElementById('final-confirm-btn');
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = `ПОДТВЕРДИТЬ: ${name.toUpperCase()}`;
             }
         }
 
@@ -724,13 +769,23 @@
                 return;
             }
             
+            // Добавляем анимацию нажатия
+            const confirmBtn = document.getElementById('final-confirm-btn');
+            if (confirmBtn) {
+                confirmBtn.style.transform = 'scale(0.95)';
+                confirmBtn.textContent = 'ЗАГРУЗКА...';
+                confirmBtn.disabled = true;
+            }
+            
             try { 
-                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroId}`, { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }); 
+                if (SERVER_URL) {
+                    await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroId}`, { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                }
                 showMenu(); 
             } catch (e) { 
                 console.error('Ошибка сохранения героя:', e);
@@ -748,14 +803,28 @@
             // Устанавливаем аватар выбранного героя
             if (currentHeroId && heroesData[currentHeroId]) {
                 const heroData = heroesData[currentHeroId];
-                document.getElementById('menu-avatar').src = heroData.avatar;
-                document.getElementById('p-name-display').innerText = heroData.name;
-            } else {
-                document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
+                const avatarImg = document.getElementById('menu-avatar');
+                if (avatarImg) {
+                    avatarImg.src = heroData.avatar;
+                    avatarImg.onerror = function() {
+                        // Если картинка не загрузилась, используем стандартную
+                        this.src = heroData.image;
+                    };
+                }
+                
+                const nameDisplay = document.getElementById('p-name-display');
+                if (nameDisplay) {
+                    nameDisplay.textContent = heroData.name;
+                }
+                
+                const invHeroImg = document.getElementById('inv-hero-img');
+                if (invHeroImg) {
+                    invHeroImg.src = heroData.image;
+                }
             }
             
-            document.getElementById('gold-val').innerText = "1500";
-            document.getElementById('crys-val').innerText = "50";
+            document.getElementById('gold-val').textContent = "1500";
+            document.getElementById('crys-val').textContent = "50";
             buildDynamicUI();
         }
 
@@ -788,16 +857,18 @@
                 icon.id = 'icon-' + id; icon.className = 'game-icon';
                 Object.assign(icon.style, { width: d.s+'px', height: d.s+'px', left: d.x+'px', top: d.y+'px' });
                 icon.innerHTML = `<img src="icon_${id}.png" style="width:100%; height:100%;">`;
-                icon.onclick = () => { if(id === 'inventory') openInventory(); };
+                icon.onclick = () => { 
+                    if(id === 'inventory') openInventory(); 
+                    else alert(`Нажата иконка: ${iconNames[id] || id}`);
+                };
                 layer.appendChild(icon);
                 
                 // Создаем подпись для иконки
                 const label = document.createElement('div');
                 label.id = 'label-' + id;
-                label.innerText = iconNames[id] || id;
+                label.textContent = iconNames[id] || id;
                 label.className = 'icon-label';
                 
-                // Используем фиксированные позиции текста
                 const textPos = textPositions[id] || {x: d.x + (d.s / 2), y: d.y + d.s + 5};
                 
                 Object.assign(label.style, {
@@ -818,17 +889,53 @@
                 const label = document.getElementById('label-' + id);
                 const data = config.layout[id];
                 
-                // Если иконка статическая, всегда показываем её и её подпись
                 if (data.static) {
                     if (el) el.classList.remove('hidden');
                     if (label) label.classList.remove('hidden');
                 } else {
-                    // Иначе показываем только если она принадлежит текущей странице
                     const isVisible = pages[currentPage].includes(id);
                     if (el) el.classList.toggle('hidden', !isVisible);
                     if (label) label.classList.toggle('hidden', !isVisible);
                 }
             });
+        }
+
+        // Инициализация инвентаря
+        function initInventory() {
+            const isMobile = window.innerWidth <= 599;
+            const positions = isMobile ? phonePositions : tabletPositions;
+            
+            Object.keys(positions).forEach(slotId => {
+                const slot = document.getElementById(slotId);
+                if (slot) {
+                    const pos = positions[slotId];
+                    slot.style.left = pos.x + '%';
+                    slot.style.top = pos.y + '%';
+                    slot.style.width = pos.width + 'px';
+                    slot.style.height = pos.height + 'px';
+                }
+            });
+            
+            // Обработчики для кнопок сохранения
+            const copyBtn = document.getElementById('copy-json-btn');
+            const closeBtn = document.getElementById('close-save-btn');
+            
+            if (copyBtn) {
+                copyBtn.onclick = function() {
+                    const jsonTextarea = document.getElementById('save-json');
+                    if (jsonTextarea) {
+                        jsonTextarea.select();
+                        document.execCommand('copy');
+                        alert('JSON скопирован в буфер обмена!');
+                    }
+                };
+            }
+            
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    document.getElementById('save-panel').style.display = 'none';
+                };
+            }
         }
 
         function openInventory() { 
@@ -848,22 +955,48 @@
             }, 400);
         }
 
-        // Функция предзагрузки изображений (из второго кода)
+        // Предзагрузка изображений
         function preloadAssets() {
             const imagesToLoad = [
+                // Экран выбора героев
                 'Loading_screen_war_of_kings.png',
-                'hero_tsar.png', 'hero_sultan.png', 'hero_king.png',
+                'hero_tsar.png', 
+                'hero_sultan.png', 
+                'hero_king.png',
+                
+                // Логотип и VIP
                 'icon_logo_void_echoes.png',
-                'icon_vip.png', 'icon_gold.png', 'icon_crystal.png',
+                'icon_vip.png',
+                
+                // Ресурсы
+                'icon_gold.png',
+                'icon_crystal.png',
+                
+                // Фоны
                 'bg_menu_main.png',
-                'helmet.png', 'chestplate.png', 'hammer.png', 'ring.png',
-                'bracers.png', 'boots.png'
+                'character_preview.png',
+                
+                // Экипировка
+                'helmet.png',
+                'chestplate.png',
+                'hammer.png',
+                'ring.png',
+                'bracers.png',
+                'boots.png',
+                
+                // Иконки интерфейса (основные)
+                'icon_quests.png',
+                'icon_battle.png',
+                'icon_inventory.png',
+                'icon_profile.png',
+                'icon_mail.png'
             ];
             
             let loadedCount = 0;
             const totalImages = imagesToLoad.length;
             
             if (totalImages === 0) {
+                showSelectionScreen();
                 return;
             }
 
@@ -875,7 +1008,7 @@
                     updateLoadingProgress(loadedCount, totalImages);
                 };
                 img.onerror = () => {
-                    console.error("Файл не найден:", src);
+                    console.warn("Файл не найден:", src);
                     loadedCount++;
                     updateLoadingProgress(loadedCount, totalImages);
                 };
@@ -893,7 +1026,7 @@
             }
             
             if (loadingPct) {
-                loadingPct.innerText = progress + '%';
+                loadingPct.textContent = progress + '%';
             }
             
             if (progress >= 100) {
@@ -920,6 +1053,7 @@
             }
         }
 
+        // Инициализация
         window.onload = () => {
             console.log("Game loading started");
             if(tg) { 
@@ -931,6 +1065,15 @@
             // Запускаем предзагрузку
             preloadAssets();
         };
+        
+        // Обработчик VIP кнопки
+        const vipBtn = document.getElementById('vip-btn');
+        if (vipBtn) {
+            vipBtn.onclick = function() {
+                this.classList.toggle('active');
+                alert('VIP функция активирована!');
+            };
+        }
     </script>
 </body>
 </html>
