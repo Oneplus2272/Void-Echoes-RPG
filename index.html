@@ -40,7 +40,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #000;
+            background: url('Loading_screen_war_of_kings.png') center/cover no-repeat;
             opacity: 1;
         }
 
@@ -61,6 +61,7 @@
             margin-bottom: 10px;
             font-size: 18px;
             color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
         }
 
         .progress-bar {
@@ -69,6 +70,7 @@
             background: #333;
             border-radius: 5px;
             overflow: hidden;
+            border: 1px solid #ffd700;
         }
 
         .progress-fill {
@@ -76,9 +78,10 @@
             height: 100%;
             background: #ffd700;
             transition: width 0.3s;
+            box-shadow: 0 0 10px #ffd700;
         }
 
-        /* ЭКРАН ВЫБОРА ГЕРОЯ */
+        /* ЭКРАН ВЫБОРА ГЕРОЯ - ГЕРОИ В РЯД */
         #selection-screen {
             display: flex;
             flex-direction: column;
@@ -99,113 +102,152 @@
 
         .hero-title {
             color: #ffd700;
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 30px;
             text-align: center;
             text-transform: uppercase;
+            text-shadow: 0 0 15px #ffd700;
         }
 
         .cards-container {
             display: flex;
-            gap: 20px;
+            flex-direction: row; /* ГЕРОИ В РЯД */
+            gap: 30px;
             padding: 20px;
             width: 100%;
             max-width: 1200px;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
+            overflow-x: auto;
         }
 
         .hero-card {
-            background: #1a1a1a;
-            border-radius: 15px;
-            padding: 20px;
-            width: 280px;
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 20px;
+            padding: 25px;
+            width: 320px;
+            min-width: 300px;
             text-align: center;
             border: 2px solid #333;
             transition: all 0.3s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
         }
 
         .hero-card.active {
             border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            transform: translateY(-10px);
         }
 
         .hero-image {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 15px;
-            border-radius: 10px;
+            width: 220px;
+            height: 220px;
+            margin: 0 auto 20px;
+            border-radius: 15px;
             overflow: hidden;
             background: #2a2a2a;
             display: flex;
             align-items: center;
             justify-content: center;
+            border: 3px solid #333;
+            transition: all 0.3s ease;
+        }
+
+        .hero-card.active .hero-image {
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
         }
 
         .hero-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            filter: brightness(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .hero-card.active .hero-image img {
+            filter: brightness(1.1);
         }
 
         .hero-name {
             color: #ffd700;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 22px;
+            margin-bottom: 12px;
             text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .hero-description {
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 15px;
-            min-height: 40px;
+            color: #ccc;
+            font-size: 15px;
+            margin-bottom: 20px;
+            min-height: 45px;
+            padding: 0 10px;
         }
 
         .select-btn {
             width: 100%;
-            padding: 12px;
-            background: #ffd700;
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .select-btn:active {
-            transform: scale(0.95);
-        }
-
-        .confirm-container {
-            margin-top: 40px;
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .confirm-btn {
-            width: 100%;
-            padding: 15px;
-            background: #ffd700;
+            padding: 14px;
+            background: linear-gradient(to bottom, #ffd700, #b8860b);
             color: #000;
             border: none;
             border-radius: 10px;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .select-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+        }
+
+        .select-btn:active {
+            transform: scale(0.98);
+        }
+
+        .confirm-container {
+            margin-top: 50px;
+            width: 100%;
+            max-width: 400px;
+            padding: 0 20px;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(to bottom, #ffd700, #b8860b);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
         }
 
         .confirm-btn:disabled {
             background: #666;
             color: #999;
             cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
 
-        /* ГЛАВНОЕ МЕНЮ */
+        .confirm-btn:not(:disabled):hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        /* ГЛАВНОЕ МЕНЮ С ИКОНКАМИ */
         #menu-screen {
             background: url('bg_menu_main.png') center/cover no-repeat;
         }
@@ -222,35 +264,38 @@
             left: 20px;
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 20px;
+            border-radius: 12px;
             border: 2px solid #ffd700;
+            backdrop-filter: blur(10px);
         }
 
         .player-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%; /* Круглая аватарка для лица */
-            margin-right: 15px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            margin-right: 20px;
             background: #2a2a2a;
-            border: 2px solid #ffd700;
+            border: 3px solid #ffd700;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
         .player-avatar img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Лицо заполняет весь круг */
+            object-fit: cover;
         }
 
         .player-info h3 {
             color: #ffd700;
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 5px;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
         }
 
         .player-info p {
@@ -270,16 +315,23 @@
         .resource-panel {
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid #ffd700;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 18px;
+            border-radius: 25px;
+            border: 2px solid #ffd700;
+            backdrop-filter: blur(10px);
         }
 
         .resource-panel img {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
+            width: 28px;
+            height: 28px;
+            margin-right: 10px;
+        }
+
+        .resource-panel .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
         }
 
         .vip-button {
@@ -287,9 +339,10 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             cursor: pointer;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
         }
 
         .vip-button img {
@@ -297,39 +350,57 @@
             height: 100%;
         }
 
-        /* Кнопки меню */
-        .menu-buttons {
+        /* ИКОНКИ В НИЖНЕЙ ПАНЕЛИ */
+        .bottom-panel {
             position: absolute;
-            bottom: 30px;
+            bottom: 0;
             left: 0;
             width: 100%;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.85);
+            border-top: 3px solid #ffd700;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            align-items: center;
+            gap: 25px;
             padding: 0 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 -5px 25px rgba(255, 215, 0, 0.3);
         }
 
-        .menu-button {
+        .menu-icon {
             width: 80px;
             height: 80px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 20px;
             border: 2px solid #ffd700;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        .menu-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        .menu-icon:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.4);
         }
 
-        .menu-button img {
-            width: 50px;
-            height: 50px;
+        .menu-icon img {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 5px;
+        }
+
+        .icon-label {
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 3px;
         }
 
         /* Инвентарь */
@@ -342,9 +413,10 @@
             top: 20px;
             left: 20px;
             font-size: 40px;
-            color: white;
+            color: #ffd700;
             cursor: pointer;
             z-index: 1001;
+            text-shadow: 0 0 10px #ffd700;
         }
 
         .inv-container {
@@ -357,39 +429,77 @@
         }
 
         #inv-hero-img {
-            max-width: 300px;
-            max-height: 500px;
+            max-width: 350px;
+            max-height: 550px;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
         }
 
         /* Адаптивность */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .cards-container {
-                flex-direction: column;
+                gap: 20px;
             }
             
             .hero-card {
-                width: 90%;
-                max-width: 300px;
+                width: 280px;
+                min-width: 250px;
             }
             
             .hero-image {
-                width: 150px;
-                height: 150px;
+                width: 180px;
+                height: 180px;
             }
             
-            .menu-buttons {
-                gap: 10px;
-                padding: 0 10px;
+            .bottom-panel {
+                height: 100px;
+                gap: 15px;
             }
             
-            .menu-button {
+            .menu-icon {
                 width: 70px;
                 height: 70px;
             }
             
-            .menu-button img {
+            .menu-icon img {
                 width: 40px;
                 height: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .hero-card {
+                width: 90%;
+                max-width: 350px;
+            }
+            
+            .hero-image {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .bottom-panel {
+                height: 90px;
+                gap: 10px;
+                padding: 0 10px;
+            }
+            
+            .menu-icon {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .menu-icon img {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .icon-label {
+                font-size: 10px;
             }
         }
     </style>
@@ -449,7 +559,7 @@
         </div>
     </div>
 
-    <!-- ГЛАВНОЕ МЕНЮ -->
+    <!-- ГЛАВНОЕ МЕНЮ С ИКОНКАМИ -->
     <div id="menu-screen" class="screen">
         <div class="menu-container">
             <div class="player-header">
@@ -477,19 +587,31 @@
                 </div>
             </div>
 
-            <!-- Простые кнопки меню -->
-            <div class="menu-buttons">
-                <div class="menu-button" onclick="openInventory()">
+            <!-- ПАНЕЛЬ С ИКОНКАМИ -->
+            <div class="bottom-panel">
+                <div class="menu-icon" onclick="openInventory()">
                     <img src="icon_inventory.png" alt="Инвентарь">
+                    <div class="icon-label">Инвентарь</div>
                 </div>
-                <div class="menu-button" onclick="alert('Задания')">
+                <div class="menu-icon" onclick="alert('Задания открыты!')">
                     <img src="icon_quests.png" alt="Задания">
+                    <div class="icon-label">Задания</div>
                 </div>
-                <div class="menu-button" onclick="alert('Бой')">
+                <div class="menu-icon" onclick="alert('Бой начат!')">
                     <img src="icon_battle.png" alt="Бой">
+                    <div class="icon-label">Бой</div>
                 </div>
-                <div class="menu-button" onclick="alert('Магазин')">
+                <div class="menu-icon" onclick="alert('Магазин открыт!')">
                     <img src="icon_shop.png" alt="Магазин">
+                    <div class="icon-label">Магазин</div>
+                </div>
+                <div class="menu-icon" onclick="alert('Союз открыт!')">
+                    <img src="icon_alliance.png" alt="Союз">
+                    <div class="icon-label">Союз</div>
+                </div>
+                <div class="menu-icon" onclick="alert('Сообщество открыто!')">
+                    <img src="icon_community.png" alt="Сообщество">
+                    <div class="icon-label">Сообщество</div>
                 </div>
             </div>
         </div>
@@ -504,28 +626,28 @@
     </div>
 
     <script>
-        // ПРОСТОЙ РАБОЧИЙ КОД
+        // ПРОСТОЙ И РАБОЧИЙ КОД
         let currentHero = null;
         let isLoading = false;
 
-        // Данные героев с ОТДЕЛЬНЫМИ ЛИЦАМИ для аватарки
+        // Данные героев
         const heroes = {
             tsar: {
                 name: "Царь",
-                image: "hero_tsar.png",       // Полное изображение героя
-                face: "face_1.png",           // Лицо для аватарки
+                image: "hero_tsar.png",
+                face: "face_1.png",
                 description: "Могущественный правитель с железной волей"
             },
             sultan: {
                 name: "Султан", 
-                image: "hero_sultan.png",     // Полное изображение героя
-                face: "face_2.png",           // Лицо для аватарки
+                image: "hero_sultan.png",
+                face: "face_2.png",
                 description: "Мудрый восточный владыка"
             },
             king: {
                 name: "Король",
-                image: "hero_king.png",       // Полное изображение героя
-                face: "face_3.png",           // Лицо для аватарки
+                image: "hero_king.png",
+                face: "face_3.png",
                 description: "Благородный западный монарх"
             }
         };
@@ -559,18 +681,23 @@
             const invHeroImg = document.getElementById('inv-hero-img');
             if (invHeroImg && heroes[heroId]) {
                 invHeroImg.src = heroes[heroId].image;
-                console.log('Установлено изображение для инвентаря:', heroes[heroId].image);
             }
         }
 
-        // 2. Функция подтверждения выбора - РАБОТАЕТ!
+        // 2. Функция подтверждения выбора - ТОЧНО РАБОТАЕТ!
         function confirmHeroSelection() {
+            console.log('confirmHeroSelection вызвана');
+            
             if (!currentHero) {
                 alert('Сначала выберите героя!');
                 return;
             }
             
-            if (isLoading) return;
+            if (isLoading) {
+                console.log('Уже идет загрузка...');
+                return;
+            }
+            
             isLoading = true;
             
             console.log('Подтверждаем выбор героя:', currentHero);
@@ -581,16 +708,17 @@
                 confirmBtn.disabled = true;
             }
             
-            // Переключаемся на главное меню
+            // Показываем анимацию загрузки
             setTimeout(() => {
+                console.log('Переходим в меню');
                 showMenuScreen();
                 isLoading = false;
-            }, 500);
+            }, 800);
         }
 
-        // 3. Показать главное меню с ЛИЦОМ героя в аватарке
+        // 3. Показать главное меню - ТОЧНО РАБОТАЕТ!
         function showMenuScreen() {
-            console.log('Показываем главное меню для героя:', currentHero);
+            console.log('showMenuScreen вызвана для героя:', currentHero);
             
             // Скрываем экран выбора
             const selectionScreen = document.getElementById('selection-screen');
@@ -598,31 +726,31 @@
                 selectionScreen.style.opacity = '0';
                 setTimeout(() => {
                     selectionScreen.style.display = 'none';
-                }, 300);
-            }
-            
-            // Показываем главное меню
-            const menuScreen = document.getElementById('menu-screen');
-            if (menuScreen) {
-                // Устанавливаем ЛИЦО выбранного героя в аватарку
-                if (currentHero && heroes[currentHero]) {
-                    const avatarImg = document.getElementById('menu-avatar');
-                    if (avatarImg) {
-                        // Используем лицо (face), а не полное изображение
-                        avatarImg.src = heroes[currentHero].face;
-                        console.log('Установлено лицо в аватарку:', heroes[currentHero].face);
-                    }
+                    console.log('Экран выбора скрыт');
                     
-                    const nameDisplay = document.getElementById('p-name-display');
-                    if (nameDisplay) {
-                        nameDisplay.textContent = heroes[currentHero].name;
+                    // Показываем главное меню
+                    const menuScreen = document.getElementById('menu-screen');
+                    if (menuScreen) {
+                        // Устанавливаем лицо выбранного героя в аватарку
+                        if (currentHero && heroes[currentHero]) {
+                            const avatarImg = document.getElementById('menu-avatar');
+                            if (avatarImg) {
+                                avatarImg.src = heroes[currentHero].face;
+                            }
+                            
+                            const nameDisplay = document.getElementById('p-name-display');
+                            if (nameDisplay) {
+                                nameDisplay.textContent = heroes[currentHero].name;
+                            }
+                        }
+                        
+                        menuScreen.style.display = 'block';
+                        setTimeout(() => {
+                            menuScreen.style.opacity = '1';
+                            console.log('Главное меню показано');
+                        }, 50);
                     }
-                }
-                
-                menuScreen.style.display = 'block';
-                setTimeout(() => {
-                    menuScreen.style.opacity = '1';
-                }, 50);
+                }, 500);
             }
         }
 
@@ -638,14 +766,16 @@
                 loadingScreen.style.opacity = '0';
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
+                    console.log('Экран загрузки скрыт');
+                    
+                    if (selectionScreen) {
+                        selectionScreen.style.display = 'flex';
+                        setTimeout(() => {
+                            selectionScreen.style.opacity = '1';
+                            console.log('Экран выбора показан');
+                        }, 100);
+                    }
                 }, 500);
-            }
-            
-            if (selectionScreen) {
-                selectionScreen.style.display = 'flex';
-                setTimeout(() => {
-                    selectionScreen.style.opacity = '1';
-                }, 100);
             }
         }
 
@@ -665,6 +795,8 @@
             const progressFill = document.getElementById('progress-fill');
             const loadingPct = document.getElementById('loading-pct');
             
+            console.log('Начинаем загрузку...');
+            
             const interval = setInterval(() => {
                 progress += 2;
                 
@@ -678,6 +810,7 @@
                 
                 if (progress >= 100) {
                     clearInterval(interval);
+                    console.log('Загрузка завершена на 100%');
                     startGame();
                 }
             }, 50);
@@ -685,7 +818,7 @@
 
         // 7. Инициализация при загрузке страницы
         window.onload = function() {
-            console.log('Страница загружена');
+            console.log('=== СТРАНИЦА ЗАГРУЖЕНА ===');
             
             // Инициализируем Telegram
             initTelegram();
@@ -700,6 +833,9 @@
                     alert('VIP функция активирована!');
                 };
             }
+            
+            // Для тестирования - можно выбрать героя по умолчанию
+            // selectHero('Царь', 'tsar');
         };
 
         // 8. Функции инвентаря
