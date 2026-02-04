@@ -39,7 +39,7 @@
         #loading-screen {
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            z-index: 2000; background: url('bg_loading_main_v1.png') no-repeat center center/cover;
+            z-index: 2000; background: url('Loading_screen_war_of_kings.png') no-repeat center center/cover;
             opacity: 1;
         }
         .logo-main { width: 220px; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--blue)); }
@@ -55,24 +55,89 @@
             padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
             box-sizing: border-box;
         }
-        .hero-view { flex: 1; display: flex; align-items: flex-end; justify-content: center; position: relative; min-height: 0; }
-        .hero-view img { max-height: 95%; max-width: 90%; object-fit: contain; filter: drop-shadow(0 0 20px #000); }
-        .gender-switch { position: absolute; right: 15px; bottom: 10px; display: flex; gap: 8px; z-index: 10; }
-        .gender-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--gold); background: rgba(0,0,0,0.6); color: var(--gold); font-weight: bold; display: flex; align-items: center; justify-content: center; }
-        .gender-btn.active { background: var(--gold); color: black; box-shadow: 0 0 10px var(--gold); }
-
-        .skills-card { width: 90%; max-width: 380px; margin: 10px auto; background: var(--bg-panel); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 12px; padding: 10px; backdrop-filter: blur(10px); flex-shrink: 0; }
-        .skills-card h2 { margin: 0 0 8px 0; text-align: center; color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
-        .skill-item { display: flex; align-items: center; margin-bottom: 6px; background: rgba(255, 255, 255, 0.05); padding: 6px 10px; border-radius: 8px; }
-        .skill-img { width: 28px; height: 28px; border: 1px solid var(--gold); border-radius: 4px; margin-right: 12px; }
-        .skill-name { font-size: 0.85rem; font-weight: bold; color: #fff; }
-        .confirm-btn { margin-top: 8px; width: 100%; padding: 12px; background: linear-gradient(180deg, var(--gold), #b8860b); color: black; border: none; border-radius: 8px; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; cursor: pointer; }
-
-        .class-selector { width: 100%; display: flex; justify-content: center; gap: 15px; padding: 10px 0 20px 0; flex-shrink: 0; }
-        .icon-btn { filter: grayscale(1); transition: 0.3s; transform: scale(0.9); cursor: pointer; }
-        .icon-btn img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid transparent; }
-        .icon-btn.active { filter: grayscale(0); transform: scale(1.1); }
-        .icon-btn.active img { border-color: var(--gold); }
+        
+        .cards-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            scroll-snap-type: x mandatory;
+        }
+        .cards-container::-webkit-scrollbar { display: none; }
+        
+        .hero-card {
+            background-color: rgba(21, 21, 21, 0.9);
+            border-radius: 24px;
+            min-width: 280px;
+            padding: 20px;
+            border: 2px solid #252525;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scroll-snap-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-card.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .hero-placeholder {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .hero-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+        
+        .hero-card h3 {
+            text-align: center;
+            color: var(--gold);
+            margin: 10px 0;
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+        }
+        
+        .hero-description {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 15px;
+            padding: 0 10px;
+            line-height: 1.4;
+        }
+        
+        .confirm-btn {
+            margin-top: 8px;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(180deg, var(--gold), #b8860b);
+            color: black;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .confirm-btn:active {
+            transform: scale(0.98);
+        }
 
         /* --- ГЛАВНОЕ МЕНЮ --- */
         #menu-screen { background: url('bg_menu_main.png') no-repeat center center/cover; z-index: 10; }
@@ -85,8 +150,27 @@
         .resource-panel img { width: 22px; height: 22px; margin-right: 8px; }
         .resource-panel .value { font-size: 1rem; font-weight: bold; }
 
-        .player-header { position: absolute; top: env(safe-area-inset-top, 20px); left: 15px; display: flex; align-items: center; background: rgba(0, 0, 0, 0.75); padding: 8px; border-radius: 14px; border: 1px solid var(--blue); backdrop-filter: blur(10px); z-index: 20; cursor: pointer; }
-        .player-avatar { width: 45px; height: 45px; border-radius: 8px; border: 1px solid var(--gold); margin-right: 12px; }
+        .player-header { 
+            position: absolute; 
+            top: env(safe-area-inset-top, 20px); 
+            left: 15px; 
+            display: flex; 
+            align-items: center; 
+            background: rgba(0, 0, 0, 0.75); 
+            padding: 8px; 
+            border-radius: 14px; 
+            border: 1px solid var(--blue); 
+            backdrop-filter: blur(10px); 
+            z-index: 20; 
+        }
+        .player-avatar { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 12px; 
+            border: 2px solid var(--gold); 
+            margin-right: 12px; 
+            object-fit: cover;
+        }
         .player-info h3 { margin: 0; color: var(--gold); font-size: 1rem; }
         .player-info p { margin: 0; font-size: 0.8rem; color: #ccc; }
 
@@ -122,7 +206,7 @@
         .game-icon.hidden { opacity: 0; transform: translateY(100px) scale(0.5); pointer-events: none; }
         .game-icon img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* Стили для подписей иконок - ПОД ИКОНКАМИ ВПЛОТНУЮ */
+        /* Стили для подписей иконок */
         .icon-label {
             position: absolute;
             text-align: center;
@@ -195,7 +279,7 @@
             z-index: 2;
         }
         
-        /* Слоты экипировки - чистые иконки без фона */
+        /* Слоты экипировки */
         .inv-slot {
             position: absolute;
             pointer-events: auto;
@@ -308,6 +392,15 @@
                 padding: 3px 6px;
                 border-radius: 4px;
             }
+            
+            .hero-card {
+                min-width: 250px;
+                padding: 15px;
+            }
+            
+            .hero-placeholder {
+                height: 180px;
+            }
         }
         
         @media screen and (min-width: 600px) {
@@ -326,6 +419,10 @@
                 font-size: 13px;
                 padding: 5px 10px;
                 border-radius: 6px;
+            }
+            
+            .hero-card {
+                min-width: 320px;
             }
         }
 
@@ -346,29 +443,38 @@
 
     <div id="selection-screen" class="screen">
         <div class="selection-container">
-            <div class="hero-view">
-                <img id="hero-img" src="">
-                <div class="gender-switch">
-                    <div id="gender-m" class="gender-btn active" onclick="setGender('male')">M</div>
-                    <div id="gender-f" class="gender-btn" onclick="setGender('female')">W</div>
+            <h2 style="text-align: center; margin: 20px 0 10px 0; color: var(--gold); text-transform: uppercase; letter-spacing: 2px;">ВЫБЕРИ СВОЕГО ГЕРОЯ</h2>
+            
+            <div class="cards-container">
+                <div class="hero-card" id="c-tsar">
+                    <div class="hero-placeholder"><img src="hero_tsar.png" id="hero-tsar-img"></div>
+                    <h3>Царь</h3>
+                    <div class="hero-description">Могущественный правитель с железной волей</div>
+                    <button class="select-btn confirm-btn" onclick="selectHero('Царь', 'tsar')">Выбрать</button>
+                </div>
+                <div class="hero-card" id="c-sultan">
+                    <div class="hero-placeholder"><img src="hero_sultan.png" id="hero-sultan-img"></div>
+                    <h3>Султан</h3>
+                    <div class="hero-description">Мудрый восточный владыка</div>
+                    <button class="select-btn confirm-btn" onclick="selectHero('Султан', 'sultan')">Выбрать</button>
+                </div>
+                <div class="hero-card" id="c-king">
+                    <div class="hero-placeholder"><img src="hero_king.png" id="hero-king-img"></div>
+                    <h3>Король</h3>
+                    <div class="hero-description">Благородный западный монарх</div>
+                    <button class="select-btn confirm-btn" onclick="selectHero('Король', 'king')">Выбрать</button>
                 </div>
             </div>
-            <div class="skills-card">
-                <h2 id="class-title">КЛАСС</h2>
-                <div id="skills-list"></div>
-                <button class="confirm-btn" onclick="confirmSelection()">ВЫБРАТЬ ГЕРОЯ</button>
-            </div>
-            <div class="class-selector">
-                <div class="icon-btn" id="btn-warrior" onclick="selectHero('warrior')"><img src="icon_hero_paladin.png"></div>
-                <div class="icon-btn" id="btn-mage" onclick="selectHero('mage')"><img src="icon_hero_mage.png"></div>
-                <div class="icon-btn" id="btn-archer" onclick="selectHero('archer')"><img src="icon_hero_ranger.png"></div>
+            
+            <div style="text-align: center; margin: 20px; color: #aaa; font-size: 0.9rem;">
+                Выберите героя, который будет представлять ваше королевство
             </div>
         </div>
     </div>
 
     <div id="menu-screen" class="screen">
         <div class="menu-container">
-            <div class="player-header" onclick="openInventory()">
+            <div class="player-header">
                 <img id="menu-avatar" src="" class="player-avatar">
                 <div class="player-info">
                     <h3 id="p-name-display">Загрузка...</h3>
@@ -395,7 +501,6 @@
         <div class="inv-container">
             <div class="hero-preview-box"><img id="inv-hero-img" src=""></div>
             
-            <!-- Вертикальные линии УБРАНЫ -->
             <div class="equipment-grid">
                 <!-- СЛОТЫ ЭКИПИРОВКИ ДЛЯ ПЛАНШЕТОВ -->
                 <div class="inv-slot" id="helmet-slot">
@@ -427,15 +532,6 @@
         </div>
     </div>
 
-    <div id="skill-modal" onclick="this.style.display='none'">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" src="" style="width:60px; margin-bottom:10px;">
-            <h3 id="modal-name" style="color:var(--gold); margin:5px 0;"></h3>
-            <p id="modal-text" style="color:#ddd; font-size:0.9rem;"></p>
-            <button class="confirm-btn" onclick="document.getElementById('skill-modal').style.display='none'">ЗАКРЫТЬ</button>
-        </div>
-    </div>
-
     <!-- Панель сохранения JSON -->
     <div id="save-panel">
         <h3>JSON координат экипировки</h3>
@@ -451,10 +547,37 @@
         const SERVER_URL = 'https://void-echoes-rpg.onrender.com';
         let userId = tg?.initDataUnsafe?.user?.id || 12345;
         let currentPage = 1;
-        let currentHeroKey = 'warrior';
-        let currentGender = 'male';
+        let currentHeroId = null;
         
-        // Координаты для планшетов (из предоставленного JSON)
+        // Данные героев (упрощенные, без навыков)
+        const heroesData = {
+            tsar: {
+                title: "Царь",
+                name: "Царь",
+                description: "Могущественный правитель с железной волей",
+                image: "hero_tsar.png",
+                avatar: "hero_tsar.png", // Используем ту же картинку для аватарки
+                face: "face_1.png" // Если нужно отдельное лицо для аватарки
+            },
+            sultan: {
+                title: "Султан",
+                name: "Султан",
+                description: "Мудрый восточный владыка",
+                image: "hero_sultan.png",
+                avatar: "hero_sultan.png",
+                face: "face_2.png"
+            },
+            king: {
+                title: "Король",
+                name: "Король",
+                description: "Благородный западный монарх",
+                image: "hero_king.png",
+                avatar: "hero_king.png",
+                face: "face_3.png"
+            }
+        };
+        
+        // Координаты для планшетов
         const tabletPositions = {
             'helmet-slot': { x: 14.21, y: 26.51, width: 235, height: 235 },
             'chestplate-slot': { x: 13.98, y: 37.87, width: 235, height: 235 },
@@ -466,7 +589,7 @@
             'ring2-slot': { x: 55.96, y: 57.14, width: 235, height: 235 }
         };
         
-        // Координаты для телефонов (из предоставленного JSON)
+        // Координаты для телефонов
         const phonePositions = {
             'helmet-slot': { x: 5.23, y: 28.63, width: 144, height: 144 },
             'chestplate-slot': { x: 5.55, y: 40.42, width: 144, height: 144 },
@@ -476,42 +599,6 @@
             'boots-slot': { x: 59.86, y: 39.20, width: 144, height: 144 },
             'hammer2-slot': { x: 60.00, y: 50.64, width: 144, height: 144 },
             'ring2-slot': { x: 60.00, y: 59.33, width: 144, height: 144 }
-        };
-
-        const heroesData = {
-            warrior: {
-                title: "ВОИН", bg: "UI_Background_Warrior.png", male: "hero_warrior_male.png", female: "hero_warrior_female.png",
-                ava_m: "ava_warrior_male.png", ava_f: "ava_warrior_female.png",
-                skills: [
-                    { n: "Рассекающий удар", i: "war_1_basic.png", d: "Наносит 120% физического урона." },
-                    { n: "Вихрь стали", i: "war_2_aoe.png", d: "Круговая атака по области." },
-                    { n: "Сокрушительный рывок", i: "war_3_control.png", d: "Рывок и оглушение на 2.5 сек." },
-                    { n: "Бастион веры", i: "war_4_survivability.png", d: "Увеличивает защиту на 25%." },
-                    { n: "Гнев Титана", i: "war_5_ultimate.png", d: "Все удары критические 10 сек." }
-                ]
-            },
-            mage: {
-                title: "МАГ", bg: "UI_Background_Mage.png", male: "hero_mage_male.png", female: "hero_mage_female.png",
-                ava_m: "ava_mage_male.png", ava_f: "ava_mage_female.png",
-                skills: [
-                    { n: "Ледяная стрела", i: "mag_1_basic.png", d: "Замедляет цель на 40%." },
-                    { n: "Огненный шторм", i: "mag_2_aoe.png", d: "Огненный дождь по площади." },
-                    { n: "Кольцо холода", i: "mag_3_control.png", d: "Замораживает врагов вокруг." },
-                    { n: "Призрачный щит", i: "mag_4_survivability.png", d: "Щит, поглощающий ману." },
-                    { n: "Разлом Пустоты", i: "mag_5_ultimate.png", d: "Взрыв энергии Пустоты." }
-                ]
-            },
-            archer: {
-                title: "ЛУЧНИК", bg: "UI_Background_Archer.png", male: "hero_archer_male.png", female: "hero_archer_female.png",
-                ava_m: "ava_archer_male.png", ava_f: "ava_archer_female.png",
-                skills: [
-                    { n: "Прицельный выстрел", i: "arc_1_basic_attack.png", d: "Высокий критический урон." },
-                    { n: "Град стрел", i: "arc_2_aoe_damage.png", d: "Массовая атака стрелами." },
-                    { n: "Ловушка охотника", i: "arc_3_control.png", d: "Обездвиживает противника." },
-                    { n: "Мастер уклонения", i: "arc_4_survivability.png", d: "Шанс избежать урона." },
-                    { n: "Око Орла", i: "arc_5_ultimate.png", d: "Максимальная точность и скорость." }
-                ]
-            }
         };
 
         const isTablet = window.innerWidth > 1024 || (window.innerWidth <= 1024 && window.innerHeight > 1024);
@@ -572,33 +659,21 @@
 
         // Инициализация инвентаря - установка позиций
         function initInventory() {
-            // Определяем, телефон это или планшет
             const isMobile = window.innerWidth <= 599;
             const positions = isMobile ? phonePositions : tabletPositions;
             
-            // Устанавливаем позиции для всех слотов
             Object.keys(positions).forEach(slotId => {
                 const slot = document.getElementById(slotId);
                 if (slot) {
                     const pos = positions[slotId];
-                    
-                    // Устанавливаем позицию в процентах
                     slot.style.left = pos.x + '%';
                     slot.style.top = pos.y + '%';
-                    
-                    // Устанавливаем размеры (все иконки одинакового размера как молот)
                     slot.style.width = pos.width + 'px';
                     slot.style.height = pos.height + 'px';
                 }
             });
             
-            // Убираем вертикальные линии (если они есть в DOM)
-            const lineLeft = document.getElementById('vertical-line-left');
-            const lineRight = document.getElementById('vertical-line-right');
-            if (lineLeft) lineLeft.style.display = 'none';
-            if (lineRight) lineRight.style.display = 'none';
-            
-            // Добавляем обработчики для кнопок сохранения (если нужны для будущего)
+            // Добавляем обработчики для кнопок сохранения
             document.getElementById('copy-json-btn').onclick = function() {
                 const jsonTextarea = document.getElementById('save-json');
                 if (jsonTextarea) {
@@ -613,28 +688,75 @@
             };
         }
 
-        // Генерация JSON с текущими координатами (для возможного использования)
-        function generateEquipmentJSON() {
-            const isMobile = window.innerWidth <= 599;
-            const positions = isMobile ? phonePositions : tabletPositions;
+        // Функция выбора героя
+        function selectHero(name, id) {
+            currentHeroId = id;
             
-            const data = {
-                equipmentPositions: positions,
-                verticalLines: { left: 25, right: 75 } // Линии убраны, но оставляем для структуры
-            };
+            // Снимаем выделение со всех карточек
+            document.querySelectorAll('.hero-card').forEach(card => {
+                card.classList.remove('active');
+                card.style.borderColor = '#252525';
+            });
             
-            return JSON.stringify(data, null, 2);
+            // Выделяем выбранную карточку
+            const selectedCard = document.getElementById('c-' + id);
+            if (selectedCard) {
+                selectedCard.classList.add('active');
+                selectedCard.style.borderColor = 'var(--gold)';
+            }
+            
+            // Обновляем изображение в инвентаре
+            updateHeroImage();
         }
 
-        // Показать панель с JSON (если понадобится)
-        function showSavePanel() {
-            const savePanel = document.getElementById('save-panel');
-            const jsonTextarea = document.getElementById('save-json');
+        // Обновление изображения героя
+        function updateHeroImage() {
+            if (currentHeroId && heroesData[currentHeroId]) {
+                const heroData = heroesData[currentHeroId];
+                document.getElementById('inv-hero-img').src = heroData.image;
+            }
+        }
+
+        // Подтверждение выбора героя
+        async function confirmHeroSelection() {
+            if (!currentHeroId) {
+                alert('Пожалуйста, выберите героя!');
+                return;
+            }
             
-            if (!savePanel || !jsonTextarea) return;
+            try { 
+                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroId}`, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }); 
+                showMenu(); 
+            } catch (e) { 
+                console.error('Ошибка сохранения героя:', e);
+                showMenu(); 
+            }
+        }
+
+        // Показать главное меню
+        function showMenu() {
+            document.getElementById('selection-screen').style.display = 'none';
+            const menuScreen = document.getElementById('menu-screen'); 
+            menuScreen.style.display = 'block'; 
+            setTimeout(() => menuScreen.style.opacity = '1', 50);
             
-            jsonTextarea.value = generateEquipmentJSON();
-            savePanel.style.display = 'flex';
+            // Устанавливаем аватар выбранного героя
+            if (currentHeroId && heroesData[currentHeroId]) {
+                const heroData = heroesData[currentHeroId];
+                document.getElementById('menu-avatar').src = heroData.avatar;
+                document.getElementById('p-name-display').innerText = heroData.name;
+            } else {
+                document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
+            }
+            
+            document.getElementById('gold-val').innerText = "1500";
+            document.getElementById('crys-val').innerText = "50";
+            buildDynamicUI();
         }
 
         function buildDynamicUI() {
@@ -669,7 +791,7 @@
                 icon.onclick = () => { if(id === 'inventory') openInventory(); };
                 layer.appendChild(icon);
                 
-                // Создаем подпись для иконки - ПОД ИКОНКОЙ ВПЛОТНУЮ
+                // Создаем подпись для иконки
                 const label = document.createElement('div');
                 label.id = 'label-' + id;
                 label.innerText = iconNames[id] || id;
@@ -709,48 +831,6 @@
             });
         }
 
-        function selectHero(key) {
-            currentHeroKey = key; const data = heroesData[key];
-            document.getElementById('selection-screen').style.backgroundImage = `url('${data.bg}')`;
-            document.getElementById('class-title').innerText = data.title;
-            const list = document.getElementById('skills-list'); list.innerHTML = '';
-            data.skills.forEach((s, idx) => { list.innerHTML += `<div class="skill-item" onclick="openSkill(${idx})"><img src="${s.i}" class="skill-img"><div class="skill-name">${s.n}</div></div>`; });
-            document.querySelectorAll('.class-selector .icon-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + key).classList.add('active');
-            updateHeroImage();
-        }
-
-        function setGender(g) { currentGender = g; document.getElementById('gender-m').classList.toggle('active', g === 'male'); document.getElementById('gender-f').classList.toggle('active', g === 'female'); updateHeroImage(); }
-        function updateHeroImage() { const src = heroesData[currentHeroKey][currentGender]; document.getElementById('hero-img').src = src; document.getElementById('inv-hero-img').src = src; }
-        function openSkill(idx) { const s = heroesData[currentHeroKey].skills[idx]; document.getElementById('modal-img').src = s.i; document.getElementById('modal-name').innerText = s.n; document.getElementById('modal-text').innerText = s.d; document.getElementById('skill-modal').style.display = 'flex'; }
-        
-        async function confirmSelection() {
-            try { 
-                await fetch(`${SERVER_URL}/set_hero/${userId}/${currentHeroKey}`, { 
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }); 
-                showMenu(); 
-            } catch (e) { 
-                showMenu(); 
-            }
-        }
-
-        function showMenu() {
-            document.getElementById('selection-screen').style.display = 'none';
-            const m = document.getElementById('menu-screen'); 
-            m.style.display = 'block'; 
-            setTimeout(() => m.style.opacity = '1', 50);
-            const h = heroesData[currentHeroKey];
-            document.getElementById('menu-avatar').src = (currentGender === 'male' ? h.ava_m : h.ava_f);
-            document.getElementById('p-name-display').innerText = tg?.initDataUnsafe?.user?.first_name || "Игрок";
-            document.getElementById('gold-val').innerText = "1500";
-            document.getElementById('crys-val').innerText = "50";
-            buildDynamicUI();
-        }
-
         function openInventory() { 
             const inv = document.getElementById('inventory-screen'); 
             inv.style.display = 'block'; 
@@ -761,12 +841,83 @@
         }
         
         function closeInventory() { 
-            // Скрываем инвентарь без показа панели сохранения
             const inv = document.getElementById('inventory-screen');
             inv.style.opacity = '0';
             setTimeout(() => {
                 inv.style.display = 'none';
             }, 400);
+        }
+
+        // Функция предзагрузки изображений (из второго кода)
+        function preloadAssets() {
+            const imagesToLoad = [
+                'Loading_screen_war_of_kings.png',
+                'hero_tsar.png', 'hero_sultan.png', 'hero_king.png',
+                'icon_logo_void_echoes.png',
+                'icon_vip.png', 'icon_gold.png', 'icon_crystal.png',
+                'bg_menu_main.png',
+                'helmet.png', 'chestplate.png', 'hammer.png', 'ring.png',
+                'bracers.png', 'boots.png'
+            ];
+            
+            let loadedCount = 0;
+            const totalImages = imagesToLoad.length;
+            
+            if (totalImages === 0) {
+                return;
+            }
+
+            imagesToLoad.forEach(src => {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    loadedCount++;
+                    updateLoadingProgress(loadedCount, totalImages);
+                };
+                img.onerror = () => {
+                    console.error("Файл не найден:", src);
+                    loadedCount++;
+                    updateLoadingProgress(loadedCount, totalImages);
+                };
+            });
+        }
+        
+        function updateLoadingProgress(loaded, total) {
+            const progress = Math.min(100, Math.round((loaded / total) * 100));
+            
+            const progressFill = document.getElementById('progress-fill');
+            const loadingPct = document.getElementById('loading-pct');
+            
+            if (progressFill) {
+                progressFill.style.width = progress + '%'; 
+            }
+            
+            if (loadingPct) {
+                loadingPct.innerText = progress + '%';
+            }
+            
+            if (progress >= 100) {
+                setTimeout(showSelectionScreen, 500);
+            }
+        }
+        
+        function showSelectionScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const selectionScreen = document.getElementById('selection-screen');
+            
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+            
+            if (selectionScreen) {
+                selectionScreen.style.display = 'flex'; 
+                setTimeout(() => {
+                    selectionScreen.style.opacity = '1';
+                }, 100); 
+            }
         }
 
         window.onload = () => {
@@ -777,42 +928,8 @@
                 console.log("Telegram WebApp initialized");
             }
             
-            let p = 0; 
-            const loadingInterval = setInterval(() => {
-                p += 5; 
-                
-                const progressFill = document.getElementById('progress-fill');
-                const loadingPct = document.getElementById('loading-pct');
-                
-                if (progressFill) {
-                    progressFill.style.width = p + '%'; 
-                }
-                
-                if (loadingPct) {
-                    loadingPct.innerText = p + '%';
-                }
-                
-                if(p >= 100) { 
-                    clearInterval(loadingInterval); 
-                    
-                    const loadingScreen = document.getElementById('loading-screen');
-                    const selectionScreen = document.getElementById('selection-screen');
-                    
-                    if (loadingScreen) {
-                        loadingScreen.style.display = 'none'; 
-                    }
-                    
-                    if (selectionScreen) {
-                        selectionScreen.style.display = 'block'; 
-                        setTimeout(() => {
-                            selectionScreen.style.opacity = '1';
-                        }, 50); 
-                        selectHero('warrior'); 
-                    }
-                    
-                    console.log("Loading complete");
-                }
-            }, 30);
+            // Запускаем предзагрузку
+            preloadAssets();
         };
     </script>
 </body>
