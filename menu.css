@@ -1,0 +1,200 @@
+#menu-screen {
+    background: url('assets/bg/bg_menu_main.png') no-repeat center center/cover;
+}
+
+.menu-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.player-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 2px solid var(--gold);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.player-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+}
+
+.player-info h3 {
+    color: var(--gold);
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.player-info p {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.vip-button {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+}
+
+.vip-button img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.resources-column {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.resource-panel {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 2px solid var(--gold);
+    backdrop-filter: blur(10px);
+}
+
+.resource-panel.blue {
+    border-color: var(--blue);
+}
+
+.resource-panel img {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+.resource-panel .value {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--gold);
+}
+
+.resource-panel.blue .value {
+    color: var(--blue);
+}
+
+/* Динамическая панель */
+.bottom-panel-bg {
+    position: absolute;
+    background: rgba(30, 15, 5, 0.8);
+    border-top: 3px solid var(--gold);
+    pointer-events: none;
+    transition: border-color 0.5s, box-shadow 0.5s;
+    box-shadow: 0 -5px 20px rgba(255, 215, 0, 0.3);
+    z-index: 15;
+}
+
+.bottom-panel-bg.page2 {
+    border-color: var(--blue);
+    box-shadow: 0 -5px 20px rgba(0, 212, 255, 0.3);
+}
+
+/* Стрелка переключения */
+.nav-arrow-custom {
+    position: absolute;
+    left: 50%;
+    top: -60px;
+    transform: translateX(-50%);
+    width: 55px;
+    height: 55px;
+    background: rgba(15, 5, 0, 0.95);
+    border: 3px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    z-index: 30;
+    transition: 0.4s;
+    cursor: pointer;
+}
+
+.nav-arrow-custom::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-top: 4px solid var(--gold);
+    border-right: 4px solid var(--gold);
+    transform: rotate(45deg);
+    margin-right: 4px;
+}
+
+.nav-arrow-custom.flip {
+    transform: translateX(-50%) rotate(180deg);
+    border-color: var(--blue);
+}
+
+.nav-arrow-custom.flip::after {
+    border-color: var(--blue);
+}
+
+/* Иконки меню */
+.game-icon {
+    position: absolute;
+    pointer-events: auto;
+    z-index: 25;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    cursor: pointer;
+}
+
+.game-icon.hidden {
+    opacity: 0;
+    transform: translateY(100px) scale(0.5);
+    pointer-events: none;
+}
+
+.game-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Подписи иконок */
+.icon-label {
+    position: absolute;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
+    z-index: 26;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    border-radius: 6px;
+    padding: 4px 8px;
+    backdrop-filter: blur(4px);
+    white-space: nowrap;
+    min-width: 80px;
+    transform: translateX(-50%);
+}
+
+.icon-label.hidden {
+    opacity: 0;
+    transform: translateY(100px) scale(0.5) translateX(-50%);
+    pointer-events: none;
+}
