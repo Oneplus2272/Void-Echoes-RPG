@@ -1,65 +1,40 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>War of Kings: Legacy of Empires</title>
+    <title>War of Kings Test</title>
     <style>
-        body { margin: 0; padding: 0; background: #000; color: #ffd700; font-family: 'serif'; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
-        #loading-screen { text-align: center; width: 100%; }
-        .bar-container { width: 80%; height: 12px; background: #222; border: 1px solid #ffd700; margin: 20px auto; border-radius: 6px; }
-        #bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ffd700, #b8860b); border-radius: 5px; transition: width 0.1s; }
-        #selection-screen { display: none; text-align: center; }
-        .hero-btn { background: #1a1a1a; border: 1px solid #ffd700; color: #ffd700; padding: 15px; margin: 10px; border-radius: 8px; font-size: 18px; }
+        body { background: #000; color: gold; text-align: center; font-family: sans-serif; padding-top: 100px; }
+        #bar-container { width: 300px; height: 20px; border: 2px solid gold; margin: 20px auto; border-radius: 10px; }
+        #bar-fill { width: 0%; height: 100%; background: gold; transition: width 0.1s; }
     </style>
 </head>
 <body>
-
-    <div id="loading-screen">
-        <h1>War of Kings:<br>Legacy of Empires</h1>
-        <div class="bar-container">
-            <div id="bar-fill"></div>
-        </div>
-        <p id="pct-text">Подготовка... 0%</p>
+    <h1>War of Kings: Legacy of Empires</h1>
+    <div id="bar-container">
+        <div id="bar-fill"></div>
     </div>
-
-    <div id="selection-screen">
-        <h2>Выберите своего правителя</h2>
-        <button class="hero-btn" onclick="selectHero('Воин')">Воин Тьмы</button>
-        <button class="hero-btn" onclick="selectHero('Маг')">Маг Империи</button>
-    </div>
+    <h2 id="status">0%</h2>
 
     <script>
-        // Функция запускается СРАЗУ, никого не дожидаясь
-        (function() {
-            const fill = document.getElementById('bar-fill');
-            const txt = document.getElementById('pct-text');
-            let p = 0;
+        // Самый простой скрипт без условий
+        let p = 0;
+        const fill = document.getElementById('bar-fill');
+        const status = document.getElementById('status');
 
-            console.log("Скрипт загрузки запущен");
-
-            const timer = setInterval(() => {
-                p += 2;
-                if (p > 100) p = 100;
-                
-                if(fill) fill.style.width = p + '%';
-                if(txt) txt.textContent = 'Загрузка империи... ' + p + '%';
-
-                if (p >= 100) {
-                    clearInterval(timer);
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('selection-screen').style.display = 'block';
-                }
-            }, 40);
-
-            // Пытаемся связаться с сервером просто для логов в фоне
-            fetch('http://45.128.204.64/api/status').catch(e => console.log("Фоновая проверка IP"));
-        })();
-
-        function selectHero(name) {
-            alert('Вы выбрали: ' + name + '. Скоро начнется великая война!');
-            // Здесь мы потом добавим fetch запрос на твой сервер для сохранения
+        function frame() {
+            p += 1;
+            fill.style.width = p + '%';
+            status.innerText = p + '%';
+            if (p < 100) {
+                requestAnimationFrame(frame);
+            } else {
+                status.innerText = "ЗАГРУЖЕНО! БЭКЕНД: 45.128.204.64";
+            }
         }
+        
+        // Запускаем через секунду после открытия
+        setTimeout(frame, 1000);
     </script>
 </body>
 </html>
