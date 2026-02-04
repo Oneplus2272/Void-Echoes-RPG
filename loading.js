@@ -1,44 +1,41 @@
-// Логика экрана загрузки
-class LoadingScreen {
-    constructor() {
-        this.loadingPct = document.getElementById('loading-pct');
-        this.progressFill = document.getElementById('progress-fill');
-        this.init();
-    }
-
-    init() {
-        this.startLoading();
-    }
-
-    startLoading() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 2;
-            this.updateProgress(progress);
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                this.completeLoading();
-            }
-        }, 30);
-    }
-
-    updateProgress(percent) {
-        if (this.progressFill) {
-            this.progressFill.style.width = percent + '%';
-        }
-        if (this.loadingPct) {
-            this.loadingPct.textContent = percent + '%';
-        }
-    }
-
-    completeLoading() {
-        console.log('Загрузка завершена');
-        setTimeout(() => {
-            game.switchScreen('selection');
-        }, 500);
-    }
+#loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--dark);
 }
 
-// Инициализируем экран загрузки
-const loadingScreen = new LoadingScreen();
+.logo-main {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 30px;
+    object-fit: contain;
+}
+
+.loader-container {
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+}
+
+#loading-pct {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: var(--gold);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--gold);
+    transition: width 0.3s;
+}
