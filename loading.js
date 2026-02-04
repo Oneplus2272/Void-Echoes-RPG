@@ -1,49 +1,48 @@
 /**
- * Файл управления загрузкой игры
+ * Улучшенный загрузчик с защитой от ошибок
  */
 (function() {
-    console.log("Loading system initialized");
+    // Заглушки, чтобы код не падал, если конфиги не загрузились
+    if (typeof window.config === 'undefined') window.config = {};
+    if (typeof window.heroesData === 'undefined') window.heroesData = {};
 
-    function initLoader() {
+    function startLoading() {
         const fill = document.getElementById('progress-fill');
         const pct = document.getElementById('loading-pct');
-        const loadScreen = document.getElementById('loading-screen');
-        const selectScreen = document.getElementById('selection-screen');
+        const screen = document.getElementById('loading-screen');
+        const next = document.getElementById('selection-screen');
 
         if (!fill || !pct) {
-            // Если DOM еще не готов, ждем немного
-            setTimeout(initLoader, 50);
+            setTimeout(startLoading, 100);
             return;
         }
 
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 5;
-            fill.style.width = progress + '%';
-            pct.textContent = progress + '%';
+        let p = 0;
+        const timer = setInterval(() => {
+            p += 2;
+            fill.style.width = p + '%';
+            pct.textContent = p + '%';
 
-            if (progress >= 100) {
-                clearInterval(interval);
-                
-                if (loadScreen) loadScreen.style.display = 'none';
-                if (selectScreen) {
-                    selectScreen.style.display = 'block';
-                    setTimeout(() => { selectScreen.style.opacity = '1'; }, 50);
+            if (p >= 100) {
+                clearInterval(timer);
+                if (screen) screen.style.display = 'none';
+                if (next) {
+                    next.style.display = 'block';
+                    setTimeout(() => { next.style.opacity = '1'; }, 50);
                 }
             }
-        }, 40);
+        }, 30);
     }
 
-    // Запуск Telegram WebApp
+    // Инициализация Telegram
     if (window.Telegram && window.Telegram.WebApp) {
         window.Telegram.WebApp.expand();
         window.Telegram.WebApp.ready();
     }
 
-    // Запускаем как только возможно
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initLoader);
+    if (document.readyState === 'complete') {
+        startLoading();
     } else {
-        initLoader();
+        window.addEventListener('load', startLoading);
     }
 })();
