@@ -2,46 +2,39 @@
     --gold: #ffd700;
     --blue: #00d4ff;
     --purple: #bf40bf;
-    --dark: #000;
-    --dark-gray: #1a1a1a;
-    --light: #fff;
-    --gray: #ccc;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    --bg-panel: rgba(10, 10, 15, 0.9);
+    --bg-modal: rgba(5, 5, 10, 0.95);
 }
 
 body, html {
-    width: 100%;
-    height: 100%;
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
     overflow: hidden;
-    background: var(--dark);
-    color: var(--light);
+    background-color: #000;
     font-family: 'Segoe UI', Tahoma, sans-serif;
+    color: white;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+    display: none; width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 0.4s ease;
+    position: absolute; top: 0; left: 0;
 }
 
-.screen.active {
-    display: block;
+/* ЗАГРУЗОЧНЫЙ ЭКРАН */
+#loading-screen {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 2000; background: url('Loading_screen_war_of_kings.png') no-repeat center center/cover;
     opacity: 1;
 }
-
-.hidden {
-    display: none !important;
-}
+.logo-main { width: 220px; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--blue)); }
+.loader-container { width: 70%; max-width: 300px; text-align: center; }
+#loading-pct { margin-bottom: 8px; font-weight: bold; color: var(--blue); font-size: 1.2rem; text-shadow: 0 0 10px var(--blue); }
+.progress-bar { height: 12px; background: rgba(0, 0, 0, 0.7); border: 1px solid var(--blue); border-radius: 6px; overflow: hidden; }
+.progress-fill { width: 0%; height: 100%; background: var(--blue); transition: width 0.3s; }
