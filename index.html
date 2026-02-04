@@ -8,45 +8,17 @@
     <link rel="stylesheet" href="selection.css">
     <link rel="stylesheet" href="menu.css">
     <link rel="stylesheet" href="inventory.css">
+    <link rel="stylesheet" href="loading.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        /* Критические стили для шкалы, чтобы они были доступны мгновенно */
-        #loading-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #000;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .progress-bar {
-            width: 250px;
-            height: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid #00d4ff;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-        #progress-fill {
-            width: 0%;
-            height: 100%;
-            background: #00d4ff;
-            transition: width 0.1s linear;
-        }
-    </style>
 </head>
 <body>
 
-    <div id="loading-screen" class="screen">
+    <div id="loading-screen" class="screen" style="display: flex; opacity: 1;">
         <img src="icon_logo_void_echoes.png" class="logo-main">
         <div class="loader-container">
             <div id="loading-pct">0%</div>
             <div class="progress-bar">
-                <div id="progress-fill"></div>
+                <div id="progress-fill" class="progress-fill"></div>
             </div>
         </div>
     </div>
@@ -118,8 +90,11 @@
     </div>
 
     <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script src="names.js"></script>
     <script src="selection.js"></script>
     <script src="inventory.js"></script>
+    <script src="game.js"></script>
     <script src="main.js"></script>
     <script src="loading.js"></script>
 </body>
