@@ -5,53 +5,31 @@
         if (!fill || !pct) return setTimeout(start, 50);
 
         let p = 0;
-        
-        // 1. Сначала плавно доходим до 30%, пока ждем сервер
-        const initialLoad = setInterval(() => {
-            if (p < 30) {
-                p += 2;
-                updateProgress(p, fill, pct);
-            } else {
-                clearInterval(initialLoad);
-                checkServer(); // Проверяем твой сервер на AdminVPS
+        const interval = setInterval(async () => {
+            p += Math.random() * 5;
+            if (p >= 100) {
+                p = 100;
+                clearInterval(interval);
+                finishLoading();
             }
-        }, 50);
+            fill.style.width = p + '%';
+            pct.textContent = Math.floor(p) + '%';
+        }, 100);
 
-        async function checkServer() {
-            try {
-                // Пытаемся связаться с твоим бэкендом на 3.6 ГГц
-                const response = await fetch('http://45.128.204.64/api/status');
-                if (response.ok) {
-                    // 2. Если сервер ответил, быстро докручиваем до 100%
-                    const finalLoad = setInterval(() => {
-                        p += 10;
-                        updateProgress(p, fill, pct);
-                        if (p >= 100) {
-                            clearInterval(finalLoad);
-                            showSelection();
-                        }
-                    }, 30);
-                }
-            } catch (error) {
-                console.error("Сервер пока не отвечает:", error);
-                // Если сервер выключен, пишем ошибку прямо на шкале
-                document.getElementById('status-text').textContent = "Ошибка связи с империей...";
-            }
+        // Попытка связаться с сервером в фоновом режиме
+        try {
+            await fetch('http://45.128.204.64/api/status', { mode: 'no-cors' });
+            console.log("Связь с сервером AdminVPS установлена");
+        } catch (e) {
+            console.log("Работаем в автономном режиме");
         }
     }
 
-    function updateProgress(p, fill, pct) {
-        if (p > 100) p = 100;
-        fill.style.width = p + '%';
-        pct.textContent = Math.floor(p) + '%';
-    }
-
-    function showSelection() {
+    function finishLoading() {
         document.getElementById('loading-screen').style.display = 'none';
         const next = document.getElementById('selection-screen');
         next.style.display = 'block';
         setTimeout(() => next.style.opacity = '1', 50);
     }
-
     window.onload = start;
 })();
