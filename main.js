@@ -1,282 +1,120 @@
-// Основной файл игры с поддержкой сервера
-class Game {
-    constructor() {
-        this.currentHero = null;
-        this.currentScreen = 'loading';
-        this.playerData = null;
-        this.isOnline = true;
-        this.init();
-    }
-
-    async init() {
-        console.log('Игра инициализирована');
-        
-        // Проверяем соединение с сервером
-        this.isOnline = await gameAPI.checkServerConnection();
-        console.log('Режим работы:', this.isOnline ? 'онлайн' : 'оффлайн');
-        
-        // Загружаем данные игрока
-        await this.loadPlayerData();
-        
-        // Настраиваем обработчики
-        this.setupEventListeners();
-        
-        // Инициализируем Telegram
-        this.initTelegram();
-    }
-
-    initTelegram() {
-        if (window.Telegram?.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
-            
-            // Устанавливаем тему Telegram
-            this.setTelegramTheme(tg);
-            
-            // Обработчик изменения темы
-            tg.onEvent('themeChanged', () => {
-                this.setTelegramTheme(tg);
-            });
-        }
-    }
-
-    setTelegramTheme(tg) {
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#000000');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#999999');
-        document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#ffd700');
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#ffd700');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#000000');
-    }
-
-    async loadPlayerData() {
-        try {
-            if (this.isOnline) {
-                this.playerData = await gameAPI.getPlayerData();
-            } else {
-                this.playerData = gameAPI.getDefaultPlayerData();
-            }
-            
-            console.log('Данные игрока загружены:', this.playerData);
-            
-            // Если у игрока уже есть герой, пропускаем выбор
-            if (this.playerData.hero) {
-                this.currentHero = this.playerData.hero;
-                this.showMainMenu();
-            }
-            
-        } catch (error) {
-            console.error('Ошибка загрузки данных:', error);
-            this.playerData = gameAPI.getDefaultPlayerData();
-        }
-    }
-
-    setupEventListeners() {
-        // Кнопка подтверждения выбора героя
-        document.getElementById('confirm-btn').addEventListener('click', () => {
-            this.confirmHeroSelection();
-        });
-
-        // Кнопка закрытия инвентаря
-        document.getElementById('close-inv').addEventListener('click', () => {
-            this.closeInventory();
-        });
-
-        // Клик на аватарку для открытия инвентаря
+class MenuScreen {
+    static init() {
+        // Обработчики кликов
         document.getElementById('avatar-btn').addEventListener('click', () => {
-            this.openInventory();
+            game.openInventory();
         });
-
-        // VIP кнопка
+        
         document.getElementById('vip-btn').addEventListener('click', () => {
-            this.openVIP();
+            alert('VIP функция активирована!');
         });
-
-        // Обработка изменения размера окна
-        window.addEventListener('resize', () => {
-            this.handleResize();
-        });
-    }
-
-    handleResize() {
-        // Обновляем позиции элементов при изменении размера
-        if (this.currentScreen === 'inventory') {
-            inventoryScreen.updatePositions();
-        }
         
-        if (this.currentScreen === 'menu') {
-            menuScreen.updateLayout();
-        }
+        // Создаем динамический интерфейс
+        MenuScreen.createDynamicUI();
     }
 
-    async confirmHeroSelection() {
-        if (!this.currentHero) {
-            this.showNotification('Сначала выберите героя!', 'warning');
-            return;
-        }
-
-        const confirmBtn = document.getElementById('confirm-btn');
-        confirmBtn.textContent = 'СОХРАНЕНИЕ...';
-        confirmBtn.disabled = true;
-
-        try {
-            if (this.isOnline) {
-                await gameAPI.saveHeroSelection(this.currentHero);
+    static createDynamicUI() {
+        const layer = document.getElementById('ui-dynamic-layer');
+        if (!layer) return;
+        
+        layer.innerHTML = '';
+        
+        // Фон панели
+        const bg = document.createElement('div');
+        bg.className = 'bottom-panel-bg';
+        bg.style.left = GameConfig.layout.panel.x + 'px';
+        bg.style.top = GameConfig.layout.panel.y + 'px';
+        bg.style.width = GameConfig.layout.panel.w + 'px';
+        bg.style.height = GameConfig.layout.panel.h + 'px';
+        
+        // Стрелка переключения
+        const arrow = document.createElement('div');
+        arrow.className = 'nav-arrow-custom';
+        arrow.addEventListener('click', MenuScreen.togglePage);
+        bg.appendChild(arrow);
+        
+        layer.appendChild(bg);
+        
+        // Создаем иконки
+        Object.keys(GameConfig.layout.layout).forEach(iconId => {
+            const data = GameConfig.layout.layout[iconId];
+            
+            // Иконка
+            const icon = document.createElement('div');
+            icon.id = 'icon-' + iconId;
+            icon.className = 'game-icon';
+            icon.style.width = data.s + 'px';
+            icon.style.height = data.s + 'px';
+            icon.style.left = data.x + 'px';
+            icon.style.top = data.y + 'px';
+            
+            const iconInfo = GameConfig.menuIcons[iconId];
+            if (iconInfo) {
+                icon.innerHTML = `<img src="${iconInfo.icon}" alt="${iconInfo.name}">`;
+                icon.addEventListener('click', () => {
+                    if (iconId === 'inventory') {
+                        game.openInventory();
+                    } else {
+                        alert(`${iconInfo.name} - функция в разработке`);
+                    }
+                });
             }
             
-            // Сохраняем локально
-            this.playerData.hero = this.currentHero;
-            this.saveToLocalStorage();
+            layer.appendChild(icon);
             
-            this.showMainMenu();
+            // Подпись
+            const label = document.createElement('div');
+            label.id = 'label-' + iconId;
+            label.className = 'icon-label';
+            label.textContent = iconInfo ? iconInfo.name : iconId;
             
-        } catch (error) {
-            this.showNotification('Ошибка сохранения, пробуем снова...', 'error');
-            setTimeout(() => this.confirmHeroSelection(), 2000);
-        }
-    }
-
-    showMainMenu() {
-        // Обновляем аватарку
-        if (this.currentHero) {
-            const heroData = GameConfig.heroes[this.currentHero];
-            const avatarImg = document.getElementById('menu-avatar');
-            
-            // Загружаем изображение с обработкой ошибок
-            avatarImg.onerror = () => {
-                avatarImg.src = 'assets/icons/default_avatar.png';
+            const textPos = GameConfig.textPositions[iconId] || {
+                x: data.x + (data.s / 2),
+                y: data.y + data.s + 5
             };
-            avatarImg.src = heroData.face;
             
-            document.getElementById('player-name').textContent = heroData.name;
-        }
-
-        // Обновляем ресурсы
-        document.getElementById('gold-value').textContent = this.playerData.gold || 1500;
-        document.getElementById('crystal-value').textContent = this.playerData.crystals || 50;
-
-        // Обновляем уровень
-        document.getElementById('player-level').textContent = `Уровень: ${this.playerData.level || 1}`;
-
-        // Переключаем экран
-        this.switchScreen('menu');
-        
-        // Инициализируем меню
-        menuScreen.init();
-    }
-
-    openInventory() {
-        if (this.currentHero) {
-            const heroData = GameConfig.heroes[this.currentHero];
-            const invHeroImg = document.getElementById('inv-hero-img');
+            label.style.top = textPos.y + 'px';
+            label.style.left = textPos.x + 'px';
             
-            invHeroImg.onerror = () => {
-                invHeroImg.src = 'assets/icons/default_hero.png';
-            };
-            invHeroImg.src = heroData.image;
-        }
-        
-        this.switchScreen('inventory');
-        
-        // Инициализируем инвентарь
-        inventoryScreen.init();
-    }
-
-    closeInventory() {
-        this.switchScreen('menu');
-    }
-
-    openVIP() {
-        this.showNotification('VIP функция скоро будет доступна!', 'info');
-    }
-
-    switchScreen(screenName) {
-        // Сохраняем текущий экран
-        const previousScreen = this.currentScreen;
-        this.currentScreen = screenName;
-        
-        // Анимация перехода
-        document.querySelectorAll('.screen').forEach(screen => {
-            if (screen.id === previousScreen + '-screen') {
-                screen.style.opacity = '0';
-                setTimeout(() => {
-                    screen.classList.remove('active');
-                }, 400);
-            }
-            
-            if (screen.id === screenName + '-screen') {
-                screen.classList.add('active');
-                setTimeout(() => {
-                    screen.style.opacity = '1';
-                }, 50);
-            }
+            layer.appendChild(label);
         });
         
-        console.log('Переключен экран:', screenName);
+        // Обновляем видимость
+        MenuScreen.currentPage = 1;
+        MenuScreen.updateIconVisibility();
     }
 
-    setCurrentHero(heroId) {
-        this.currentHero = heroId;
-        const confirmBtn = document.getElementById('confirm-btn');
-        confirmBtn.disabled = false;
-        confirmBtn.textContent = `ПОДТВЕРДИТЬ: ${GameConfig.heroes[heroId].name}`;
-    }
-
-    showNotification(message, type = 'info') {
-        // Создаем уведомление
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = `
-            <div class="notification-content">
-                ${message}
-            </div>
-        `;
+    static togglePage() {
+        MenuScreen.currentPage = MenuScreen.currentPage === 1 ? 2 : 1;
         
-        document.body.appendChild(notification);
+        const bg = document.querySelector('.bottom-panel-bg');
+        const arrow = document.querySelector('.nav-arrow-custom');
         
-        // Удаляем через 3 секунды
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
-
-    saveToLocalStorage() {
-        try {
-            localStorage.setItem('void_echoes_player_data', JSON.stringify(this.playerData));
-            localStorage.setItem('void_echoes_current_hero', this.currentHero);
-        } catch (error) {
-            console.error('Ошибка сохранения в localStorage:', error);
+        if (MenuScreen.currentPage === 2) {
+            bg.classList.add('page2');
+            arrow.classList.add('flip');
+        } else {
+            bg.classList.remove('page2');
+            arrow.classList.remove('flip');
         }
+        
+        MenuScreen.updateIconVisibility();
     }
 
-    loadFromLocalStorage() {
-        try {
-            const savedData = localStorage.getItem('void_echoes_player_data');
-            const savedHero = localStorage.getItem('void_echoes_current_hero');
+    static updateIconVisibility() {
+        Object.keys(GameConfig.layout.layout).forEach(iconId => {
+            const icon = document.getElementById('icon-' + iconId);
+            const label = document.getElementById('label-' + iconId);
+            const data = GameConfig.layout.layout[iconId];
             
-            if (savedData) {
-                this.playerData = JSON.parse(savedData);
+            if (data.static) {
+                if (icon) icon.classList.remove('hidden');
+                if (label) label.classList.remove('hidden');
+            } else {
+                const isVisible = GameConfig.pages[MenuScreen.currentPage].includes(iconId);
+                if (icon) icon.classList.toggle('hidden', !isVisible);
+                if (label) label.classList.toggle('hidden', !isVisible);
             }
-            
-            if (savedHero) {
-                this.currentHero = savedHero;
-            }
-        } catch (error) {
-            console.error('Ошибка загрузки из localStorage:', error);
-        }
-    }
-
-    // Метод для тестирования API
-    async testServerConnection() {
-        const result = await gameAPI.checkServerConnection();
-        this.showNotification(result ? 'Сервер доступен' : 'Сервер недоступен', result ? 'success' : 'error');
-        return result;
+        });
     }
 }
-
-// Создаем экземпляр игры
-const game = new Game();
