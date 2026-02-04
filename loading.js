@@ -1,36 +1,18 @@
-class LoadingScreen {
-    static start() {
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 2;
-            LoadingScreen.updateProgress(progress);
-            
-            if (progress >= 100) {
-                clearInterval(interval);
-                LoadingScreen.complete();
-            }
-        }, 30);
-    }
-
-    static updateProgress(percent) {
-        const fill = document.getElementById('progress-fill');
-        const text = document.getElementById('loading-pct');
+window.onload = () => {
+    const tg = window.Telegram?.WebApp;
+    if(tg) { tg.expand(); tg.ready(); }
+    
+    let p = 0; 
+    const loadingInterval = setInterval(() => {
+        p += 5; 
+        document.getElementById('progress-fill').style.width = p + '%'; 
+        document.getElementById('loading-pct').textContent = p + '%';
         
-        if (fill) fill.style.width = percent + '%';
-        if (text) text.textContent = percent + '%';
-    }
-
-    static complete() {
-        console.log('Loading complete');
-        
-        // Проверяем, есть ли сохраненный герой
-        const savedHero = localStorage.getItem('void_echoes_hero');
-        if (savedHero && GameConfig.heroes[savedHero]) {
-            game.currentHero = savedHero;
-            game.showMenu();
-        } else {
-            ScreenManager.switchTo('selection');
-            SelectionScreen.init();
+        if(p >= 100) { 
+            clearInterval(loadingInterval); 
+            document.getElementById('loading-screen').style.display = 'none'; 
+            document.getElementById('selection-screen').style.display = 'block'; 
+            setTimeout(() => document.getElementById('selection-screen').style.opacity = '1', 50);
         }
-    }
-}
+    }, 30);
+};
