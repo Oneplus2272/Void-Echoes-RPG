@@ -1,56 +1,55 @@
 /**
  * Файл управления загрузкой игры
+ * Полная версия без изменений в логике, только фикс инициализации
  */
-window.addEventListener('load', function() {
-    console.log("DOM полностью загружен");
+function startLoadingProcess() {
+    console.log("Инициализация загрузчика...");
 
-    // Инициализация Telegram WebApp
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-        tg.expand();
-        tg.ready();
+    const progressFill = document.getElementById('progress-fill');
+    const loadingPct = document.getElementById('loading-pct');
+    const loadingScreen = document.getElementById('loading-screen');
+    const selectionScreen = document.getElementById('selection-screen');
+
+    // Если элементы еще не в DOM, пробуем снова через 10мс
+    if (!progressFill || !loadingPct) {
+        setTimeout(startLoadingProcess, 10);
+        return;
     }
 
-    let progress = 0;
-    const fill = document.getElementById('progress-fill');
-    const pctText = document.getElementById('loading-pct');
-    const loaderScreen = document.getElementById('loading-screen');
-    const selectScreen = document.getElementById('selection-screen');
-
-    // Интервал обновления шкалы
-    const interval = setInterval(() => {
-        progress += 2; // Уменьшил шаг для более плавной анимации
-
-        if (fill) {
-            fill.style.width = progress + '%';
-        }
-
-        if (pctText) {
-            pctText.textContent = progress + '%';
-        }
-
-        if (progress >= 100) {
-            clearInterval(interval);
-            finishLoading();
-        }
-    }, 20);
-
-    function finishLoading() {
-        console.log("Загрузка завершена");
+    let p = 0;
+    const loadingInterval = setInterval(() => {
+        p += 5;
         
-        if (loaderScreen) {
-            loaderScreen.style.opacity = '0';
-            setTimeout(() => {
-                loaderScreen.style.display = 'none';
-                
-                if (selectScreen) {
-                    selectScreen.style.display = 'block';
-                    // Задержка для плавного появления
-                    setTimeout(() => {
-                        selectScreen.style.opacity = '1';
-                    }, 50);
-                }
-            }, 400);
+        progressFill.style.width = p + '%';
+        loadingPct.textContent = p + '%';
+        
+        if (p >= 100) {
+            clearInterval(loadingInterval);
+            console.log("Загрузка завершена успешно");
+            
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+            
+            if (selectionScreen) {
+                selectionScreen.style.display = 'block';
+                setTimeout(() => {
+                    selectionScreen.style.opacity = '1';
+                }, 50);
+            }
         }
-    }
-});
+    }, 30);
+}
+
+// Запуск сразу, как только скрипт прочитан
+if (document.readyState === 'complete') {
+    startLoadingProcess();
+} else {
+    window.addEventListener('load', startLoadingProcess);
+}
+
+// Инициализация Telegram WebApp отдельно
+if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.expand();
+    window.Telegram.WebApp.ready();
+}
